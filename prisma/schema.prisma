@@ -1,0 +1,462 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String?
+  name          String
+  image         String?
+  memberProfile Member?
+  accounts      Account[]
+  sessions      Session[]
+  authoredUpdates ClubUpdate[]
+  notifications Notification[]
+  uploadedGalleryItems GalleryItem[]
+  submittedPromotions PromotionRequest[] @relation("PromotionSubmittedBy")
+  reviewedPromotions  PromotionRequest[] @relation("PromotionReviewedBy")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Member {
+  id               String                @id @default(cuid())
+  userId           String                @unique
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memberCode       String                @unique
+  phone            String?
+  dateOfBirth      DateTime?
+  address          String?
+  emergencyContact String?
+  photoUrl         String?
+  joiningDate      DateTime              @default(now())
+  status           MemberStatus          @default(PENDING)
+  departments      MemberDepartment[]
+  committeeRoles   CommitteeMemberRole[]
+  promotions       PromotionRequest[]    @relation("PromotionSubject")
+  coordinatedDepts Department[]          @relation("DepartmentCoordinator")
+  sourceApplicant  Applicant?
+  assignedTasks    Task[]
+  eventRsvps       EventRsvp[]
+
+  @@index([userId])
+  @@index([memberCode])
+  @@index([status])
+}
+
+enum MemberStatus {
+  PENDING
+  ACTIVE
+  ALUMNI
+  INACTIVE
+  SUSPENDED
+}
+
+model Role {
+  id                   String                @id @default(cuid())
+  name                 String                @unique
+  description          String?
+  permissions          RolePermission[]
+  committeeMemberRoles CommitteeMemberRole[]
+  currentPromotions    PromotionRequest[]    @relation("PromotionCurrentRole")
+  proposedPromotions   PromotionRequest[]    @relation("PromotionProposedRole")
+}
+
+model Permission {
+  id             String           @id @default(cuid())
+  key            String           @unique
+  description    String?
+  roles          RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model Committee {
+  id          String                @id @default(cuid())
+  year        String
+  startDate   DateTime
+  endDate     DateTime?
+  isCurrent   Boolean               @default(false)
+  status      CommitteeStatus       @default(ACTIVE)
+  memberRoles CommitteeMemberRole[]
+  departments Department[]
+}
+
+enum CommitteeStatus {
+  ACTIVE
+  DISSOLVED
+  UPCOMING
+}
+
+model CommitteeMemberRole {
+  id          String    @id @default(cuid())
+  committeeId String
+  memberId    String
+  roleId      String
+  committee   Committee @relation(fields: [committeeId], references: [id], onDelete: Cascade)
+  member      Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  role        Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  startedAt   DateTime  @default(now())
+  endedAt     DateTime?
+
+  @@unique([committeeId, memberId, roleId])
+  @@index([committeeId])
+  @@index([memberId])
+}
+
+model Department {
+  id            String             @id @default(cuid())
+  name          String
+  description   String?
+  committeeId   String
+  coordinatorId String?
+  committee     Committee          @relation(fields: [committeeId], references: [id], onDelete: Cascade)
+  coordinator   Member?            @relation("DepartmentCoordinator", fields: [coordinatorId], references: [id])
+  members       MemberDepartment[]
+  events        Event[]
+  galleryAlbums GalleryAlbum[]
+  tasks         Task[]
+
+  @@index([committeeId])
+}
+
+model MemberDepartment {
+  memberId     String
+  departmentId String
+  member       Member     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@id([memberId, departmentId])
+}
+
+model Task {
+  id           String     @id @default(cuid())
+  departmentId String
+  title        String
+  description  String?
+  assigneeId   String?
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  assignee     Member?    @relation(fields: [assigneeId], references: [id])
+  status       TaskStatus @default(TODO)
+  dueDate      DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([departmentId])
+  @@index([assigneeId])
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+model RegistrationWindow {
+  id          String               @id @default(cuid())
+  title       String
+  description String
+  bannerUrl   String?
+  startDate   DateTime
+  endDate     DateTime
+  status      RegistrationWindowStatus @default(DRAFT)
+  formSchema  Json    @default("{}")
+  applicants  Applicant[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([status])
+}
+
+enum RegistrationWindowStatus {
+  DRAFT
+  SCHEDULED
+  LIVE
+  CLOSED
+}
+
+model Applicant {
+  id                   String             @id @default(cuid())
+  registrationWindowId String
+  name                 String
+  email                String
+  phone                String
+  studentId            String
+  departmentPrefs      String[]
+  skills               String[]
+  actingExperience     String?
+  portfolioUrl         String?
+  customResponses      Json?
+  status               ApplicantStatus    @default(SUBMITTED)
+  registrationWindow   RegistrationWindow @relation(fields: [registrationWindowId], references: [id], onDelete: Cascade)
+  convertedMemberId    String?            @unique
+  convertedMember      Member?            @relation(fields: [convertedMemberId], references: [id])
+  createdAt            DateTime           @default(now())
+
+  @@index([registrationWindowId])
+  @@index([status])
+  @@unique([registrationWindowId, email])
+}
+
+enum ApplicantStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  CONVERTED
+}
+
+model ContactSubmission {
+  id        String    @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime  @default(now())
+  handledAt DateTime?
+}
+
+model PromotionRequest {
+  id             String           @id @default(cuid())
+  memberId       String
+  member         Member           @relation("PromotionSubject", fields: [memberId], references: [id], onDelete: Cascade)
+  currentRoleId  String
+  currentRole    Role?            @relation("PromotionCurrentRole", fields: [currentRoleId], references: [id])
+  proposedRoleId String
+  proposedRole   Role?            @relation("PromotionProposedRole", fields: [proposedRoleId], references: [id])
+  reason         String
+  achievements   String?
+  documentUrls   String[]
+  status         PromotionStatus  @default(DRAFT)
+  submittedById  String
+  submittedBy    User?            @relation("PromotionSubmittedBy", fields: [submittedById], references: [id])
+  reviewedById   String?
+  reviewedBy     User?            @relation("PromotionReviewedBy", fields: [reviewedById], references: [id])
+  reviewedAt     DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([memberId])
+  @@index([status])
+}
+
+enum PromotionStatus {
+  DRAFT
+  SUBMITTED
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+}
+
+model Event {
+  id           String      @id @default(cuid())
+  title        String
+  type         EventType
+  status       EventStatus @default(UPCOMING)
+  departmentId String?
+  startAt      DateTime
+  endAt        DateTime?
+  location     String?
+  description  String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  rsvps        EventRsvp[]
+  createdAt    DateTime    @default(now())
+
+  @@index([departmentId])
+  @@index([startAt])
+}
+
+enum EventType {
+  WORKSHOP
+  REHEARSAL
+  PERFORMANCE
+  AUDITION
+  FESTIVAL
+  TRAINING
+}
+
+enum EventStatus {
+  DRAFT
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model EventRsvp {
+  id        String  @id @default(cuid())
+  eventId   String
+  memberId  String
+  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  member    Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  status    RsvpStatus @default(GOING)
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, memberId])
+  @@index([eventId])
+  @@index([memberId])
+}
+
+enum RsvpStatus {
+  GOING
+  MAYBE
+  NOT_GOING
+}
+
+model ClubUpdate {
+  id           String         @id @default(cuid())
+  title        String
+  bodyRichText String
+  category     UpdateCategory
+  mediaUrls    String[]
+  publishedAt  DateTime?
+  authorId     String
+  author       User?          @relation(fields: [authorId], references: [id])
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([publishedAt])
+  @@index([category])
+}
+
+enum UpdateCategory {
+  ANNOUNCEMENT
+  NOTICE
+  ACHIEVEMENT
+  PRODUCTION
+  RECRUITMENT
+  EVENT
+}
+
+model GalleryAlbum {
+  id           String        @id @default(cuid())
+  name         String
+  category     AlbumCategory
+  departmentId String?
+  department   Department?   @relation(fields: [departmentId], references: [id])
+  items        GalleryItem[]
+  createdAt    DateTime      @default(now())
+
+  @@index([departmentId])
+  @@index([category])
+}
+
+enum AlbumCategory {
+  PRODUCTIONS
+  WORKSHOPS
+  BEHIND_THE_SCENES
+  FESTIVALS
+  REHEARSALS
+  CLUB_LIFE
+}
+
+model GalleryItem {
+  id           String       @id @default(cuid())
+  albumId      String
+  r2Key        String
+  fileName     String
+  type         MediaType
+  caption      String?
+  uploadedById String
+  uploadedBy   User?        @relation(fields: [uploadedById], references: [id])
+  album        GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now())
+
+  @@index([albumId])
+  @@index([uploadedById])
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  payload   Json?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, readAt])
+  @@index([createdAt])
+}
+
+enum NotificationType {
+  PROMOTION
+  REGISTRATION
+  ANNOUNCEMENT
+  EVENT
+  GALLERY
+  GENERAL
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String
+  action     String
+  entityType String
+  entityId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model SystemSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value Json
+}

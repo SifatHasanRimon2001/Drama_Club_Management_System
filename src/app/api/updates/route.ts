@@ -1,0 +1,93 @@
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { getPaginationParams, requireAuth } from "@/lib/api-helpers";
+import { clubUpdateSchema } from "@/lib/validations";
+import { logAudit } from "@/lib/audit";
+import { notifyAllActiveMembers } from "@/lib/notifications";
+import { ZodError } from "zod";
+
+export async function GET(request: NextRequest) {
+  try {
+    const { page, limit, skip } = getPaginationParams(request);
+    const url = new URL(request.url);
+    const category = url.searchParams.get("category");
+
+    // PRD §5: public read for published updates only
+    const where: Record<string, unknown> = {
+      publishedAt: { not: null },
+    };
+    if (category) where.category = category;
+
+    const [updates, total] = await Promise.all([
+      prisma.clubUpdate.findMany({
+        where,
+        orderBy: { publishedAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.clubUpdate.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      updates,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    });
+  } catch (error) {
+    console.error("[Updates GET]", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const auth = await requireAuth("updates.publish");
+    if (auth.error) return auth.error;
+
+    const body = await request.json();
+    const data = clubUpdateSchema.parse(body);
+
+    const update = await prisma.clubUpdate.create({
+      data: {
+        title: data.title,
+        bodyRichText: data.bodyRichText,
+        category: data.category,
+        mediaUrls: data.mediaUrls || [],
+        publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
+        authorId: auth.userId,
+      },
+    });
+
+    // PRD §3c: New ClubUpdate published → ANNOUNCEMENT in-app to all active members
+    if (update.publishedAt) {
+      await notifyAllActiveMembers({
+        type: "ANNOUNCEMENT",
+        title: `New ${update.category.toLowerCase()}: ${update.title}`,
+        message: update.title,
+        payload: { updateId: update.id },
+        link: `/updates/${update.id}`,
+      });
+    }
+
+    await logAudit({
+      actorId: auth.userId,
+      action: "update.created",
+      entityType: "ClubUpdate",
+      entityId: update.id,
+      metadata: { title: update.title, category: update.category },
+    });
+
+    return NextResponse.json(update, { status: 201 });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    console.error("[Updates POST]", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
