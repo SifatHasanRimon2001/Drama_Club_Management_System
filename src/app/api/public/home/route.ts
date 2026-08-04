@@ -44,8 +44,26 @@ export async function GET() {
         }),
       ]);
 
+    // Strip emails from committee member roles for public response
+    const safeCommittee = committee
+      ? {
+          ...committee,
+          memberRoles: committee.memberRoles.map((mr) => ({
+            ...mr,
+            member: {
+              ...mr.member,
+              user: {
+                id: mr.member.user.id,
+                name: mr.member.user.name,
+                image: mr.member.user.image,
+              },
+            },
+          })),
+        }
+      : null;
+
     return NextResponse.json({
-      committee,
+      committee: safeCommittee,
       departments,
       recentUpdates,
       upcomingEvents,

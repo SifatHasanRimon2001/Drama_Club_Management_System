@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth, getPaginationParams } from "@/lib/api-helpers";
+import { requireAuth, getPaginationParams, validateEnumParam } from "@/lib/api-helpers";
+
+const VALID_APPLICANT_STATUSES = [
+  "SUBMITTED",
+  "UNDER_REVIEW",
+  "ACCEPTED",
+  "REJECTED",
+  "CONVERTED",
+] as const;
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,12 +18,15 @@ export async function GET(request: NextRequest) {
     const { page, limit, skip } = getPaginationParams(request);
     const url = new URL(request.url);
     const windowId = url.searchParams.get("windowId");
-    const status = url.searchParams.get("status");
+
+    const statusResult = validateEnumParam(request, "status", VALID_APPLICANT_STATUSES);
+    if (statusResult.error) return statusResult.error;
+
     const search = url.searchParams.get("search");
 
     const where: Record<string, unknown> = {};
     if (windowId) where.registrationWindowId = windowId;
-    if (status) where.status = status;
+    if (statusResult.value) where.status = statusResult.value;
     if (search) {
       where.OR = [
         { name: { contains: search, mode: "insensitive" } },

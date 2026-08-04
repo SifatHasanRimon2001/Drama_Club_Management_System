@@ -71,6 +71,17 @@ export async function POST(request: NextRequest) {
     if (error instanceof ZodError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      (error as { code: string }).code === "P2002"
+    ) {
+      return NextResponse.json(
+        { error: "A role with this name already exists" },
+        { status: 409 }
+      );
+    }
     console.error("[Roles POST]", error);
     return NextResponse.json(
       { error: "Internal server error" },

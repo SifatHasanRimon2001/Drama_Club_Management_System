@@ -11,8 +11,15 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "npx tsx prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force && npm run db:seed",
-    "db:studio": "prisma studio"
+    "db:reset": "npx tsx scripts/reset-db.ts",
+    "db:studio": "prisma studio",
+        "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+        "start:e2e": "npx tsx scripts/e2e-server.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ci": "next build && playwright test",
+    "test:e2e:http": "tsx scripts/e2e.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
@@ -21,6 +28,7 @@
     "@auth/prisma-adapter": "^2.11.3",
     "@aws-sdk/client-s3": "^3.1101.0",
     "@aws-sdk/s3-request-presigner": "^3.1101.0",
+    "@cline/sdk": "^0.0.69",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "@tiptap/extension-image": "^3.29.2",
@@ -42,6 +50,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
@@ -49,6 +58,7 @@
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^6.0.5",
+    "@vitest/coverage-v8": "^4.1.10",
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",

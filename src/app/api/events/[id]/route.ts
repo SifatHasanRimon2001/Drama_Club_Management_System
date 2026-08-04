@@ -57,6 +57,24 @@ export async function PATCH(
       );
     }
 
+    // Validate status transitions
+    if (data.status && data.status !== existing.status) {
+      const allowedTransitions: Record<string, string[]> = {
+        DRAFT: ["UPCOMING", "CANCELLED"],
+        UPCOMING: ["ONGOING", "CANCELLED"],
+        ONGOING: ["COMPLETED", "CANCELLED"],
+        COMPLETED: [],
+        CANCELLED: [],
+      };
+      const validNext = allowedTransitions[existing.status] || [];
+      if (!validNext.includes(data.status)) {
+        return NextResponse.json(
+          { error: `Cannot transition event from ${existing.status} to ${data.status}` },
+          { status: 400 }
+        );
+      }
+    }
+
     // Validate endAt > startAt if both provided
     const startAt = data.startAt ? new Date(data.startAt) : existing.startAt;
     const endAt = data.endAt ? new Date(data.endAt) : existing.endAt;
@@ -83,6 +101,7 @@ export async function PATCH(
       data: {
         title: data.title,
         type: data.type,
+        status: data.status,
         departmentId: data.departmentId,
         startAt: data.startAt ? new Date(data.startAt) : undefined,
         endAt: data.endAt ? new Date(data.endAt) : undefined,

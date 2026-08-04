@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth, getPaginationParams } from "@/lib/api-helpers";
+import { requireAuth, getPaginationParams, validateEnumParam } from "@/lib/api-helpers";
 import { registrationWindowSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
 import { Prisma } from "@prisma/client";
+
+const VALID_REGISTRATION_STATUSES = [
+  "DRAFT",
+  "SCHEDULED",
+  "LIVE",
+  "CLOSED",
+] as const;
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,11 +19,12 @@ export async function GET(request: NextRequest) {
     if (auth.error) return auth.error;
 
     const { page, limit, skip } = getPaginationParams(request);
-    const url = new URL(request.url);
-    const status = url.searchParams.get("status");
+
+    const statusResult = validateEnumParam(request, "status", VALID_REGISTRATION_STATUSES);
+    if (statusResult.error) return statusResult.error;
 
     const where: Record<string, unknown> = {};
-    if (status) where.status = status;
+    if (statusResult.value) where.status = statusResult.value;
 
     const [windows, total] = await Promise.all([
       prisma.registrationWindow.findMany({

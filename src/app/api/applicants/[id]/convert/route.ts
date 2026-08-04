@@ -37,17 +37,17 @@ export async function POST(
       );
     }
 
-    if (applicant.status !== "ACCEPTED") {
-      return NextResponse.json(
-        { error: "Only accepted applicants can be converted" },
-        { status: 400 }
-      );
-    }
-
     if (applicant.convertedMemberId) {
       return NextResponse.json(
         { error: "Applicant has already been converted" },
         { status: 409 }
+      );
+    }
+
+    if (applicant.status !== "ACCEPTED") {
+      return NextResponse.json(
+        { error: "Only accepted applicants can be converted" },
+        { status: 400 }
       );
     }
 
@@ -76,6 +76,22 @@ export async function POST(
           joiningDate: new Date(),
         },
       });
+
+      // Assign departments from applicant preferences (only valid department IDs)
+      if (applicant.departmentPrefs.length > 0) {
+        const validDepts = await tx.department.findMany({
+          where: { id: { in: applicant.departmentPrefs } },
+          select: { id: true },
+        });
+        if (validDepts.length > 0) {
+          await tx.memberDepartment.createMany({
+            data: validDepts.map((d) => ({
+              memberId: member.id,
+              departmentId: d.id,
+            })),
+          });
+        }
+      }
 
       // Update applicant
       await tx.applicant.update({

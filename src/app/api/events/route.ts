@@ -1,16 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getPaginationParams, requireAuth } from "@/lib/api-helpers";
+import { getPaginationParams, requireAuth, validateEnumParam } from "@/lib/api-helpers";
 import { eventSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { notifyDepartmentMembers, notifyAllActiveMembers } from "@/lib/notifications";
 import { ZodError } from "zod";
 
+const VALID_EVENT_TYPES = [
+  "WORKSHOP",
+  "REHEARSAL",
+  "PERFORMANCE",
+  "AUDITION",
+  "FESTIVAL",
+  "TRAINING",
+] as const;
+
 export async function GET(request: NextRequest) {
   try {
     const { page, limit, skip } = getPaginationParams(request);
     const url = new URL(request.url);
-    const type = url.searchParams.get("type");
+
+    const typeResult = validateEnumParam(request, "type", VALID_EVENT_TYPES);
+    if (typeResult.error) return typeResult.error;
+
     const departmentId = url.searchParams.get("departmentId");
     const upcoming = url.searchParams.get("upcoming") === "true";
 
@@ -18,7 +30,7 @@ export async function GET(request: NextRequest) {
     const where: Record<string, unknown> = {
       status: { not: "DRAFT" },
     };
-    if (type) where.type = type;
+    if (typeResult.value) where.type = typeResult.value;
     if (departmentId) where.departmentId = departmentId;
     if (upcoming) where.startAt = { gte: new Date() };
 
@@ -97,7 +109,7 @@ export async function POST(request: NextRequest) {
         departmentId: data.departmentId,
         type: "EVENT",
         title: `New Event: ${event.title}`,
-        message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt.toLocaleDateString()}.`,
+        message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt?.toLocaleDateString() ?? "TBD"}.`,
         payload: { eventId: event.id },
         link: `/events/${event.id}`,
       });
@@ -105,7 +117,7 @@ export async function POST(request: NextRequest) {
       await notifyAllActiveMembers({
         type: "EVENT",
         title: `New Event: ${event.title}`,
-        message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt.toLocaleDateString()}.`,
+        message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt?.toLocaleDateString() ?? "TBD"}.`,
         payload: { eventId: event.id },
         link: `/events/${event.id}`,
       });

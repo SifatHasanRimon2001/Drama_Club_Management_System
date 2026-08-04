@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth, getPaginationParams } from "@/lib/api-helpers";
+import { requireAuth, getPaginationParams, validateEnumParam } from "@/lib/api-helpers";
 import { memberSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
+
+const VALID_MEMBER_STATUSES = [
+  "PENDING",
+  "ACTIVE",
+  "ALUMNI",
+  "INACTIVE",
+  "SUSPENDED",
+] as const;
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,12 +20,15 @@ export async function GET(request: NextRequest) {
 
     const { page, limit, skip } = getPaginationParams(request);
     const url = new URL(request.url);
-    const status = url.searchParams.get("status");
+
+    const statusResult = validateEnumParam(request, "status", VALID_MEMBER_STATUSES);
+    if (statusResult.error) return statusResult.error;
+
     const departmentId = url.searchParams.get("departmentId");
     const search = url.searchParams.get("search");
 
     const where: Record<string, unknown> = {};
-    if (status) where.status = status;
+    if (statusResult.value) where.status = statusResult.value;
     if (departmentId) {
       where.departments = { some: { departmentId } };
     }

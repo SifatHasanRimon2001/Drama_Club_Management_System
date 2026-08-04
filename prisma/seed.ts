@@ -163,7 +163,7 @@ async function main() {
     },
   });
 
-  const logisticsDept = await prisma.department.upsert({
+  await prisma.department.upsert({
     where: { id: "dept-logistics" },
     update: {},
     create: {
@@ -286,7 +286,7 @@ async function main() {
 
   // 13. Create sample gallery album
   console.log("Creating sample gallery album...");
-  const album = await prisma.galleryAlbum.upsert({
+  await prisma.galleryAlbum.upsert({
     where: { id: "album-spring-2026" },
     update: {},
     create: {

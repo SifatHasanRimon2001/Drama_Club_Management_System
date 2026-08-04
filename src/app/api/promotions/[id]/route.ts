@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/api-helpers";
 import { can } from "@/lib/permissions";
-import { logAudit } from "@/lib/audit";
 
 export async function GET(
   _request: NextRequest,

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAuth, validateEnumParam } from "@/lib/api-helpers";
 import { taskSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
+
+const VALID_TASK_STATUSES = ["TODO", "IN_PROGRESS", "DONE"] as const;
 
 export async function GET(
   request: NextRequest,
@@ -24,12 +26,14 @@ export async function GET(
       );
     }
 
+    const statusResult = validateEnumParam(request, "status", VALID_TASK_STATUSES);
+    if (statusResult.error) return statusResult.error;
+
     const url = new URL(request.url);
-    const status = url.searchParams.get("status");
     const assigneeId = url.searchParams.get("assigneeId");
 
     const where: Record<string, unknown> = { departmentId };
-    if (status) where.status = status;
+    if (statusResult.value) where.status = statusResult.value;
     if (assigneeId) where.assigneeId = assigneeId;
 
     const tasks = await prisma.task.findMany({

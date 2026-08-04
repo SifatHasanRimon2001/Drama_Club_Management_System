@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth, getPaginationParams } from "@/lib/api-helpers";
+import { requireAuth } from "@/lib/api-helpers";
 import { committeeSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
@@ -53,8 +53,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await requireAuth("committee.manage");
-    if (auth.error) return auth.error;
+    const authResult = await requireAuth("committee.manage");
+    if (authResult.error) return authResult.error;
 
     const body = await request.json();
     const data = committeeSchema.parse(body);
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       });
 
       await logAudit({
-        actorId: auth.userId,
+        actorId: authResult.userId,
         action: "committee.created",
         entityType: "Committee",
         entityId: committee.id,
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     });
 
     await logAudit({
-      actorId: auth.userId,
+      actorId: authResult.userId,
       action: "committee.created",
       entityType: "Committee",
       entityId: committee.id,

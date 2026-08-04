@@ -78,8 +78,6 @@ model Member {
   assignedTasks    Task[]
   eventRsvps       EventRsvp[]
 
-  @@index([userId])
-  @@index([memberCode])
   @@index([status])
 }
 
@@ -309,6 +307,7 @@ model Event {
 
   @@index([departmentId])
   @@index([startAt])
+  @@index([status])
 }
 
 enum EventType {

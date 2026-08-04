@@ -1,21 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAuth, validateEnumParam } from "@/lib/api-helpers";
 import { galleryAlbumSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
+
+const VALID_ALBUM_CATEGORIES = [
+  "PRODUCTIONS",
+  "WORKSHOPS",
+  "BEHIND_THE_SCENES",
+  "FESTIVALS",
+  "REHEARSALS",
+  "CLUB_LIFE",
+] as const;
 
 export async function GET(request: NextRequest) {
   try {
     const auth = await requireAuth();
     if (auth.error) return auth.error;
 
+    const categoryResult = validateEnumParam(request, "category", VALID_ALBUM_CATEGORIES);
+    if (categoryResult.error) return categoryResult.error;
+
     const url = new URL(request.url);
-    const category = url.searchParams.get("category");
     const departmentId = url.searchParams.get("departmentId");
 
     const where: Record<string, unknown> = {};
-    if (category) where.category = category;
+    if (categoryResult.value) where.category = categoryResult.value;
     if (departmentId) where.departmentId = departmentId;
 
     const albums = await prisma.galleryAlbum.findMany({

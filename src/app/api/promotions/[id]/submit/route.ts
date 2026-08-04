@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/api-helpers";
 import { logAudit } from "@/lib/audit";
 import { can } from "@/lib/permissions";
-import { createNotification } from "@/lib/notifications";
+import { Prisma } from "@prisma/client";
 
 export async function POST(
   _request: NextRequest,
@@ -73,22 +73,31 @@ export async function POST(
         },
       });
 
-      const approverUserIds = new Set<string>();
+      const approverUserIdSet = new Set<string>();
       for (const rp of approverRolePermissions) {
         for (const cmr of rp.role.committeeMemberRoles) {
-          approverUserIds.add(cmr.member.userId);
+          approverUserIdSet.add(cmr.member.userId);
         }
       }
 
-      for (const userId of approverUserIds) {
-        await createNotification({
-          userId,
-          type: "PROMOTION",
-          title: "New Promotion Request",
-          message: `${promotion.member.user.name} has submitted a promotion request for review.`,
-          payload: { promotionId: id },
-          link: `/promotions/${id}`,
-        });
+      const approverUserIds = Array.from(approverUserIdSet);
+
+      if (approverUserIds.length > 0) {
+        // Batch create notifications for all approvers
+        const CHUNK_SIZE = 100;
+        for (let i = 0; i < approverUserIds.length; i += CHUNK_SIZE) {
+          const chunk = approverUserIds.slice(i, i + CHUNK_SIZE);
+          await prisma.notification.createMany({
+            data: chunk.map((userId) => ({
+              userId,
+              type: "PROMOTION" as const,
+              title: "New Promotion Request",
+              message: `${promotion.member.user.name} has submitted a promotion request for review.`,
+              payload: { promotionId: id } as Prisma.InputJsonValue,
+              link: `/promotions/${id}`,
+            })),
+          });
+        }
       }
     } catch (notifError) {
       console.error("[Promotion Submit] Failed to notify approvers:", notifError);

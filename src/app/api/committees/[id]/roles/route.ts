@@ -45,7 +45,7 @@ export async function POST(
     }
 
     const existing = await prisma.committeeMemberRole.findFirst({
-      where: { committeeId, memberId, roleId },
+      where: { committeeId, memberId, roleId, endedAt: null },
     });
 
     if (existing) {

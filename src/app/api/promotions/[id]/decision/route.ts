@@ -67,43 +67,45 @@ export async function POST(
           where: { isCurrent: true },
         });
 
-        if (currentCommittee) {
-          // Soft-end the old role (set endedAt) instead of deleting
-          const oldRole = await tx.committeeMemberRole.findFirst({
-            where: {
-              committeeId: currentCommittee.id,
-              memberId: promotion.memberId,
-              roleId: promotion.currentRoleId,
-              endedAt: null,
-            },
+        if (!currentCommittee) {
+          throw new Error("No current committee found. Cannot assign new role without an active committee.");
+        }
+
+        // Soft-end the old role (set endedAt) instead of deleting
+        const oldRole = await tx.committeeMemberRole.findFirst({
+          where: {
+            committeeId: currentCommittee.id,
+            memberId: promotion.memberId,
+            roleId: promotion.currentRoleId,
+            endedAt: null,
+          },
+        });
+
+        if (oldRole) {
+          await tx.committeeMemberRole.update({
+            where: { id: oldRole.id },
+            data: { endedAt: new Date() },
           });
+        }
 
-          if (oldRole) {
-            await tx.committeeMemberRole.update({
-              where: { id: oldRole.id },
-              data: { endedAt: new Date() },
-            });
-          }
+        // Check if member already has the proposed role (active)
+        const existingNewRole = await tx.committeeMemberRole.findFirst({
+          where: {
+            committeeId: currentCommittee.id,
+            memberId: promotion.memberId,
+            roleId: promotion.proposedRoleId,
+            endedAt: null,
+          },
+        });
 
-          // Check if member already has the proposed role (active)
-          const existingNewRole = await tx.committeeMemberRole.findFirst({
-            where: {
+        if (!existingNewRole) {
+          await tx.committeeMemberRole.create({
+            data: {
               committeeId: currentCommittee.id,
               memberId: promotion.memberId,
               roleId: promotion.proposedRoleId,
-              endedAt: null,
             },
           });
-
-          if (!existingNewRole) {
-            await tx.committeeMemberRole.create({
-              data: {
-                committeeId: currentCommittee.id,
-                memberId: promotion.memberId,
-                roleId: promotion.proposedRoleId,
-              },
-            });
-          }
         }
       }
 

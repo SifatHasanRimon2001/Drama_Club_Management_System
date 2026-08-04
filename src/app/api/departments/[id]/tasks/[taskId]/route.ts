@@ -13,7 +13,7 @@ export async function PATCH(
     const auth = await requireAuth("department.manage");
     if (auth.error) return auth.error;
 
-    const { taskId } = await params;
+    const { id: departmentId, taskId } = await params;
     const body = await request.json();
     const data = taskSchema.partial().parse(body);
 
@@ -21,6 +21,13 @@ export async function PATCH(
     if (!existing) {
       return NextResponse.json(
         { error: "Task not found" },
+        { status: 404 }
+      );
+    }
+
+    if (existing.departmentId !== departmentId) {
+      return NextResponse.json(
+        { error: "Task does not belong to this department" },
         { status: 404 }
       );
     }
@@ -70,12 +77,19 @@ export async function DELETE(
     const auth = await requireAuth("department.manage");
     if (auth.error) return auth.error;
 
-    const { taskId } = await params;
+    const { id: departmentId, taskId } = await params;
 
     const existing = await prisma.task.findUnique({ where: { id: taskId } });
     if (!existing) {
       return NextResponse.json(
         { error: "Task not found" },
+        { status: 404 }
+      );
+    }
+
+    if (existing.departmentId !== departmentId) {
+      return NextResponse.json(
+        { error: "Task does not belong to this department" },
         { status: 404 }
       );
     }

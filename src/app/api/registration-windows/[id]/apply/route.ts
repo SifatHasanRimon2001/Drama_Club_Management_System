@@ -126,6 +126,22 @@ export async function POST(
     // First validate base applicant fields
     const data = applicantSchema.parse(body);
 
+    // Validate department preferences exist
+    if (data.departmentPrefs.length > 0) {
+      const validDepts = await prisma.department.findMany({
+        where: { id: { in: data.departmentPrefs } },
+        select: { id: true },
+      });
+      const validIds = new Set(validDepts.map((d) => d.id));
+      const invalidPrefs = data.departmentPrefs.filter((id) => !validIds.has(id));
+      if (invalidPrefs.length > 0) {
+        return NextResponse.json(
+          { error: `Invalid department preferences: ${invalidPrefs.join(", ")}` },
+          { status: 400 }
+        );
+      }
+    }
+
     // PRD §5: Dynamically validate custom fields against formSchema
     const formSchema = window.formSchema as Record<string, unknown>;
     if (formSchema && typeof formSchema === "object" && "fields" in formSchema) {

@@ -1,8 +1,18 @@
 import { Resend } from "resend";
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+// Injectable seam so the send/error branches are unit-testable without a live
+// Resend key. null => resolve the real client from env (production behavior).
+let _resendOverride: Resend | null | undefined;
+
+function getResend(): Resend | null {
+  if (_resendOverride !== undefined) return _resendOverride;
+  return process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+}
+
+/** Test-only injection point. Pass null to simulate "not configured", or undefined to reset. */
+export function _setResendForTesting(client: Resend | null | undefined): void {
+  _resendOverride = client;
+}
 
 function escapeHtml(str: string): string {
   return str
@@ -23,6 +33,7 @@ export async function sendEmail(params: {
   subject: string;
   html: string;
 }): Promise<boolean> {
+  const resend = getResend();
   if (!resend) {
     console.log("[Email] Resend not configured, skipping email:", params.subject);
     return false;

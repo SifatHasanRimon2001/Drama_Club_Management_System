@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { PERMISSIONS } from "@/lib/permissions";
 import { requireAuth } from "@/lib/api-helpers";
@@ -22,7 +22,7 @@ export async function GET() {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const auth = await requireAuth("permissions.manage");
     if (auth.error) return auth.error;

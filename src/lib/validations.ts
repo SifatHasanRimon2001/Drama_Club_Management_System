@@ -119,6 +119,7 @@ export const eventSchema = z.object({
     "FESTIVAL",
     "TRAINING",
   ]),
+  status: z.enum(["DRAFT", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"]).optional(),
   departmentId: z.string().cuid().nullish(),
   startAt: z.string().datetime(),
   endAt: z.string().datetime().optional(),

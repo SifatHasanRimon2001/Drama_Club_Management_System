@@ -66,7 +66,7 @@ export async function can(
 
   // Get current committee roles
   const currentRoles = member.committeeRoles.filter(
-    (cr) => cr.committee.isCurrent
+    (cr) => cr.committee?.isCurrent
   );
 
   // Check if any current role grants the permission

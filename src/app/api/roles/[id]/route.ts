@@ -103,3 +103,54 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const auth = await requireAuth("permissions.manage");
+    if (auth.error) return auth.error;
+
+    const { id } = await params;
+
+    const existing = await prisma.role.findUnique({
+      where: { id },
+      include: {
+        committeeMemberRoles: { where: { endedAt: null }, take: 1 },
+      },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: "Role not found" }, { status: 404 });
+    }
+
+    if (existing.committeeMemberRoles.length > 0) {
+      return NextResponse.json(
+        { error: "Cannot delete a role that is actively assigned to committee members. Remove all assignments first." },
+        { status: 400 }
+      );
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.rolePermission.deleteMany({ where: { roleId: id } });
+      await tx.role.delete({ where: { id } });
+    });
+
+    await logAudit({
+      actorId: auth.userId,
+      action: "role.deleted",
+      entityType: "Role",
+      entityId: id,
+      metadata: { name: existing.name },
+    });
+
+    return NextResponse.json({ message: "Role deleted" });
+  } catch (error) {
+    console.error("[Role DELETE]", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

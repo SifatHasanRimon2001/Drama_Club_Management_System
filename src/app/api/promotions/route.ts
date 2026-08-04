@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth, getPaginationParams } from "@/lib/api-helpers";
+import { requireAuth, getPaginationParams, validateEnumParam } from "@/lib/api-helpers";
 import { promotionRequestSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { can } from "@/lib/permissions";
 import { ZodError } from "zod";
 
-const VALID_PROMOTION_STATUSES = ["DRAFT", "SUBMITTED", "PENDING_APPROVAL", "APPROVED", "REJECTED"];
+const VALID_PROMOTION_STATUSES = [
+  "DRAFT",
+  "SUBMITTED",
+  "PENDING_APPROVAL",
+  "APPROVED",
+  "REJECTED",
+] as const;
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,20 +27,15 @@ export async function GET(request: NextRequest) {
     }
 
     const { page, limit, skip } = getPaginationParams(request);
+
+    const statusResult = validateEnumParam(request, "status", VALID_PROMOTION_STATUSES);
+    if (statusResult.error) return statusResult.error;
+
     const url = new URL(request.url);
-    const status = url.searchParams.get("status");
     const memberId = url.searchParams.get("memberId");
 
     const where: Record<string, unknown> = {};
-    if (status) {
-      if (!VALID_PROMOTION_STATUSES.includes(status)) {
-        return NextResponse.json(
-          { error: `Invalid status. Must be one of: ${VALID_PROMOTION_STATUSES.join(", ")}` },
-          { status: 400 }
-        );
-      }
-      where.status = status;
-    }
+    if (statusResult.value) where.status = statusResult.value;
     if (memberId) where.memberId = memberId;
 
     const [promotions, total] = await Promise.all([

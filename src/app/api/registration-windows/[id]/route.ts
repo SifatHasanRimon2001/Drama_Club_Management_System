@@ -62,8 +62,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const auth = await requireAuth("registration.manage");
-    if (auth.error) return auth.error;
+    const authResult = await requireAuth("registration.manage");
+    if (authResult.error) return authResult.error;
 
     const { id } = await params;
     const body = await request.json();
@@ -101,7 +101,7 @@ export async function PATCH(
     });
 
     await logAudit({
-      actorId: auth.userId,
+      actorId: authResult.userId,
       action: "registration_window.updated",
       entityType: "RegistrationWindow",
       entityId: id,

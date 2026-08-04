@@ -1,22 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getPaginationParams, requireAuth } from "@/lib/api-helpers";
+import { getPaginationParams, requireAuth, validateEnumParam } from "@/lib/api-helpers";
 import { clubUpdateSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { notifyAllActiveMembers } from "@/lib/notifications";
 import { ZodError } from "zod";
 
+const VALID_UPDATE_CATEGORIES = [
+  "ANNOUNCEMENT",
+  "NOTICE",
+  "ACHIEVEMENT",
+  "PRODUCTION",
+  "RECRUITMENT",
+  "EVENT",
+] as const;
+
 export async function GET(request: NextRequest) {
   try {
     const { page, limit, skip } = getPaginationParams(request);
-    const url = new URL(request.url);
-    const category = url.searchParams.get("category");
+
+    const categoryResult = validateEnumParam(request, "category", VALID_UPDATE_CATEGORIES);
+    if (categoryResult.error) return categoryResult.error;
 
     // PRD §5: public read for published updates only
     const where: Record<string, unknown> = {
       publishedAt: { not: null },
     };
-    if (category) where.category = category;
+    if (categoryResult.value) where.category = categoryResult.value;
 
     const [updates, total] = await Promise.all([
       prisma.clubUpdate.findMany({
