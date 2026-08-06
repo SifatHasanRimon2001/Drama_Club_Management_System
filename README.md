@@ -13,7 +13,7 @@ A centralized web platform for managing the complete lifecycle of a drama club �
 | ORM        | Prisma 7                            |
 | Auth       | NextAuth.js v5 (credentials)        |
 | Storage    | Cloudflare R2 (S3-compatible)       |
-| Styling    | Tailwind CSS + shadcn/ui            |
+| Styling    | Tailwind CSS v4                     |
 | Email      | Resend                              |
 | Validation | Zod 3                               |
 
@@ -29,13 +29,13 @@ A centralized web platform for managing the complete lifecycle of a drama club �
 | **Committee Management**  | Yearly committees with historical archive, role assignment                 |
 | **Department Management** | Unlimited departments, coordinators, member assignment                     |
 | **Registration Windows**  | Configurable forms, public application, admin review, CSV export           |
-| **Promotion Workflow**    | Draft → Submitted → Approved/Rejected with role history                  |
+| **Promotion Workflow**    | Draft → Submitted → Pending → Approved/Rejected; old role soft-ended with history |
 | **Events & Productions**  | CRUD with type filtering, department notifications                         |
 | **Club Updates**          | Rich text announcements with media attachments                             |
 | **Gallery**               | Cloudflare R2 storage, albums by category, presigned uploads               |
 | **Dashboards**            | Admin, Department, and Member dashboards with real data                    |
 | **Notifications**         | In-app notifications + email for applicant status changes                  |
-| **Public Website**        | Home, About, Committee, Departments, Events, Gallery, Recruitment, Contact |
+| **Public API**            | Home, About, Committee, Departments, Events, Productions, Updates, Gallery, Recruitment |
 | **System Settings**       | Club info, theme, R2 config with key whitelist                             |
 
 ### Permission Keys (16 exact keys per PRD §3a)
@@ -57,7 +57,7 @@ settings.manage
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20.9+ (required by Next.js 16)
 - PostgreSQL database
 - Cloudflare R2 account (for media storage)
 - Resend API key (for email notifications)
@@ -109,7 +109,7 @@ The seed script creates:
 - 5 departments (Creative Arts, Technical, Performance, Publicity, Logistics)
 - Sample tasks, events, registration window, club update, gallery album
 
-## API Routes (54 endpoints)
+## API Routes (53 route modules, 79 handlers)
 
 ### Authentication
 
@@ -171,6 +171,7 @@ The seed script creates:
 | Method | Route                            | Permission              | Description         |
 | ------ | -------------------------------- | ----------------------- | ------------------- |
 | GET    | `/api/applicants`              | `registration.review` | List all applicants |
+| GET    | `/api/applicants/[id]`         | `registration.review` | Get applicant       |
 | GET    | `/api/applicants/export`       | `registration.review` | Export CSV          |
 | PATCH  | `/api/applicants/[id]`         | `registration.review` | Update status       |
 | POST   | `/api/applicants/[id]/convert` | `member.create`       | Convert to member   |
@@ -210,7 +211,7 @@ The seed script creates:
 | Method | Route                       | Permission         | Description            |
 | ------ | --------------------------- | ------------------ | ---------------------- |
 | GET    | `/api/gallery`            | Auth               | List albums            |
-| POST   | `/api/gallery`            | Auth               | Create album           |
+| POST   | `/api/gallery`            | `gallery.manage` | Create album           |
 | GET    | `/api/gallery/items`      | Public             | List items (paginated) |
 | POST   | `/api/gallery/items`      | `gallery.upload` | Add item               |
 | POST   | `/api/gallery/upload-url` | `gallery.upload` | Get presigned URL      |
@@ -269,9 +270,11 @@ The seed script creates:
 ### Core Entities
 
 - **User** — Authentication, linked to Member profile
+- **Account / Session / VerificationToken** — NextAuth.js adapter tables (OAuth-ready)
 - **Member** — Profile with status, departments, committee roles
 - **Role** — Admin-defined with permission array
 - **Permission** — 16 exact keys from PRD
+- **RolePermission** — Join table between roles and permissions
 - **Committee** — Yearly with `isCurrent` flag
 - **CommitteeMemberRole** — Member-role-committee assignment with history (`startedAt`/`endedAt`)
 - **Department** — Linked to committee, optional coordinator
@@ -280,21 +283,26 @@ The seed script creates:
 
 ### Workflow Entities
 
-- **RegistrationWindow** — Configurable form schema, status lifecycle
-- **Applicant** — Submission with state machine (SUBMITTED → UNDER_REVIEW → ACCEPTED/REJECTED)
-- **PromotionRequest** — Draft → Submitted → Approved/Rejected with role history
+- **RegistrationWindow** — Configurable form schema, status lifecycle (DRAFT/SCHEDULED/LIVE/CLOSED)
+- **Applicant** — Submission with state machine (SUBMITTED → UNDER_REVIEW → ACCEPTED/REJECTED/CONVERTED)
+- **PromotionRequest** — DRAFT → SUBMITTED/PENDING_APPROVAL → APPROVED/REJECTED; approval soft-ends the old CommitteeMemberRole (sets `endedAt`) instead of deleting history
 - **Event** — Typed (WORKSHOP/REHEARSAL/PERFORMANCE/AUDITION/FESTIVAL/TRAINING)
+- **EventRsvp** — Member RSVP per event (GOING/MAYBE/NOT_GOING)
 - **ClubUpdate** — Rich text with category
 - **GalleryAlbum** — Category-scoped, optional department
 - **GalleryItem** — R2-stored media with type (IMAGE/VIDEO)
 - **Notification** — In-app with type and read state
 - **AuditLog** — Full audit trail for compliance
+- **ContactSubmission** — Public contact form entries with handled flag
+- **SystemSetting** — Key/value store for club info, theme, R2 config
+
+25 models total (including NextAuth tables).
 
 ## Security
 
 - **Passwords:** bcrypt with cost factor 12
 - **Sessions:** JWT with 24-hour expiry, 5-minute permission refresh
-- **Rate Limiting:** Contact form (5/15min), Registration apply (3/hour)
+- **Rate Limiting:** Contact form (5/15min), Registration apply (3/hour), Account signup (3/hour), Login throttling (10 failed attempts / 15 min per account)
 - **Input Validation:** Zod schemas on all mutating endpoints
 - **Audit Trail:** All state changes logged to AuditLog
 - **Email Safety:** Subject injection prevention, HTML escaping
@@ -319,6 +327,10 @@ npm run dev             # Start dev server
 npm run build           # Production build
 npm run lint            # ESLint
 npx tsc --noEmit        # Type check
+npm test                # Vitest unit tests
+npm run test:coverage   # Unit tests with coverage report
+npm run test:e2e        # Playwright E2E suite (see E2E.md)
+npm run test:e2e:http   # Standalone HTTP E2E smoke suite (see E2E.md)
 npx prisma generate     # Regenerate Prisma client
 npx prisma db push      # Push schema changes
 npx tsx prisma/seed.ts  # Seed database
@@ -329,17 +341,20 @@ npx tsx prisma/seed.ts  # Seed database
 ```
 Drama_Club_Management_System/
 ├── prisma/
-│   ├── schema.prisma                 # 20+ models with relations
-│   ├── seed.ts                       # Idempotent seed script
-│   └── prisma.config.ts              # Prisma 7 config
+│   ├── schema.prisma                 # 25 models with relations
+│   └── seed.ts                       # Idempotent seed script
+├── prisma.config.ts                  # Prisma 7 config
+├── scripts/                          # E2E + DB utility scripts (e2e.ts, smoke-test.ts, reset-db.ts)
+├── e2e/                              # Playwright specs (HTTP request-level, no browser)
 ├── src/
 │   ├── app/
-│   │   ├── api/                      # 54 API route handlers
+│   │   ├── api/                      # 53 API route modules (79 handlers)
 │   │   │   ├── auth/                 # NextAuth + registration
 │   │   │   ├── members/              # Member CRUD + dept assignment
 │   │   │   ├── committees/           # Committee + role management
 │   │   │   ├── departments/          # Department + task CRUD
 │   │   │   ├── registration-windows/ # Window + applicant flow
+│   │   │   ├── applicants/           # Applicant review, CSV export, conversion
 │   │   │   ├── promotions/           # Promotion workflow
 │   │   │   ├── events/               # Event management
 │   │   │   ├── updates/              # Club updates
@@ -348,10 +363,11 @@ Drama_Club_Management_System/
 │   │   │   ├── permissions/          # Permission seed
 │   │   │   ├── settings/             # System settings
 │   │   │   ├── notifications/        # In-app notifications
+│   │   │   ├── session/              # Current session endpoint
 │   │   │   ├── dashboard/            # Admin/dept/member dashboards
 │   │   │   ├── public/               # Public website endpoints
 │   │   │   └── contact/              # Contact form
-│   │   └── page.tsx                  # Home page
+│   │   └── page.tsx                  # Landing page
 │   └── lib/
 │       ├── auth.ts                   # NextAuth v5 config
 │       ├── permissions.ts            # RBAC engine (can, getUserPermissions)
@@ -360,6 +376,9 @@ Drama_Club_Management_System/
 │       ├── notifications.ts          # In-app notification helpers
 │       ├── email.ts                  # Resend email with HTML escaping
 │       ├── r2.ts                     # Cloudflare R2 presigned URLs
+│       ├── rate-limit.ts             # In-memory rate limiter + client IP keying
+│       ├── registration-form.ts      # Dynamic form schema builder
+│       ├── registration-window-transitions.ts  # Window status transitions
 │       ├── validations.ts            # All Zod schemas
 │       └── api-helpers.ts            # requireAuth, getPaginationParams
 └── README.md

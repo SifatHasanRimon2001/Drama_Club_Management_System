@@ -14,8 +14,10 @@ walks the registration → applicant → member conversion lifecycle.
 npm run test:e2e
 ```
 
-Playwright auto-starts the production server (webServer config) on port `3310`,
-so you just need Postgres + built app. To build first then run (CI):
+Playwright auto-starts the production server (webServer config) on port `3310`
+(`scripts/e2e-server.ts` resets + seeds the DB, and auto-builds if no
+production build exists), so you just need Postgres. To build first then run
+(CI):
 
 ```bash
 npm run test:e2e:ci
@@ -63,6 +65,7 @@ command. A Postgres service is the only external requirement.
 
 - `src/lib/auth.ts` — NextAuth `authorize`, `jwt`, and `session` callbacks run
   for real on login and the `/api/session` call.
-- The full request pipeline: middleware → NextAuth → RBAC (`requirePermission`)
-  → Zod validation → Prisma → email/R2 (gracefully skipped if unconfigured).
+- The full request pipeline: NextAuth session (`auth()` via `requireAuth`) → RBAC
+  (`requirePermission`) → Zod validation → Prisma → email/R2 (gracefully skipped
+  if unconfigured).
 - Public-vs-private route protection and CSRF validation.
