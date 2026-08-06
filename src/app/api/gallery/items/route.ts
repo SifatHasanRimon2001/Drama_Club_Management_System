@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth, getPaginationParams } from "@/lib/api-helpers";
+import { requireAuth, getPaginationParams, parseJsonBody } from "@/lib/api-helpers";
 import { galleryItemSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { notifyDepartmentMembers } from "@/lib/notifications";
@@ -48,8 +48,20 @@ export async function POST(request: NextRequest) {
     const auth = await requireAuth("gallery.upload");
     if (auth.error) return auth.error;
 
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = galleryItemSchema.parse(body);
+
+    // Reject unsafe r2Keys: no path traversal, no absolute paths, no whitespace.
+    // Keys are issued server-side by /api/gallery/upload-url; anything else is
+    // suspicious and would produce broken or mis-scoped gallery rows.
+    if (/\.\.|^\//.test(data.r2Key) || /\s/.test(data.r2Key)) {
+      return NextResponse.json(
+        { error: "Invalid r2Key" },
+        { status: 400 }
+      );
+    }
 
     // Validate album exists
     const album = await prisma.galleryAlbum.findUnique({ where: { id: data.albumId } });

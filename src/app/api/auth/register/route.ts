@@ -3,47 +3,27 @@ import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { parseJsonBody } from "@/lib/api-helpers";
+import { clientIpKey, RateLimiter } from "@/lib/rate-limit";
 import { ZodError } from "zod";
 
-// Rate limiter: 3 registrations per IP per hour
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 3;
-const RATE_WINDOW = 60 * 60 * 1000;
-let lastCleanup = Date.now();
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  if (now - lastCleanup > 5 * 60 * 1000) {
-    lastCleanup = now;
-    for (const [key, record] of rateLimitMap.entries()) {
-      if (now > record.resetAt) rateLimitMap.delete(key);
-    }
-  }
-  const record = rateLimitMap.get(ip);
-  if (!record || now > record.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
-    return true;
-  }
-  if (record.count >= RATE_LIMIT) return false;
-  record.count++;
-  return true;
-}
+// Rate limiter: 3 registrations per client per hour
+const registerRateLimiter = new RateLimiter(3, 60 * 60 * 1000);
 
 export async function POST(request: NextRequest) {
   try {
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
+    const ip = clientIpKey(request);
 
-    if (!checkRateLimit(ip)) {
+    if (!registerRateLimiter.allow(ip)) {
       return NextResponse.json(
         { error: "Too many registration attempts. Please try again later." },
         { status: 429 }
       );
     }
 
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = registerSchema.parse(body);
 
     const existing = await prisma.user.findUnique({

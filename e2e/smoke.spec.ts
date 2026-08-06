@@ -137,7 +137,7 @@ test.describe("Authenticated via real NextAuth login", () => {
     const ctx = await request.newContext({ baseURL: BASE });
     const csrfRes = await ctx.get(`${BASE}/api/auth/csrf`);
     const { csrfToken } = (await csrfRes.json()) as { csrfToken: string };
-    const res = await ctx.post(`${BASE}/api/auth/callback/credentials`, {
+    await ctx.post(`${BASE}/api/auth/callback/credentials`, {
       form: {
         csrfToken,
         email: ADMIN_EMAIL,

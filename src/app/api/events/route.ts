@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getPaginationParams, requireAuth, validateEnumParam } from "@/lib/api-helpers";
+import { getPaginationParams, requireAuth, validateEnumParam, parseJsonBody } from "@/lib/api-helpers";
 import { eventSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { notifyDepartmentMembers, notifyAllActiveMembers } from "@/lib/notifications";
@@ -65,7 +65,9 @@ export async function POST(request: NextRequest) {
     const auth = await requireAuth("events.manage");
     if (auth.error) return auth.error;
 
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = eventSchema.parse(body);
 
     // Validate endAt > startAt if endAt provided
@@ -104,23 +106,27 @@ export async function POST(request: NextRequest) {
     });
 
     // PRD §3c: New Event → EVENT in-app to department members (all members if dept is null)
-    if (data.departmentId) {
-      await notifyDepartmentMembers({
-        departmentId: data.departmentId,
-        type: "EVENT",
-        title: `New Event: ${event.title}`,
-        message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt?.toLocaleDateString() ?? "TBD"}.`,
-        payload: { eventId: event.id },
-        link: `/events/${event.id}`,
-      });
-    } else {
-      await notifyAllActiveMembers({
-        type: "EVENT",
-        title: `New Event: ${event.title}`,
-        message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt?.toLocaleDateString() ?? "TBD"}.`,
-        payload: { eventId: event.id },
-        link: `/events/${event.id}`,
-      });
+    try {
+      if (data.departmentId) {
+        await notifyDepartmentMembers({
+          departmentId: data.departmentId,
+          type: "EVENT",
+          title: `New Event: ${event.title}`,
+          message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt?.toLocaleDateString() ?? "TBD"}.`,
+          payload: { eventId: event.id },
+          link: `/events/${event.id}`,
+        });
+      } else {
+        await notifyAllActiveMembers({
+          type: "EVENT",
+          title: `New Event: ${event.title}`,
+          message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt?.toLocaleDateString() ?? "TBD"}.`,
+          payload: { eventId: event.id },
+          link: `/events/${event.id}`,
+        });
+      }
+    } catch (notifError) {
+      console.error("[Event POST] Failed to notify:", notifError);
     }
 
     await logAudit({

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth, getPaginationParams, validateEnumParam } from "@/lib/api-helpers";
+import { requireAuth, getPaginationParams, validateEnumParam, parseJsonBody } from "@/lib/api-helpers";
 import { registrationWindowSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
@@ -55,7 +55,9 @@ export async function POST(request: NextRequest) {
     const auth = await requireAuth("registration.manage");
     if (auth.error) return auth.error;
 
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = registrationWindowSchema.parse(body);
 
     // Validate endDate > startDate

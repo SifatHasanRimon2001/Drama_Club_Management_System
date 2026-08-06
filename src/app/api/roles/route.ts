@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { roleSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
@@ -34,17 +34,36 @@ export async function POST(request: NextRequest) {
     const auth = await requireAuth("permissions.manage");
     if (auth.error) return auth.error;
 
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = roleSchema.parse(body);
+
+    // Validate all permission IDs exist and dedupe (prevents P2003/P2002 500s)
+    const permissionIds = Array.from(new Set(data.permissionIds || []));
+    if (permissionIds.length > 0) {
+      const found = await prisma.permission.findMany({
+        where: { id: { in: permissionIds } },
+        select: { id: true },
+      });
+      const foundIds = new Set(found.map((p) => p.id));
+      const missing = permissionIds.filter((id) => !foundIds.has(id));
+      if (missing.length > 0) {
+        return NextResponse.json(
+          { error: `Unknown permission ID(s): ${missing.join(", ")}` },
+          { status: 400 }
+        );
+      }
+    }
 
     const role = await prisma.$transaction(async (tx) => {
       return tx.role.create({
         data: {
           name: data.name,
           description: data.description,
-          permissions: data.permissionIds?.length
+          permissions: permissionIds.length
             ? {
-                create: data.permissionIds.map((permissionId) => ({
+                create: permissionIds.map((permissionId) => ({
                   permissionId,
                 })),
               }
@@ -63,7 +82,7 @@ export async function POST(request: NextRequest) {
       action: "role.created",
       entityType: "Role",
       entityId: role.id,
-      metadata: { name: role.name, permissionCount: data.permissionIds?.length || 0 },
+      metadata: { name: role.name, permissionCount: permissionIds.length },
     });
 
     return NextResponse.json(role, { status: 201 });

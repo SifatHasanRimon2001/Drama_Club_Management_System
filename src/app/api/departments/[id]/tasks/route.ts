@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth, validateEnumParam } from "@/lib/api-helpers";
+import { requireAuth, validateEnumParam, parseJsonBody } from "@/lib/api-helpers";
+import { can } from "@/lib/permissions";
 import { taskSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
@@ -12,7 +13,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const auth = await requireAuth("department.view");
+    const auth = await requireAuth();
     if (auth.error) return auth.error;
 
     const { id: departmentId } = await params;
@@ -24,6 +25,32 @@ export async function GET(
         { error: "Department not found" },
         { status: 404 }
       );
+    }
+
+    // Spec §5: tasks GET requires department.manage, or being a member/coordinator of the department
+    const hasManage = await can(auth.userId, "department.manage");
+    if (!hasManage) {
+      const member = await prisma.member.findUnique({
+        where: { userId: auth.userId },
+        select: { id: true },
+      });
+      const isDepartmentMember = member
+        ? await prisma.memberDepartment.findUnique({
+            where: {
+              memberId_departmentId: {
+                memberId: member.id,
+                departmentId,
+              },
+            },
+          })
+        : null;
+      const isCoordinator = !!member && department.coordinatorId === member.id;
+      if (!isDepartmentMember && !isCoordinator) {
+        return NextResponse.json(
+          { error: "Forbidden" },
+          { status: 403 }
+        );
+      }
     }
 
     const statusResult = validateEnumParam(request, "status", VALID_TASK_STATUSES);
@@ -67,7 +94,9 @@ export async function POST(
     if (auth.error) return auth.error;
 
     const { id: departmentId } = await params;
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = taskSchema.parse(body);
 
     // Validate department exists

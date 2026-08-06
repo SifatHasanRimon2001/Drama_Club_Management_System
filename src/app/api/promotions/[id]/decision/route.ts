@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { promotionDecisionSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { createNotification } from "@/lib/notifications";
@@ -15,7 +15,9 @@ export async function POST(
     if (auth.error) return auth.error;
 
     const { id } = await params;
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = promotionDecisionSchema.parse(body);
 
     const promotion = await prisma.promotionRequest.findUnique({

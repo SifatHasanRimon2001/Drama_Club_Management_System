@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getPaginationParams, requireAuth, validateEnumParam } from "@/lib/api-helpers";
+import { getPaginationParams, requireAuth, validateEnumParam, parseJsonBody } from "@/lib/api-helpers";
 import { clubUpdateSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { notifyAllActiveMembers } from "@/lib/notifications";
@@ -56,7 +56,9 @@ export async function POST(request: NextRequest) {
     const auth = await requireAuth("updates.publish");
     if (auth.error) return auth.error;
 
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = clubUpdateSchema.parse(body);
 
     const update = await prisma.clubUpdate.create({

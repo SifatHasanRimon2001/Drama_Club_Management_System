@@ -12,10 +12,16 @@ export default defineConfig({
     fileParallelism: false,
     maxConcurrency: 1,
     pool: "forks",
+    server: {
+      deps: {
+        inline: ["next-auth"],
+      },
+    },
   },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "next/server": "next/server.js",
     },
   },
 });

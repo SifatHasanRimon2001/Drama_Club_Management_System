@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth, getPaginationParams, validateEnumParam } from "@/lib/api-helpers";
+import { requireAuth, getPaginationParams, validateEnumParam, parseJsonBody } from "@/lib/api-helpers";
 import { memberSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
@@ -81,7 +81,9 @@ export async function POST(request: NextRequest) {
     const auth = await requireAuth("member.create");
     if (auth.error) return auth.error;
 
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = memberSchema.parse(body);
 
     const existing = await prisma.member.findFirst({
@@ -92,6 +94,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Member already exists for this user or member code" },
         { status: 409 }
+      );
+    }
+
+    // The referenced user must exist (prevents an FK violation 500)
+    const user = await prisma.user.findUnique({
+      where: { id: data.userId },
+      select: { id: true },
+    });
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 400 }
       );
     }
 

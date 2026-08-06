@@ -138,7 +138,7 @@ describe("Complete Backend Coverage", () => {
       const res = await UPLOAD_URL_POST(
         mockRequest("/api/gallery/upload-url", {
           method: "POST",
-          body: { fileName: "test.jpg", contentType: "image/jpeg" },
+          body: { fileName: "test.jpg", contentType: "image/jpeg", fileSize: 1024 },
         })
       );
       expect(res.status).toBe(401);
@@ -150,7 +150,7 @@ describe("Complete Backend Coverage", () => {
       const res = await UPLOAD_URL_POST(
         mockRequest("/api/gallery/upload-url", {
           method: "POST",
-          body: { fileName: "test.jpg", contentType: "image/jpeg" },
+          body: { fileName: "test.jpg", contentType: "image/jpeg", fileSize: 1024 },
         })
       );
       expect(res.status).toBe(403);
@@ -172,7 +172,7 @@ describe("Complete Backend Coverage", () => {
       const res = await UPLOAD_URL_POST(
         mockRequest("/api/gallery/upload-url", {
           method: "POST",
-          body: { fileName: "test.exe", contentType: "application/exe" },
+          body: { fileName: "test.exe", contentType: "application/exe", fileSize: 1024 },
         })
       );
       expect(res.status).toBe(400);
@@ -183,7 +183,7 @@ describe("Complete Backend Coverage", () => {
       const res = await UPLOAD_URL_POST(
         mockRequest("/api/gallery/upload-url", {
           method: "POST",
-          body: { fileName: "photo.jpg", contentType: "image/jpeg" },
+          body: { fileName: "photo.jpg", contentType: "image/jpeg", fileSize: 1024 },
         })
       );
       expect([200, 500]).toContain(res.status);
@@ -194,7 +194,7 @@ describe("Complete Backend Coverage", () => {
       const res = await UPLOAD_URL_POST(
         mockRequest("/api/gallery/upload-url", {
           method: "POST",
-          body: { fileName: "clip.mp4", contentType: "video/mp4" },
+          body: { fileName: "clip.mp4", contentType: "video/mp4", fileSize: 1024 },
         })
       );
       expect([200, 500]).toContain(res.status);

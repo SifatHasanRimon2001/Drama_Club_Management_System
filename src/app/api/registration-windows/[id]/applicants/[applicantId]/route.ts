@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { applicantDecisionSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { sendEmail, applicantStatusEmail } from "@/lib/email";
@@ -15,7 +15,9 @@ export async function PATCH(
     if (auth.error) return auth.error;
 
     const { id: windowId, applicantId } = await params;
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = applicantDecisionSchema.parse(body);
 
     const applicant = await prisma.applicant.findFirst({

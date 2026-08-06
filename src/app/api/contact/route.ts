@@ -2,43 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { contactSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { parseJsonBody } from "@/lib/api-helpers";
+import { clientIpKey, RateLimiter } from "@/lib/rate-limit";
 import { ZodError } from "zod";
 
-// Simple in-memory rate limiter (per IP, 5 requests per 15 minutes)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 5;
-const RATE_WINDOW = 15 * 60 * 1000; // 15 minutes
-let lastCleanup = Date.now();
-
-function cleanupRateLimits() {
-  const now = Date.now();
-  // Clean up every 5 minutes
-  if (now - lastCleanup < 5 * 60 * 1000) return;
-  lastCleanup = now;
-  for (const [ip, record] of rateLimitMap.entries()) {
-    if (now > record.resetAt) {
-      rateLimitMap.delete(ip);
-    }
-  }
-}
-
-function checkRateLimit(ip: string): boolean {
-  cleanupRateLimits();
-  const now = Date.now();
-  const record = rateLimitMap.get(ip);
-
-  if (!record || now > record.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
-    return true;
-  }
-
-  if (record.count >= RATE_LIMIT) {
-    return false;
-  }
-
-  record.count++;
-  return true;
-}
+// Simple in-memory rate limiter (per client, 5 requests per 15 minutes)
+const contactRateLimiter = new RateLimiter(5, 15 * 60 * 1000);
 
 function stripHtml(input: string): string {
   return input.replace(/<[^>]*>/g, "").trim();
@@ -46,19 +15,18 @@ function stripHtml(input: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
+    const ip = clientIpKey(request);
 
-    if (!checkRateLimit(ip)) {
+    if (!contactRateLimiter.allow(ip)) {
       return NextResponse.json(
         { error: "Too many requests. Please try again later." },
         { status: 429 }
       );
     }
 
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = contactSchema.parse(body);
 
     // Sanitize input - strip HTML tags

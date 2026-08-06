@@ -168,6 +168,7 @@ export const galleryItemSchema = z.object({
 export const presignedUrlSchema = z.object({
   fileName: z.string().min(1),
   contentType: z.string().min(1),
+  fileSize: z.number().int().positive("File size must be a positive number"),
   folder: z.string().optional(),
   departmentId: z.string().cuid().optional(),
 });

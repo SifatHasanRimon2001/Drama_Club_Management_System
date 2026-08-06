@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth, getPaginationParams, validateEnumParam } from "@/lib/api-helpers";
+import { requireAuth, getPaginationParams, validateEnumParam, parseJsonBody } from "@/lib/api-helpers";
 import { promotionRequestSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { can } from "@/lib/permissions";
@@ -73,7 +73,9 @@ export async function POST(request: NextRequest) {
     const auth = await requireAuth("promotion.submit");
     if (auth.error) return auth.error;
 
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = promotionRequestSchema.parse(body);
 
     // Validate member exists
@@ -99,6 +101,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Proposed role not found" },
         { status: 404 }
+      );
+    }
+
+    if (data.currentRoleId === data.proposedRoleId) {
+      return NextResponse.json(
+        { error: "Proposed role must be different from the current role" },
+        { status: 400 }
+      );
+    }
+
+    // PRD §8: the subject member must actually hold the current role for the
+    // promotion premise to be valid (active assignment, never ended).
+    const currentAssignment = await prisma.committeeMemberRole.findFirst({
+      where: {
+        memberId: data.memberId,
+        roleId: data.currentRoleId,
+        endedAt: null,
+      },
+      select: { id: true },
+    });
+    if (!currentAssignment) {
+      return NextResponse.json(
+        { error: "Member does not currently hold the specified current role" },
+        { status: 400 }
       );
     }
 

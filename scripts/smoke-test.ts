@@ -256,7 +256,7 @@ async function main() {
 
     const applicantId = (applyRes.json as { id?: string })?.id;
     if (applicantId) {
-      // duplicate application blocked
+      // duplicate application blocked (same valid body as the first request)
       const dupRes = await req(`/api/registration-windows/${windowId}/apply`, {
         method: "POST",
         body: {
@@ -266,6 +266,7 @@ async function main() {
           studentId: `S-${uuid().toUpperCase()}`,
           departmentPrefs: [deptId].filter(Boolean),
           skills: [],
+          customResponses: { whyJoin: "To learn", experience: "School plays" },
         },
       });
       check("Duplicate application → 409", dupRes.status === 409);

@@ -23,6 +23,23 @@ export async function requireAuth(permissionKey?: string) {
   return { userId, session };
 }
 
+/**
+ * Parses a JSON request body, returning a 400 response for malformed JSON
+ * instead of letting the caller fall through to a 500.
+ */
+export async function parseJsonBody(
+  request: NextRequest
+): Promise<{ body: unknown; error: NextResponse | null }> {
+  try {
+    return { body: await request.json(), error: null };
+  } catch {
+    return {
+      body: null,
+      error: NextResponse.json({ error: "Invalid JSON body" }, { status: 400 }),
+    };
+  }
+}
+
 export function getPaginationParams(request: NextRequest) {
   const url = new URL(request.url);
   const page = Math.max(1, parseInt(url.searchParams.get("page") || "1") || 1);

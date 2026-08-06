@@ -98,8 +98,22 @@ export const ALLOWED_UPLOAD_TYPES = [
   "video/webm",
 ];
 
+export const MAX_UPLOAD_BYTES = {
+  image: 10 * 1024 * 1024, // 10 MB
+  video: 50 * 1024 * 1024, // 50 MB
+} as const;
+
 export function isValidUploadType(contentType: string): boolean {
   return ALLOWED_UPLOAD_TYPES.includes(contentType);
+}
+
+export function getMaxUploadBytes(contentType: string): number {
+  if (contentType.startsWith("video/")) return MAX_UPLOAD_BYTES.video;
+  return MAX_UPLOAD_BYTES.image;
+}
+
+export function isValidUploadSize(contentType: string, bytes: number): boolean {
+  return bytes <= getMaxUploadBytes(contentType);
 }
 
 export function getPublicUrl(key: string): string {

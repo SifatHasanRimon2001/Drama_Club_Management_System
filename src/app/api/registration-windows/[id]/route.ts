@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { registrationWindowSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { auth } from "@/lib/auth";
 import { can } from "@/lib/permissions";
 import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
+import { ALLOWED_STATUS_TRANSITIONS, allowedTransitionsFor } from "@/lib/registration-window-transitions";
 
 export async function GET(
   _request: NextRequest,
@@ -66,7 +67,9 @@ export async function PATCH(
     if (authResult.error) return authResult.error;
 
     const { id } = await params;
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = registrationWindowSchema.partial().parse(body);
 
     const existing = await prisma.registrationWindow.findUnique({ where: { id } });
@@ -85,6 +88,21 @@ export async function PATCH(
         { error: "endDate must be after startDate" },
         { status: 400 }
       );
+    }
+
+    // Enforce the registration window state machine
+    if (data.status && data.status !== existing.status) {
+      const allowed = allowedTransitionsFor(existing.status);
+      if (!allowed.includes(data.status)) {
+        return NextResponse.json(
+          {
+            error: `Invalid status transition: ${existing.status} -> ${data.status}. Allowed transitions: ${Object.entries(ALLOWED_STATUS_TRANSITIONS)
+              .flatMap(([from, tos]) => tos.map((to) => `${from}->${to}`))
+              .join(", ")}`,
+          },
+          { status: 400 }
+        );
+      }
     }
 
     const window = await prisma.registrationWindow.update({

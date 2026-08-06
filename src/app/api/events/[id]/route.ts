@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { eventSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { notifyDepartmentMembers, notifyAllActiveMembers } from "@/lib/notifications";
@@ -46,7 +46,9 @@ export async function PATCH(
     if (auth.error) return auth.error;
 
     const { id } = await params;
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = eventSchema.partial().parse(body);
 
     const existing = await prisma.event.findUnique({ where: { id } });

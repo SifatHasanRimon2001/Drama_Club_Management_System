@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth, getSession } from "@/lib/api-helpers";
+import { requireAuth, getSession, parseJsonBody } from "@/lib/api-helpers";
 import { committeeSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
@@ -57,7 +57,9 @@ export async function PATCH(
     if (auth.error) return auth.error;
 
     const { id } = await params;
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const data = committeeSchema.partial().parse(body);
 
     const existing = await prisma.committee.findUnique({ where: { id } });

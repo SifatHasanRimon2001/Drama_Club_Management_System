@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { settingsSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { Prisma } from "@prisma/client";
@@ -44,11 +44,13 @@ export async function PATCH(request: NextRequest) {
     const auth = await requireAuth("settings.manage");
     if (auth.error) return auth.error;
 
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     settingsSchema.parse(body);
 
     // Validate all keys are allowed
-    const invalidKeys = Object.keys(body).filter((k) => !ALLOWED_SETTING_KEYS.includes(k));
+          const invalidKeys = Object.keys(body as Record<string, unknown>).filter((k) => !ALLOWED_SETTING_KEYS.includes(k));
     if (invalidKeys.length > 0) {
       return NextResponse.json(
         { error: `Invalid setting keys: ${invalidKeys.join(", ")}. Allowed: ${ALLOWED_SETTING_KEYS.join(", ")}` },
@@ -58,7 +60,7 @@ export async function PATCH(request: NextRequest) {
 
     const updates = await prisma.$transaction(async (tx) => {
       const results = [];
-      for (const [key, value] of Object.entries(body)) {
+      for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
         const setting = await tx.systemSetting.upsert({
           where: { key },
           update: { value: value as Prisma.InputJsonValue },
@@ -74,7 +76,7 @@ export async function PATCH(request: NextRequest) {
       action: "settings.updated",
       entityType: "SystemSetting",
       entityId: "all",
-      metadata: { keys: Object.keys(body) },
+          metadata: { keys: Object.keys(body as Record<string, unknown>) },
     });
 
     return NextResponse.json({ message: "Settings updated", count: updates.length });

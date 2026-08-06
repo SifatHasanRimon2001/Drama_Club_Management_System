@@ -4,88 +4,20 @@ import { applicantSchema } from "@/lib/validations";
 import { Prisma } from "@prisma/client";
 import { ZodError, z } from "zod";
 import { logAudit } from "@/lib/audit";
+import { parseJsonBody } from "@/lib/api-helpers";
+import { clientIpKey, RateLimiter } from "@/lib/rate-limit";
+import { buildDynamicSchema } from "@/lib/registration-form";
 
 // Rate limiter: 3 applications per IP per hour
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 3;
-const RATE_WINDOW = 60 * 60 * 1000; // 1 hour
-let lastCleanup = Date.now();
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  if (now - lastCleanup > 5 * 60 * 1000) {
-    lastCleanup = now;
-    for (const [key, record] of rateLimitMap.entries()) {
-      if (now > record.resetAt) rateLimitMap.delete(key);
-    }
-  }
-  const record = rateLimitMap.get(ip);
-  if (!record || now > record.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
-    return true;
-  }
-  if (record.count >= RATE_LIMIT) return false;
-  record.count++;
-  return true;
-}
-
-/**
- * Build a dynamic Zod schema from the registration window's formSchema.
- * PRD §5: "validates against formSchema via Zod built dynamically"
- */
-function buildDynamicSchema(formSchema: Record<string, unknown>): z.ZodObject<z.ZodRawShape> {
-  const fields = (formSchema as { fields?: Array<{ name: string; type: string; required?: boolean; label?: string; options?: string[] }> }).fields || [];
-  const shape: Record<string, z.ZodTypeAny> = {};
-
-  for (const field of fields) {
-    let fieldSchema: z.ZodTypeAny;
-
-    switch (field.type) {
-      case "textarea":
-      case "text":
-        fieldSchema = z.string();
-        break;
-      case "select":
-        // Validate against allowed options if provided
-        if (field.options && field.options.length > 0) {
-          fieldSchema = z.enum(field.options as [string, ...string[]]);
-        } else {
-          fieldSchema = z.string();
-        }
-        break;
-      case "checkbox":
-        fieldSchema = z.boolean().optional();
-        break;
-      case "number":
-        fieldSchema = z.coerce.number();
-        break;
-      default:
-        fieldSchema = z.string();
-    }
-
-    if (field.required && !(fieldSchema instanceof z.ZodBoolean)) {
-      // Only apply .min() for string schemas; number schemas use .min() with different semantics
-      if (fieldSchema instanceof z.ZodString) {
-        fieldSchema = fieldSchema.min(1, `${field.label || field.name} is required`);
-      }
-      // For ZodNumber with required, just ensure it's not optional (it's already required by default)
-    } else if (!field.required) {
-      fieldSchema = fieldSchema.optional();
-    }
-
-    shape[field.name] = fieldSchema;
-  }
-
-  return z.object(shape);
-}
+const applyRateLimiter = new RateLimiter(3, 60 * 60 * 1000);
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    if (!checkRateLimit(ip)) {
+    const ip = clientIpKey(request);
+    if (!applyRateLimiter.allow(ip)) {
       return NextResponse.json(
         { error: "Too many requests. Please try again later." },
         { status: 429 }
@@ -121,7 +53,9 @@ export async function POST(
       );
     }
 
-    const body = await request.json();
+    const parsed = await parseJsonBody(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
 
     // First validate base applicant fields
     const data = applicantSchema.parse(body);
@@ -142,23 +76,34 @@ export async function POST(
       }
     }
 
-    // PRD §5: Dynamically validate custom fields against formSchema
+    // PRD §5: Dynamically validate custom fields against formSchema.
+    // The schema is ALWAYS applied (even when customResponses is omitted) so
+    // required fields declared by the window cannot be bypassed by omitting
+    // the whole customResponses object.
     const formSchema = window.formSchema as Record<string, unknown>;
     if (formSchema && typeof formSchema === "object" && "fields" in formSchema) {
-      const dynamicSchema = buildDynamicSchema(formSchema);
-      // Validate custom responses if present
-      if (data.customResponses && typeof data.customResponses === "object") {
-        try {
-          dynamicSchema.parse(data.customResponses);
-        } catch (dynamicError) {
-          if (dynamicError instanceof ZodError) {
-            return NextResponse.json(
-              { error: `Custom field validation: ${dynamicError.message}` },
-              { status: 400 }
-            );
-          }
-          throw dynamicError;
+      let dynamicSchema: z.ZodObject<z.ZodRawShape>;
+      try {
+        dynamicSchema = buildDynamicSchema(formSchema);
+      } catch (schemaError) {
+        if (schemaError instanceof Error) {
+          return NextResponse.json(
+            { error: schemaError.message },
+            { status: 400 }
+          );
         }
+        throw schemaError;
+      }
+      try {
+        dynamicSchema.parse(data.customResponses ?? {});
+      } catch (dynamicError) {
+        if (dynamicError instanceof ZodError) {
+          return NextResponse.json(
+            { error: `Custom field validation: ${dynamicError.message}` },
+            { status: 400 }
+          );
+        }
+        throw dynamicError;
       }
     }
 
@@ -213,6 +158,19 @@ export async function POST(
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    // TOCTOU-safe duplicate handling: the pre-insert findFirst check may miss
+    // a concurrent duplicate, in which case the DB unique constraint fires.
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      (error as { code: string }).code === "P2002"
+    ) {
+      return NextResponse.json(
+        { error: "You have already applied to this window" },
+        { status: 409 }
+      );
     }
     console.error("[Registration Apply POST]", error);
     return NextResponse.json(
