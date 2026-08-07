@@ -51,6 +51,7 @@ const NAV: NavItem[] = [
     anyPerm: ["gallery.upload", "gallery.manage"],
   },
   { href: "/dashboard/notifications", label: "Notifications", icon: "bell" },
+  { href: "/dashboard/contacts", label: "Contact Messages", icon: "mail", perms: ["settings.manage"] },
   { href: "/dashboard/settings", label: "Settings", icon: "settings", perms: ["settings.manage"] },
 ];
 
@@ -236,9 +237,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             <Dropdown
               width="w-[380px]"
-              trigger={(open) => (
+              trigger={(open, toggle) => (
                 <button
-                  onClick={open ? undefined : () => void loadNotifications()}
+                  onClick={() => {
+                    if (!open) void loadNotifications();
+                    toggle();
+                  }}
                   className={cn(
                     "relative flex size-9 items-center justify-center rounded-full transition",
                     open
@@ -327,8 +331,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             <Dropdown
               width="w-56"
-              trigger={(open) => (
+              trigger={(open, toggle) => (
                 <button
+                  onClick={toggle}
                   className={cn(
                     "flex items-center gap-2 rounded-full p-1 pr-2 transition",
                     open ? "bg-black/[0.06] dark:bg-white/10" : "hover:bg-black/[0.04] dark:hover:bg-white/5"
@@ -352,6 +357,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <p className="truncate text-[12px] text-sub dark:text-gray-400">{user?.email}</p>
                   </div>
                   <div className="pt-1.5">
+                    {user?.memberId && (
+                      <Link
+                        href={`/dashboard/members/${user.memberId}`}
+                        onClick={close}
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:text-gray-200 dark:hover:bg-white/10"
+                      >
+                        <Icon name="user" size={16} />
+                        My Profile
+                      </Link>
+                    )}
                     <Link
                       href="/dashboard/notifications"
                       onClick={close}
@@ -448,6 +463,7 @@ function pageTitle(pathname: string): string {
     ["/dashboard/updates", "Updates"],
     ["/dashboard/gallery", "Gallery"],
     ["/dashboard/notifications", "Notifications"],
+    ["/dashboard/contacts", "Contact Messages"],
     ["/dashboard/settings", "Settings"],
   ];
   for (const [prefix, title] of map) {

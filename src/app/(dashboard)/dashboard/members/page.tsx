@@ -127,9 +127,12 @@ export default function MembersPage() {
               >
                 <Avatar name={m.user.name} src={m.user.image} size={40} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14.5px] font-semibold text-ink dark:text-gray-100">
+                  <Link
+                    href={`/dashboard/members/${m.id}`}
+                    className="truncate text-[14.5px] font-semibold text-ink transition hover:text-accent dark:text-gray-100 dark:hover:text-accent"
+                  >
                     {m.user.name}
-                  </p>
+                  </Link>
                   <p className="truncate text-[12.5px] text-sub dark:text-gray-400">
                     {m.memberCode} · {m.user.email}
                   </p>
@@ -156,8 +159,9 @@ export default function MembersPage() {
                 {canEdit ? (
                   <Dropdown
                     width="w-48"
-                    trigger={(open) => (
+                    trigger={(open, toggle) => (
                       <button
+                        onClick={toggle}
                         className={cn(
                           "flex size-8 items-center justify-center rounded-full transition",
                           open

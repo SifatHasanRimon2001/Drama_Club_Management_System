@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { getUserPermissions } from "@/lib/permissions";
 
@@ -12,6 +13,10 @@ export async function GET() {
 
     const userId = (session.user as { id: string }).id;
     const permissions = await getUserPermissions(userId);
+    const member = await prisma.member.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
 
     return NextResponse.json({
       user: {
@@ -19,6 +24,7 @@ export async function GET() {
         name: session.user.name,
         email: session.user.email,
         image: session.user.image,
+        memberId: member?.id ?? null,
         permissions,
       },
     });

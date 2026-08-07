@@ -786,8 +786,8 @@ async function main() {
     });
   }
 
-  // 26. A sample contact submission
-  console.log("Creating sample contact submission...");
+  // 26. Sample contact submissions
+  console.log("Creating sample contact submissions...");
   const contactCount = await prisma.contactSubmission.count();
   if (contactCount === 0) {
     await prisma.contactSubmission.create({
@@ -795,6 +795,21 @@ async function main() {
         name: "Faculty Adviser",
         email: "faculty@university.edu",
         message: "Could the club reserve the Main Theatre for the welcome week showcase?",
+      },
+    });
+    await prisma.contactSubmission.create({
+      data: {
+        name: "Amara Osei",
+        email: "amara.osei@university.edu",
+        message: "Hi! I'd love to volunteer backstage for the fall production. Who should I contact?",
+      },
+    });
+    await prisma.contactSubmission.create({
+      data: {
+        name: "Campus Events Office",
+        email: "events.office@university.edu",
+        message: "Your costume storage room request has been approved. Pick up the key at the office.",
+        handledAt: new Date("2026-08-01"),
       },
     });
   }

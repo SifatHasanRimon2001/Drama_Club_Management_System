@@ -3,6 +3,7 @@ export interface SessionUser {
   name: string;
   email: string;
   image?: string | null;
+  memberId?: string | null;
   permissions: string[];
 }
 

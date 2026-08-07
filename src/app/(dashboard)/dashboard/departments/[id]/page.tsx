@@ -289,8 +289,9 @@ export default function DepartmentDetailPage() {
                     <div className="flex items-center gap-1">
                       <Dropdown
                         width="w-40"
-                        trigger={(open) => (
+                        trigger={(open, toggle) => (
                           <button
+                            onClick={toggle}
                             className={cn(
                               "flex size-8 items-center justify-center rounded-full transition",
                               open

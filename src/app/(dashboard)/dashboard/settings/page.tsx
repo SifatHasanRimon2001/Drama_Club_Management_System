@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiGet, apiPatch } from "@/lib/client/api";
+import { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/input";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,9 +24,17 @@ interface SettingsMap {
   maintenanceMode?: boolean;
 }
 
+interface StorageStatus {
+  configured: boolean;
+  bucket: string | null;
+  publicUrl: string;
+  missing: string[];
+}
+
 export default function SettingsPage() {
   const toast = useToast();
   const [settings, setSettings] = useState<SettingsMap | null>(null);
+  const [storage, setStorage] = useState<StorageStatus | null>(null);
   const [form, setForm] = useState({
     clubName: "",
     clubDescription: "",
@@ -55,6 +64,9 @@ export default function SettingsPage() {
         maintenanceMode: s.maintenanceMode ?? false,
       });
     });
+    apiGet<StorageStatus>("/api/settings/storage")
+      .then(setStorage)
+      .catch(() => setStorage(null));
   }, []);
 
   const save = async (e: React.FormEvent) => {
@@ -219,6 +231,65 @@ export default function SettingsPage() {
                 onChange={(v) => setToggles({ ...toggles, maintenanceMode: v })}
               />
             </div>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Club storage (Cloudflare R2)</CardTitle>
+          </CardHeader>
+          <CardBody>
+            {storage ? (
+              storage.configured ? (
+                <div className="flex items-start gap-3 rounded-2xl bg-green-500/8 px-4 py-3.5 dark:bg-green-500/10">
+                  <span className="mt-1 size-2.5 shrink-0 rounded-full bg-green-500" />
+                  <div>
+                    <p className="text-[14px] font-semibold text-ink dark:text-gray-100">
+                      Connected to {storage.bucket}
+                    </p>
+                    <p className="mt-0.5 text-[13px] text-sub dark:text-gray-400">
+                      Gallery uploads are stored in Cloudflare R2.
+                      {storage.publicUrl
+                        ? ` Public URL: ${storage.publicUrl}`
+                        : " No public URL is set — media will be stored but not publicly served."}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-start gap-3 rounded-2xl bg-amber-500/10 px-4 py-3.5">
+                  <Icon name="warn" size={17} className="mt-0.5 shrink-0 text-amber-500" />
+                  <div>
+                    <p className="text-[14px] font-semibold text-ink dark:text-gray-100">
+                      Storage is not configured
+                    </p>
+                    <p className="mt-0.5 text-[13px] leading-relaxed text-sub dark:text-gray-400">
+                      Gallery uploads will be disabled until the following environment variables
+                      are set in <code className="rounded bg-black/[0.06] px-1.5 py-0.5 font-mono text-[12px] dark:bg-white/10">.env</code>:
+                    </p>
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
+                      {(storage.missing.length > 0 ? storage.missing : ["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME"]).map(
+                        (v) => (
+                          <code
+                            key={v}
+                            className="rounded-full bg-black/[0.06] px-2.5 py-1 font-mono text-[11.5px] font-medium text-ink dark:bg-white/10 dark:text-gray-200"
+                          >
+                            {v}
+                          </code>
+                        )
+                      )}
+                      <code className="rounded-full bg-black/[0.06] px-2.5 py-1 font-mono text-[11.5px] font-medium text-ink dark:bg-white/10 dark:text-gray-200">
+                        R2_PUBLIC_URL
+                      </code>
+                    </div>
+                    <p className="mt-2.5 text-[12.5px] text-faint">
+                      Restart the server after updating environment variables.
+                    </p>
+                  </div>
+                </div>
+              )
+            ) : (
+              <p className="text-[13.5px] text-faint">Checking storage configuration…</p>
+            )}
           </CardBody>
         </Card>
 

@@ -10,7 +10,7 @@ export function Dropdown({
   width = "w-72",
   className,
 }: {
-  trigger: (open: boolean) => ReactNode;
+  trigger: (open: boolean, toggle: () => void) => ReactNode;
   children: (close: () => void) => ReactNode;
   align?: "start" | "end";
   width?: string;
@@ -18,6 +18,8 @@ export function Dropdown({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  const toggle = () => setOpen((o) => !o);
 
   useEffect(() => {
     if (!open) return;
@@ -39,7 +41,7 @@ export function Dropdown({
 
   return (
     <div ref={ref} className="relative">
-      {trigger(open)}
+      {trigger(open, toggle)}
       {open && (
         <div
           className={cn(
