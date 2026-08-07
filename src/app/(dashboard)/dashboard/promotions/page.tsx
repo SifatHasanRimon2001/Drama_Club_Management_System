@@ -39,6 +39,7 @@ export default function PromotionsPage() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [viewing, setViewing] = useState<PromotionRow | null>(null);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -51,6 +52,11 @@ export default function PromotionsPage() {
       );
       setRows(data.promotions);
       setPagination(data.pagination);
+      setAccessDenied(false);
+    } catch (err) {
+      if (err instanceof Error && err.message === "Forbidden") {
+        setAccessDenied(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -122,7 +128,13 @@ export default function PromotionsPage() {
         ]}
       />
 
-      {loading && !rows.length ? (
+      {accessDenied ? (
+        <EmptyState
+          icon="lock"
+          title="Promotions unavailable"
+          message="You need the promotion.submit or promotion.approve permission to view promotion requests."
+        />
+      ) : loading && !rows.length ? (
         <PageLoader label="Loading promotions…" />
       ) : rows.length === 0 ? (
         <EmptyState

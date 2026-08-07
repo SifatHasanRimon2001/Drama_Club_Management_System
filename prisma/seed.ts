@@ -337,7 +337,13 @@ async function main() {
   });
 
   // Add basic permissions to member role
-  const memberPermissions = ["member.view", "department.view", "events.manage", "gallery.upload"];
+  const memberPermissions = [
+    "member.view",
+    "department.view",
+    "events.manage",
+    "gallery.upload",
+    "promotion.submit",
+  ];
   for (const key of memberPermissions) {
     const perm = await prisma.permission.findUnique({ where: { key } });
     if (perm) {
