@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { ThemeProvider } from "@/lib/theme";
+import { RealtimeProvider } from "@/lib/client/socket";
 
 export const metadata: Metadata = {
   title: {
@@ -34,7 +35,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full bg-canvas text-ink dark:bg-black dark:text-gray-100">
         <ThemeProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <RealtimeProvider>{children}</RealtimeProvider>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

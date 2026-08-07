@@ -9,7 +9,8 @@ import { formatDate, membershipStatusLabel, MEMBER_STATUSES } from "@/lib/format
 import { cn } from "@/lib/cn";
 import { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { Field, SearchInput, Select } from "@/components/ui/input";
+import { Field, Input, SearchInput, Select } from "@/components/ui/input";
+import { Toolbar } from "@/components/ui/layout";
 import { Card, CardBody } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusPill } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ import { Pagination as Pager } from "@/components/ui/pagination";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
 import { Modal } from "@/components/ui/modal";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 interface MemberRow extends Omit<Member, "departments" | "committeeRoles"> {
   departments: { departmentId: string; department: { id: string; name: string } }[];
@@ -36,6 +38,7 @@ export default function MembersPage() {
   const [rows, setRows] = useState<MemberRow[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
@@ -53,6 +56,9 @@ export default function MembersPage() {
       );
       setRows(data.members);
       setPagination(data.pagination);
+      setLoadError("");
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Failed to load members");
     } finally {
       setLoading(false);
     }
@@ -62,6 +68,9 @@ export default function MembersPage() {
     const t = setTimeout(() => void load(), search ? 300 : 0);
     return () => clearTimeout(t);
   }, [load, search, status, page]);
+
+  // Live: reflect other editors' changes to members/roles immediately.
+  useRealtimeRefresh(["Member", "User", "CommitteeMemberRole", "MemberDepartment"], load);
 
   const updateStatus = async (m: MemberRow, newStatus: string) => {
     try {
@@ -85,13 +94,17 @@ export default function MembersPage() {
           </p>
         </div>
         {canCreate && (
-          <Link href="/dashboard/members/new">
-            <Button icon="plus">Add Member</Button>
+          <Link
+            href="/dashboard/members/new"
+            className="inline-flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-sm font-medium text-white shadow-[0_1px_2px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,113,227,0.25)] transition hover:bg-accent-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <Icon name="plus" size={16} />
+            Add Member
           </Link>
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <Toolbar>
         <div className="min-w-[220px] flex-1">
           <SearchInput
             value={search}
@@ -107,10 +120,21 @@ export default function MembersPage() {
             </option>
           ))}
         </Select>
-      </div>
+      </Toolbar>
 
       {loading && !rows.length ? (
         <PageLoader label="Loading members…" />
+      ) : loadError ? (
+        <EmptyState
+          icon="warn"
+          title="Couldn't load members"
+          message={loadError}
+          action={
+            <Button variant="secondary" onClick={() => void load()}>
+              Try again
+            </Button>
+          }
+        />
       ) : rows.length === 0 ? (
         <EmptyState
           icon="members"
@@ -288,25 +312,22 @@ function EditMemberModal({
           </div>
         </div>
         <Field label="Phone">
-          <input
-            className="w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-[14px] text-ink outline-none transition placeholder:text-faint focus:border-accent focus:ring-4 focus:ring-accent/15 dark:border-white/10 dark:bg-white/5 dark:text-gray-100"
+          <Input
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             placeholder="+1 (555) 000-0000"
           />
         </Field>
         <Field label="Address">
-          <input
-            className="w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-[14px] text-ink outline-none transition placeholder:text-faint focus:border-accent focus:ring-4 focus:ring-accent/15 dark:border-white/10 dark:bg-white/5 dark:text-gray-100"
+          <Input
             value={form.address}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
             placeholder="Campus address"
           />
         </Field>
         <Field label="Date of birth">
-          <input
+          <Input
             type="date"
-            className="w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-[14px] text-ink outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/15 dark:border-white/10 dark:bg-white/5 dark:text-gray-100"
             value={form.dateOfBirth}
             onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
           />

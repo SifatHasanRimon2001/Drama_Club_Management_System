@@ -3,8 +3,9 @@ import { publicFetch } from "@/lib/server";
 import type { Event } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 import { Icon } from "@/components/icons";
-import { StatusPill } from "@/components/ui/badge";
+import { prettyLabel } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
+import { Container, Grid } from "@/components/ui/layout";
 
 export const metadata = { title: "Productions" };
 
@@ -12,7 +13,7 @@ export default async function ProductionsPage() {
   const productions = await publicFetch<Event[]>("/api/public/productions?limit=100");
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 sm:px-6">
+    <Container size="page" className="pb-24 pt-28">
       <div className="max-w-3xl">
         <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">
           Past & Present
@@ -33,19 +34,14 @@ export default async function ProductionsPage() {
           />
         </div>
       ) : (
-        <div className="mt-14 grid gap-5 sm:grid-cols-2">
+        <Grid preset="split" className="mt-14">
           {productions.map((p) => (
-            <article
+            <Link
               key={p.id}
-              className="group relative overflow-hidden rounded-[22px] border border-line bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-card-hover dark:bg-[#1c1c1e] dark:border-white/10"
+              href={`/events/${p.id}`}
+              className="group relative overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-card-hover dark:bg-[#1c1c1e] dark:border-white/10"
             >
-              <div
-                className="relative flex h-44 items-end overflow-hidden bg-gradient-to-br from-indigo/80 via-purple/70 to-accent/70 p-5"
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(88,86,214,0.85), rgba(175,82,222,0.75) 55%, rgba(0,113,227,0.7))",
-                }}
-              >
+              <div className="relative flex h-44 items-end overflow-hidden bg-gradient-to-br from-indigo/80 via-purple/70 to-accent/70 p-5">
                 <div
                   className="pointer-events-none absolute inset-0 opacity-40"
                   style={{
@@ -62,7 +58,9 @@ export default async function ProductionsPage() {
                       {p.title}
                     </h2>
                   </div>
-                  <StatusPill value={p.status} className="bg-white/20 text-white backdrop-blur" />
+                  <span className="inline-flex items-center rounded-full bg-white/25 px-2.5 py-1 text-[12px] font-semibold leading-none text-white backdrop-blur">
+                    {prettyLabel(p.status)}
+                  </span>
                 </div>
               </div>
               <div className="p-5">
@@ -84,19 +82,19 @@ export default async function ProductionsPage() {
                   )}
                 </div>
               </div>
-            </article>
+            </Link>
           ))}
-        </div>
+        </Grid>
       )}
 
       <div className="mt-16 flex justify-center">
         <Link
           href="/events"
-          className="inline-flex h-11 items-center gap-2 rounded-full border border-line bg-card px-6 text-[14.5px] font-medium text-ink shadow-card transition hover:bg-white dark:bg-[#1c1c1e] dark:text-gray-100"
+          className="inline-flex h-11 items-center gap-2 rounded-full border border-line bg-card px-5 text-[14.5px] font-medium text-ink shadow-card transition hover:bg-black/[0.03] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:bg-[#1c1c1e] dark:text-gray-100 dark:hover:bg-white/10"
         >
           See all events <Icon name="chevron-right" size={14} />
         </Link>
       </div>
-    </div>
+    </Container>
   );
 }

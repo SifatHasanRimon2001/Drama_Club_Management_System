@@ -5,6 +5,7 @@ import { apiGet, apiPost } from "@/lib/client/api";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/input";
+import { Grid } from "@/components/ui/layout";
 import { Icon } from "@/components/icons";
 import type { PublicAbout } from "@/lib/types";
 
@@ -22,13 +23,14 @@ export default function ContactPage() {
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  const submit = async () => {
-    const e: Record<string, string> = {};
-    if (!form.name.trim()) e.name = "Name is required";
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = "Enter a valid email";
-    if (form.message.trim().length < 10) e.message = "Message must be at least 10 characters";
-    setErrors(e);
-    if (Object.keys(e).length > 0) return;
+  const submit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const errs: Record<string, string> = {};
+    if (!form.name.trim()) errs.name = "Name is required";
+    if (!/^\S+@\S+\.\S+$/.test(form.email)) errs.email = "Enter a valid email";
+    if (form.message.trim().length < 10) errs.message = "Message must be at least 10 characters";
+    setErrors(errs);
+    if (Object.keys(errs).length > 0) return;
 
     setSubmitting(true);
     try {
@@ -48,7 +50,7 @@ export default function ContactPage() {
           <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">
             Get in touch
           </p>
-          <h1 className="display-title mt-3 text-[2.4rem] text-ink dark:text-gray-50">Contact us</h1>
+          <h1 className="display-title mt-3 text-ink dark:text-gray-50">Contact us</h1>
           <p className="mt-5 text-[16px] leading-relaxed text-sub dark:text-gray-400">
             Questions about joining, productions, venue hire, or collaborations? Drop us a
             line — we&apos;d love to hear from you.
@@ -97,19 +99,19 @@ export default function ContactPage() {
             </p>
           </div>
         ) : (
-          <div className="rounded-[24px] border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-[#1c1c1e] dark:border-white/10">
+          <div className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-[#1c1c1e] dark:border-white/10">
             <h2 className="text-[17px] font-semibold tracking-tight text-ink dark:text-gray-100">
               Send us a message
             </h2>
-            <div className="mt-5 space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
+            <form onSubmit={submit} className="mt-5 space-y-4">
+              <Grid preset="fields">
                 <Field label="Your name" error={errors.name}>
                   <Input placeholder="Jane Doe" value={form.name} onChange={(e) => set("name", e.target.value)} />
                 </Field>
                 <Field label="Email" error={errors.email}>
                   <Input type="email" placeholder="jane@university.edu" value={form.email} onChange={(e) => set("email", e.target.value)} />
                 </Field>
-              </div>
+              </Grid>
               <Field label="Message" error={errors.message}>
                 <Textarea
                   rows={6}
@@ -118,10 +120,10 @@ export default function ContactPage() {
                   onChange={(e) => set("message", e.target.value)}
                 />
               </Field>
-              <Button onClick={submit} loading={submitting} full size="lg">
+              <Button type="submit" loading={submitting} full size="lg">
                 Send Message
               </Button>
-            </div>
+            </form>
           </div>
         )}
       </div>

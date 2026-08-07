@@ -7,8 +7,8 @@ tests must mock — is exercised through a **real** credentials login flow.
 ## 1. Playwright (HTTP request-level) — `npm run test:e2e`
 
 A lightweight, browser-free suite using Playwright's HTTP `request` fixture. It
-hits every `/api/*` route, performs a real NextAuth credentials login, and
-walks the registration → applicant → member conversion lifecycle.
+hits a broad set of `/api/*` routes, performs a real NextAuth credentials
+login, and walks the registration → applicant → member conversion lifecycle.
 
 ```bash
 npm run test:e2e
@@ -48,18 +48,44 @@ Use `--` to pass the env to the server, e.g.:
 DATABASE_URL=postgresql://user:pass@localhost:5432/dcms npm run test:e2e:http
 ```
 
+> The E2E server intentionally boots plain `next start` (no Socket.IO) — these
+> suites are API-level, so realtime is not exercised here.
+
+## 3. Realtime verification — live Socket.IO checks
+
+The realtime layer (custom `server.js` + Prisma change-emission extension) is
+verified against a **running dev server** (`npm run dev`):
+
+```bash
+npm run dev
+npx tsx scripts/realtime-smoke.ts    # connect a socket → POST /api/contact →
+                                     # assert a ContactSubmission change event arrives
+npx tsx scripts/realtime-tx-check.ts # admin login → writes inside $transaction
+                                     # (role create, settings upsert) → assert
+                                     # Role/SystemSetting change events arrive
+```
+
+Both scripts clean up after themselves. They cover what API-only suites can't:
+that **every** Prisma write — including writes inside interactive transactions —
+emits a realtime `change` event that clients receive live.
+
 ## Test accounts (from `prisma/seed.ts`)
 
 | Role  | Email              | Password |
 | ----- | ------------------ | -------- |
 | Admin | `admin@dcms.local` | `admin123` |
 | Member| `demo@dcms.local`  | `demo123` |
+| Member| any `DCMS-xxx` member (e.g. `sarah.chen@university.edu`) | `member123` |
 
-## CI (GitHub Actions)
+## CI
 
-Both harnesses are designed to run in CI. The webServer in `playwright.config.ts`
-starts the server automatically, and `test:e2e:http` is a single self-contained
-command. A Postgres service is the only external requirement.
+Both harnesses are designed to be CI-friendly (no browser, no external
+services beyond Postgres). The webServer in `playwright.config.ts` starts the
+server automatically, and `test:e2e:http` is a single self-contained command.
+
+> This repository does **not** ship a committed CI workflow file (no
+> `.github/workflows`). To run in CI, add a job that starts a Postgres service
+> and runs either `npm run test:e2e` or `npm run test:e2e:http`.
 
 ## What this covers that unit tests can't
 
@@ -69,3 +95,5 @@ command. A Postgres service is the only external requirement.
   (`requirePermission`) → Zod validation → Prisma → email/R2 (gracefully skipped
   if unconfigured).
 - Public-vs-private route protection and CSRF validation.
+- Socket.IO realtime: broadcast + transaction-scoped change events, live
+  (see §3 above).

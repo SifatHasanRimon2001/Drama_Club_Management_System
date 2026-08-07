@@ -9,10 +9,12 @@ import { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/input";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/feedback";
+import { EmptyState, PageLoader } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
 import { MEMBER_STATUSES, membershipStatusLabel } from "@/lib/format";
 import { cn } from "@/lib/cn";
+import { ActionIcon } from "@/components/ui/button";
+import { Grid } from "@/components/ui/layout";
 
 interface LinkedUser {
   id: string;
@@ -41,6 +43,7 @@ export default function AddMemberPage() {
   const [searching, setSearching] = useState(false);
   const [picked, setPicked] = useState<LinkedUser | null>(null);
   const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const searchBoxRef = useRef<HTMLDivElement | null>(null);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
@@ -77,7 +80,31 @@ export default function AddMemberPage() {
     setPicked(u);
     setForm((f) => ({ ...f, userId: u.id }));
     setOpen(false);
+    setActiveIndex(-1);
     toast.info(`Linked to ${u.name} (${u.email})`);
+  };
+
+  const onInputKeyDown = (e: React.KeyboardEvent) => {
+    if (!open && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+      setOpen(true);
+      return;
+    }
+    if (e.key === "Escape") {
+      setOpen(false);
+      setActiveIndex(-1);
+      return;
+    }
+    if (!open || results.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((i) => (i + 1) % results.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((i) => (i - 1 + results.length) % results.length);
+    } else if (e.key === "Enter" && activeIndex >= 0) {
+      e.preventDefault();
+      pick(results[activeIndex]);
+    }
   };
 
   const save = async (e: React.FormEvent) => {
@@ -106,7 +133,7 @@ export default function AddMemberPage() {
     }
   };
 
-  if (sessionLoading) return null;
+  if (sessionLoading) return <PageLoader label="Checking permissions…" />;
 
   if (!canCreate) {
     return (
@@ -169,32 +196,46 @@ export default function AddMemberPage() {
                         {picked.email}
                       </p>
                     </div>
-                    <button
-                      type="button"
+                    <ActionIcon
+                      icon="close"
+                      label="Change user"
+                      size="xs"
                       onClick={() => {
                         setPicked(null);
                         setForm((f) => ({ ...f, userId: "" }));
                       }}
-                      className="flex size-8 shrink-0 items-center justify-center rounded-full text-faint transition hover:bg-black/[0.05] hover:text-red dark:hover:bg-white/10"
-                      aria-label="Change user"
-                    >
-                      <Icon name="close" size={14} />
-                    </button>
+                    />
                   </div>
                 ) : (
                   <div className="relative">
                     <Input
                       autoFocus
+                      aria-label="User account"
+                      role="combobox"
+                      aria-expanded={open}
+                      aria-controls="user-search-results"
+                      aria-activedescendant={
+                        open && activeIndex >= 0 ? `user-option-${results[activeIndex].id}` : undefined
+                      }
+                      aria-autocomplete="list"
+                      autoComplete="off"
                       value={search}
                       onChange={(e) => {
                         setSearch(e.target.value);
+                        setActiveIndex(-1);
                         setOpen(true);
                       }}
                       onFocus={() => setOpen(true)}
+                      onKeyDown={onInputKeyDown}
                       placeholder="Type a name or email…"
                     />
                     {open && (
-                      <div className="absolute inset-x-0 top-full z-20 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-line bg-white p-1.5 shadow-card dark:border-white/15 dark:bg-[#1c1c1e]">
+                      <div
+                        id="user-search-results"
+                        role="listbox"
+                        aria-label="Matching accounts"
+                        className="absolute inset-x-0 top-full z-20 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-line bg-white p-1.5 shadow-card dark:border-white/15 dark:bg-[#1c1c1e]"
+                      >
                         {searching && (
                           <p className="px-3 py-2.5 text-[13px] text-faint">
                             Searching…
@@ -203,21 +244,32 @@ export default function AddMemberPage() {
                         {!searching && results.length === 0 && (
                           <p className="px-3 py-2.5 text-[13px] text-faint">
                             No accounts found — users can create an account on the{" "}
-                            <Link href="/register" className="text-accent hover:underline" target="_blank">
+                            <Link
+                              href="/register"
+                              className="text-accent hover:underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               register page
                             </Link>
                             .
                           </p>
                         )}
                         {!searching &&
-                          results.map((u) => (
+                          results.map((u, i) => (
                             <button
                               key={u.id}
+                              id={`user-option-${u.id}`}
                               type="button"
+                              role="option"
+                              aria-selected={i === activeIndex}
+                              onMouseEnter={() => setActiveIndex(i)}
                               onClick={() => pick(u)}
                               className={cn(
                                 "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition",
-                                "hover:bg-black/[0.04] dark:hover:bg-white/10"
+                                i === activeIndex
+                                  ? "bg-accent-soft/60 dark:bg-white/10"
+                                  : "hover:bg-black/[0.04] dark:hover:bg-white/10"
                               )}
                             >
                               <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent dark:bg-accent/20">
@@ -248,7 +300,7 @@ export default function AddMemberPage() {
               />
             </Field>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <Grid preset="fields">
               <Field label="Phone" optional>
                 <Input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+1 (555) 000-0000" />
               </Field>
@@ -259,13 +311,13 @@ export default function AddMemberPage() {
                   onChange={(e) => set("dateOfBirth", e.target.value)}
                 />
               </Field>
-            </div>
+            </Grid>
 
             <Field label="Address" optional>
               <Input value={form.address} onChange={(e) => set("address", e.target.value)} placeholder="Campus address" />
             </Field>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <Grid preset="fields">
               <Field label="Emergency contact" optional>
                 <Input value={form.emergencyContact} onChange={(e) => set("emergencyContact", e.target.value)} placeholder="Name & phone" />
               </Field>
@@ -279,7 +331,7 @@ export default function AddMemberPage() {
                   ))}
                 </Select>
               </Field>
-            </div>
+            </Grid>
 
             <div className="flex gap-3 pt-2">
               <Button variant="ghost" full type="button" onClick={() => router.push("/dashboard/members")}>

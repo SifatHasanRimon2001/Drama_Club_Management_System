@@ -6,12 +6,14 @@ import { apiDelete, apiGet, apiPatch, apiPost } from "@/lib/client/api";
 import { useSession } from "@/lib/client/session";
 import type { Committee, Department, Member } from "@/lib/types";
 import { Icon } from "@/components/icons";
-import { Button } from "@/components/ui/button";
+import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/input";
+import { Grid } from "@/components/ui/layout";
 import { Avatar } from "@/components/ui/avatar";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Modal, ConfirmDialog } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 interface DepartmentRow extends Department {
   committee: { id: string; year: string; isCurrent: boolean };
@@ -23,6 +25,7 @@ export default function DepartmentsPage() {
 
   const [depts, setDepts] = useState<DepartmentRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<DepartmentRow | null>(null);
   const [deleting, setDeleting] = useState<DepartmentRow | null>(null);
@@ -32,6 +35,9 @@ export default function DepartmentsPage() {
     setLoading(true);
     try {
       setDepts(await apiGet<DepartmentRow[]>("/api/departments"));
+      setLoadError("");
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Failed to load departments");
     } finally {
       setLoading(false);
     }
@@ -41,6 +47,9 @@ export default function DepartmentsPage() {
     const timer = setTimeout(() => void load(), 0);
     return () => clearTimeout(timer);
   }, [load]);
+
+  // Live: reflect department/committee/member changes in real time.
+  useRealtimeRefresh(["Department", "Committee", "Member", "MemberDepartment"], load);
 
   const confirmDelete = async () => {
     if (!deleting) return;
@@ -75,6 +84,17 @@ export default function DepartmentsPage() {
 
       {loading ? (
         <PageLoader label="Loading departments…" />
+      ) : loadError ? (
+        <EmptyState
+          icon="warn"
+          title="Couldn't load departments"
+          message={loadError}
+          action={
+            <Button variant="secondary" onClick={() => void load()}>
+              Try again
+            </Button>
+          }
+        />
       ) : depts.length === 0 ? (
         <EmptyState
           icon="folder"
@@ -82,7 +102,7 @@ export default function DepartmentsPage() {
           message="Create your first department to start organizing."
         />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <Grid preset="cards">
           {depts.map((d) => (
             <div
               key={d.id}
@@ -141,19 +161,19 @@ export default function DepartmentsPage() {
                     <Button size="sm" variant="secondary" onClick={() => setEditing(d)}>
                       Edit
                     </Button>
-                    <button
+                    <ActionIcon
+                      icon="trash"
+                      label={`Delete ${d.name}`}
+                      size="xs"
+                      className="hover:bg-red/10 hover:text-red dark:hover:bg-red/20 dark:hover:text-red-300"
                       onClick={() => setDeleting(d)}
-                      className="flex size-8 items-center justify-center rounded-full text-faint transition hover:bg-red/10 hover:text-red"
-                      aria-label="Delete department"
-                    >
-                      <Icon name="trash" size={14} />
-                    </button>
+                    />
                   </div>
                 )}
               </div>
             </div>
           ))}
-        </div>
+        </Grid>
       )}
 
       {(creating || editing) && (
@@ -258,7 +278,7 @@ function DepartmentModal({
       size="lg"
     >
       <form onSubmit={save} className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <Grid preset="fields">
           <Field label="Name">
             <Input
               autoFocus
@@ -280,7 +300,7 @@ function DepartmentModal({
               ))}
             </Select>
           </Field>
-        </div>
+        </Grid>
         <Field label="Description" optional>
           <Textarea
             value={form.description}

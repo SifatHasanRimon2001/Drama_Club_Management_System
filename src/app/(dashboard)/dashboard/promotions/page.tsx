@@ -8,8 +8,9 @@ import {
   timeAgo,
 } from "@/lib/format";
 import { Icon } from "@/components/icons";
-import { Button } from "@/components/ui/button";
+import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Select, Textarea } from "@/components/ui/input";
+import { Grid } from "@/components/ui/layout";
 import { Card, CardBody } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusPill } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ import { Modal } from "@/components/ui/modal";
 import { Pagination as Pager } from "@/components/ui/pagination";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 type Filter = "all" | "DRAFT" | "SUBMITTED" | "PENDING_APPROVAL" | "APPROVED" | "REJECTED";
 
@@ -67,6 +69,9 @@ export default function PromotionsPage() {
     return () => clearTimeout(timer);
   }, [load]);
 
+  // Live: refresh the queue when requests are submitted/decided in real time.
+  useRealtimeRefresh(["PromotionRequest", "Role", "Member"], load);
+
   const submit = async (id: string) => {
     try {
       await apiPost(`/api/promotions/${id}/submit`);
@@ -113,6 +118,7 @@ export default function PromotionsPage() {
       </div>
 
       <Segmented<Filter>
+        scrollable
         value={filter}
         onChange={(v) => {
           setFilter(v);
@@ -182,13 +188,7 @@ export default function PromotionsPage() {
                   )}
                 </div>
                 <StatusPill value={p.status} />
-                <button
-                  onClick={() => setViewing(p)}
-                  className="flex size-8 items-center justify-center rounded-full text-faint transition hover:bg-black/[0.05] hover:text-ink dark:hover:bg-white/10 dark:hover:text-gray-200"
-                  aria-label="View promotion"
-                >
-                  <Icon name="eye" size={15} />
-                </button>
+                <ActionIcon icon="eye" label="View promotion" size="xs" onClick={() => setViewing(p)} />
               </div>
             ))}
           </CardBody>
@@ -309,7 +309,7 @@ function CreatePromotionModal({
             ))}
           </Select>
         </Field>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <Grid preset="fields">
           <Field label="Current role">
             <Select value={form.currentRoleId} onChange={(v) => setForm({ ...form, currentRoleId: v })}>
               <option value="">Select role…</option>
@@ -330,7 +330,7 @@ function CreatePromotionModal({
               ))}
             </Select>
           </Field>
-        </div>
+        </Grid>
         <Field label="Reason">
           <Textarea
             value={form.reason}
@@ -402,7 +402,7 @@ function PromotionModal({
           <span className="text-[12.5px] text-faint">Submitted {timeAgo(promotion.createdAt)}</span>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <Grid preset="split">
           <div className="rounded-2xl border border-line px-4 py-3.5 dark:border-white/10">
             <p className="text-[11px] font-medium uppercase tracking-wide text-faint">Member</p>
             <p className="mt-0.5 text-[14.5px] font-semibold text-ink dark:text-gray-100">
@@ -419,7 +419,7 @@ function PromotionModal({
               <span className="text-accent">{promotion.proposedRole?.name}</span>
             </p>
           </div>
-        </div>
+        </Grid>
 
         {promotion.reason && (
           <div className="rounded-2xl border border-line p-4 dark:border-white/10">

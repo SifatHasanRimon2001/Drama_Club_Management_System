@@ -19,18 +19,21 @@ import {
 } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { Icon, type IconName } from "@/components/icons";
+import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/ui/stat";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusPill } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
+import { Grid } from "@/components/ui/layout";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 import { r2Url } from "@/lib/server";
 
 const MEMBER_TONES: Record<string, string> = {
   ACTIVE: "bg-green/12 text-green dark:bg-green/20 dark:text-green-300",
   PENDING: "bg-orange/12 text-orange dark:bg-orange/20 dark:text-orange-300",
   ALUMNI: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
-  INACTIVE: "bg-gray-500/10 text-faint",
+  INACTIVE: "bg-gray/12 text-sub dark:bg-white/10 dark:text-gray-400",
   SUSPENDED: "bg-red/12 text-red dark:bg-red/20 dark:text-red-300",
 };
 
@@ -79,6 +82,12 @@ export default function DashboardHomePage() {
     }
   }, [sessionLoading, user, load]);
 
+  // Live: refresh whenever anything on the overview changes in real time.
+  useRealtimeRefresh(
+    ["Member", "Event", "PromotionRequest", "RegistrationWindow", "Applicant", "GalleryAlbum", "GalleryItem", "Notification", "Department", "Committee", "ClubUpdate"],
+    load
+  );
+
   if (sessionLoading || (!admin && !member && !error)) {
     return <PageLoader label="Loading your dashboard…" />;
   }
@@ -90,12 +99,9 @@ export default function DashboardHomePage() {
         title="Couldn't load the dashboard"
         message={error}
         action={
-          <button
-            onClick={() => void load()}
-            className="rounded-full bg-accent px-5 py-2.5 text-[14px] font-medium text-white hover:bg-accent-hover"
-          >
+          <Button variant="secondary" onClick={() => void load()}>
             Try again
-          </button>
+          </Button>
         }
       />
     );
@@ -123,7 +129,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
       </div>
 
       {/* Stat cards */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <Grid preset="stats">
         <Link href="/dashboard/members">
           <StatCard
             icon="members"
@@ -160,11 +166,11 @@ function AdminView({ data }: { data: AdminDashboardData }) {
             sub="in the calendar"
           />
         </Link>
-      </div>
+      </Grid>
 
-      <div className="grid gap-6 lg:grid-cols-5">
+      <Grid preset="dash">
         {/* Members by status */}
-        <Card className="lg:col-span-2">
+        <Card className="min-w-0 lg:col-span-2">
           <CardHeader>
             <CardTitle>Members by Status</CardTitle>
           </CardHeader>
@@ -202,7 +208,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
         </Card>
 
         {/* Registration stats */}
-        <Card className="lg:col-span-3">
+        <Card className="min-w-0 lg:col-span-3">
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Registration Windows</CardTitle>
             <Link
@@ -249,11 +255,11 @@ function AdminView({ data }: { data: AdminDashboardData }) {
             )}
           </CardBody>
         </Card>
-      </div>
+      </Grid>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <Grid preset="split">
         {/* Pending promotions */}
-        <Card>
+        <Card className="min-w-0">
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Pending Promotions</CardTitle>
             <Link
@@ -295,7 +301,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
         </Card>
 
         {/* Upcoming events */}
-        <Card>
+        <Card className="min-w-0">
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Upcoming Events</CardTitle>
             <Link
@@ -340,7 +346,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
             )}
           </CardBody>
         </Card>
-      </div>
+      </Grid>
 
       {/* Recent gallery */}
       <Card>
@@ -354,7 +360,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
           </Link>
         </CardHeader>
         <CardBody>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+          <Grid preset="thumbs">
             {data.recentGalleryItems.length === 0 ? (
               <p className="col-span-full py-6 text-center text-[13.5px] text-sub dark:text-gray-400">
                 Nothing uploaded yet.
@@ -389,7 +395,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
                 );
               })
             )}
-          </div>
+          </Grid>
         </CardBody>
       </Card>
     </div>
@@ -421,7 +427,7 @@ function MemberView({
       </div>
 
       {isMember ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Grid preset="stats">
           <StatCard
             icon="role"
             tone="purple"
@@ -450,7 +456,7 @@ function MemberView({
             value={member?.recentNotifications.length ?? 0}
             sub="recent"
           />
-        </div>
+        </Grid>
       ) : (
         <Card>
           <CardBody className="flex flex-col items-center gap-3 py-10 text-center">
@@ -523,7 +529,7 @@ function DepartmentWidget({ data }: { data: DepartmentDashboardData }) {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <Grid preset="stats">
         <StatCard
           icon="folder"
           tone="blue"
@@ -552,10 +558,10 @@ function DepartmentWidget({ data }: { data: DepartmentDashboardData }) {
           value={data.recruitment.total}
           sub="applicants interested"
         />
-      </div>
+      </Grid>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
+      <Grid preset="split">
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle>Tasks</CardTitle>
           </CardHeader>
@@ -593,7 +599,7 @@ function DepartmentWidget({ data }: { data: DepartmentDashboardData }) {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle>Department Events</CardTitle>
           </CardHeader>
@@ -625,7 +631,7 @@ function DepartmentWidget({ data }: { data: DepartmentDashboardData }) {
             )}
           </CardBody>
         </Card>
-      </div>
+      </Grid>
     </div>
   );
 }

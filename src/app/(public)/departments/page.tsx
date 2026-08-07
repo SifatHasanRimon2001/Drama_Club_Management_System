@@ -4,6 +4,7 @@ import { Icon } from "@/components/icons";
 import { Avatar } from "@/components/ui/avatar";
 import { Card, CardBody } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
+import { Container, Grid } from "@/components/ui/layout";
 
 export const metadata = { title: "Departments" };
 
@@ -13,7 +14,7 @@ export default async function DepartmentsPage() {
   const departments = await publicFetch<PublicDepartment[]>("/api/public/departments");
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 sm:px-6">
+    <Container size="page" className="pb-24 pt-28">
       <div className="max-w-3xl">
         <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">
           How we work
@@ -34,7 +35,7 @@ export default async function DepartmentsPage() {
           />
         </div>
       ) : (
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <Grid preset="cards" className="mt-14">
           {departments.map((d, i) => (
             <Card
               key={d.id}
@@ -75,8 +76,8 @@ export default async function DepartmentsPage() {
               </CardBody>
             </Card>
           ))}
-        </div>
+        </Grid>
       )}
-    </div>
+    </Container>
   );
 }

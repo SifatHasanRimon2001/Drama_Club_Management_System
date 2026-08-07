@@ -42,20 +42,19 @@ export default async function UpdatesPage() {
             >
               <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-start">
                 <StatusPill value={u.category} />
-                <span className="text-[12px] text-faint">{formatDate(u.publishedAt)}</span>
+                <span className="text-[12px] text-faint dark:text-gray-500">{formatDate(u.publishedAt)}</span>
               </div>
               <div className="min-w-0 flex-1">
                 <h2 className="text-[17px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-gray-100">
                   {u.title}
                 </h2>
                 {u.bodyRichText && (
-                  <div
-                    className="rich-text mt-1.5 line-clamp-3 text-[13.5px] text-sub dark:text-gray-400"
-                    dangerouslySetInnerHTML={{ __html: u.bodyRichText }}
-                  />
+                  <p className="mt-1.5 line-clamp-3 text-[13.5px] leading-relaxed text-sub dark:text-gray-400">
+                    {stripHtml(u.bodyRichText)}
+                  </p>
                 )}
                 {u.author?.name && (
-                  <p className="mt-2 flex items-center gap-1.5 text-[12px] text-faint">
+                  <p className="mt-2 flex items-center gap-1.5 text-[12px] text-faint dark:text-gray-500">
                     <Icon name="user" size={12} />
                     {u.author.name}
                   </p>
@@ -64,6 +63,7 @@ export default async function UpdatesPage() {
               <Icon
                 name="chevron-right"
                 size={16}
+                aria-hidden="true"
                 className="hidden shrink-0 self-center text-faint transition group-hover:translate-x-0.5 group-hover:text-accent sm:block"
               />
             </Link>
@@ -77,4 +77,11 @@ export default async function UpdatesPage() {
       )}
     </div>
   );
+}
+
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }

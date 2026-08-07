@@ -22,7 +22,12 @@ export function Toggle({
       aria-checked={checked}
       aria-label={label}
       disabled={disabled}
-      onClick={() => onChange(!checked)}
+      onClick={(e) => {
+        // Allow rows that wrap this toggle to also handle clicks without
+        // double-toggling (nested interactive elements are invalid).
+        e.stopPropagation();
+        onChange(!checked);
+      }}
       className={cn(
         "flex items-center gap-3 text-left",
         disabled && "opacity-50"

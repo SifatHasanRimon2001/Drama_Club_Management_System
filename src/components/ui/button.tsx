@@ -27,9 +27,9 @@ const variantClasses: Record<Variant, string> = {
 };
 
 const sizeClasses: Record<Size, string> = {
-  xs: "h-7 px-2.5 text-[13px] rounded-full gap-1",
-  sm: "h-8.5 px-4 text-sm rounded-full gap-1.5",
-  md: "h-10 px-5 text-sm rounded-full gap-2",
+  xs: "h-8 px-3 text-[13px] rounded-full gap-1",
+  sm: "h-9 px-4 text-sm rounded-full gap-1.5",
+  md: "h-11 px-5 text-sm rounded-full gap-2",
   lg: "h-12 px-7 text-base rounded-full gap-2",
 };
 
@@ -42,9 +42,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || loading}
+        aria-busy={loading || undefined}
         className={cn(
           "inline-flex items-center justify-center font-medium transition-all duration-150 select-none",
           "disabled:opacity-50 disabled:pointer-events-none",
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
           variantClasses[variant],
           sizeClasses[size],
           full && "w-full",
@@ -53,7 +55,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading && (
-          <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          <span
+            className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+            aria-hidden="true"
+          />
         )}
         {icon && <Icon name={icon} size={size === "sm" || size === "xs" ? 15 : 17} />}
         {children}
@@ -74,8 +79,9 @@ export function IconButton({
       title={label}
       className={cn(
         "inline-flex items-center justify-center rounded-full transition-all",
-        "size-9 text-ink hover:bg-black/[0.06] active:scale-95",
+        "size-10 text-ink hover:bg-black/[0.06] active:scale-95",
         "dark:text-gray-200 dark:hover:bg-white/10",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         className
       )}
       {...props}
@@ -91,7 +97,7 @@ export function ActionIcon({
   className,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
-  icon: "edit" | "trash" | "eye" | "upload" | "plus" | "download" | "check" | "close" | "chevron-right" | "dots";
+  icon: IconName;
   label: string;
   variant?: Variant;
   size?: Size;

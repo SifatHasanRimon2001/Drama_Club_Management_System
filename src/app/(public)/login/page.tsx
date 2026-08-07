@@ -43,21 +43,12 @@ export default function LoginPage() {
 
   return (
     <div
-      className="relative flex min-h-dvh flex-col items-center justify-center px-4 py-16"
+      className="flex min-h-[80dvh] flex-col items-center justify-center px-4 py-12"
       style={{
         background:
           "radial-gradient(900px 450px at 20% -10%, rgba(0,113,227,0.12), transparent 60%), radial-gradient(700px 400px at 90% 110%, rgba(175,82,222,0.1), transparent 55%)",
       }}
     >
-      <Link href="/" className="mb-8 flex items-center gap-2.5">
-        <span className="flex size-9 items-center justify-center rounded-xl bg-accent text-white shadow-[0_4px_14px_rgba(0,113,227,0.35)]">
-          <Icon name="sparkles" size={17} />
-        </span>
-        <span className="text-[17px] font-bold tracking-tight text-ink dark:text-gray-100">
-          Drama Club
-        </span>
-      </Link>
-
       <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-white/80 p-8 shadow-pop backdrop-blur-2xl dark:bg-[#1c1c1e]/90 dark:border-white/10">
         <h1 className="text-[24px] font-bold tracking-tight text-ink dark:text-gray-100">
           Sign in to your account
@@ -87,7 +78,10 @@ export default function LoginPage() {
           </Field>
 
           {error && (
-            <p className="flex items-center gap-2 rounded-xl bg-red/10 px-3.5 py-2.5 text-[13px] font-medium text-red">
+            <p
+              role="alert"
+              className="flex items-center gap-2 rounded-xl bg-red/10 px-3.5 py-2.5 text-[13px] font-medium text-red"
+            >
               <Icon name="warn" size={14} className="shrink-0" />
               {error}
             </p>

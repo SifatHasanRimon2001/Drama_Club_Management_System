@@ -14,6 +14,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Dropdown } from "@/components/ui/dropdown";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useToast } from "@/components/ui/toast";
+import { useRealtimeRefresh, useRealtimeNotification } from "@/lib/client/socket";
 
 interface NavItem {
   href: string;
@@ -120,6 +121,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timer);
   }, [loadNotifications]);
 
+  // Live: keep the bell badge fresh and pop a toast for brand-new
+  // notifications (pushed to this user's socket room only).
+  useRealtimeRefresh(["Notification"], loadNotifications, 300);
+  useRealtimeNotification((payload) => {
+    void loadNotifications();
+    if (payload && typeof payload === "object" && !("_bulk" in payload)) {
+      const title = typeof payload.title === "string" ? payload.title : "New notification";
+      const message = typeof payload.message === "string" ? payload.message : undefined;
+      toast.info(title, message);
+    }
+  });
+
   const visibleNav = NAV.filter((n) => {
     if (n.perms) return n.perms.some((p) => user?.permissions?.includes(p));
     if (n.anyPerm) return n.anyPerm.some((p) => user?.permissions?.includes(p));
@@ -203,6 +216,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-dvh bg-canvas dark:bg-black">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+      >
+        Skip to main content
+      </a>
+
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r border-line bg-white/70 backdrop-blur-2xl lg:block dark:bg-[#161617]/80 dark:border-white/10">
         {sidebar}
@@ -211,8 +231,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Mobile sidebar */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-          <aside className="animate-sheet absolute inset-y-0 left-0 w-72 bg-white/95 shadow-pop backdrop-blur-2xl dark:bg-[#161617]/95">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
+          <aside
+            className="animate-sheet absolute inset-y-0 left-0 w-[82vw] max-w-72 bg-white/95 shadow-pop backdrop-blur-2xl dark:bg-[#161617]/95"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation"
+          >
             {sidebar}
           </aside>
         </div>
@@ -224,7 +249,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex h-14 items-center gap-3 px-4 sm:px-6">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="flex size-9 items-center justify-center rounded-full text-ink transition hover:bg-black/[0.05] lg:hidden dark:text-gray-100 dark:hover:bg-white/10"
+              className="flex size-10 items-center justify-center rounded-full text-ink transition hover:bg-black/[0.05] lg:hidden dark:text-gray-100 dark:hover:bg-white/10"
               aria-label="Open menu"
             >
               <Icon name="menu" size={19} />
@@ -244,7 +269,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     toggle();
                   }}
                   className={cn(
-                    "relative flex size-9 items-center justify-center rounded-full transition",
+                    "relative flex size-10 items-center justify-center rounded-full transition",
+                    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                     open
                       ? "bg-black/[0.07] dark:bg-white/15"
                       : "text-sub hover:bg-black/[0.05] dark:text-gray-400 dark:hover:bg-white/10"
@@ -400,7 +426,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 pb-24 sm:px-6 lg:pb-8">
+        <main id="main-content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 pb-28 sm:px-6 lg:pb-8">
           {children}
         </main>
       </div>

@@ -77,7 +77,7 @@ export function PublicFooter({
                 <li>
                   <a
                     href={`mailto:${contactEmail}`}
-                    className="text-[13.5px] text-sub transition hover:text-accent dark:text-gray-400"
+                    className="inline-block max-w-full break-all text-[13.5px] leading-relaxed text-sub transition hover:text-accent dark:text-gray-400"
                   >
                     {contactEmail}
                   </a>
@@ -86,11 +86,11 @@ export function PublicFooter({
             </ul>
           </div>
         </div>
-        <div className="mt-10 flex items-center justify-between border-t border-line pt-6 dark:border-white/10">
-          <p className="text-[12.5px] text-faint">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-line pt-6 sm:justify-between dark:border-white/10">
+          <p className="text-center text-[12.5px] leading-relaxed text-faint sm:text-left dark:text-gray-500">
             © {year} {clubName || "Drama Club"}. All rights reserved.
           </p>
-          <p className="text-[12.5px] text-faint">Made with passion for the stage.</p>
+          <p className="text-[12.5px] text-faint dark:text-gray-500">Made with passion for the stage.</p>
         </div>
       </div>
     </footer>

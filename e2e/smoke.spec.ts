@@ -133,7 +133,7 @@ test.describe("Authenticated via real NextAuth login", () => {
 
   test("Wrong password is rejected by NextAuth", async () => {
     // Don't auto-follow redirects: a failed credentials attempt 302-redirects to
-    // /login (which 404s in this API-only app), so following would yield 404.
+    // /login, so we assert the absence of a session instead of the page status.
     const ctx = await request.newContext({ baseURL: BASE });
     const csrfRes = await ctx.get(`${BASE}/api/auth/csrf`);
     const { csrfToken } = (await csrfRes.json()) as { csrfToken: string };

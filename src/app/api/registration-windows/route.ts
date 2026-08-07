@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth, getPaginationParams, validateEnumParam, parseJsonBody } from "@/lib/api-helpers";
 import { can } from "@/lib/permissions";
-import { registrationWindowSchema } from "@/lib/validations";
+import { registrationWindowSchema, registrationFormSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
 import { Prisma } from "@prisma/client";
@@ -75,6 +75,17 @@ export async function POST(request: NextRequest) {
         { error: "endDate must be after startDate" },
         { status: 400 }
       );
+    }
+
+    // Validate the custom form definition before persisting it
+    if (data.formSchema) {
+      const formResult = registrationFormSchema.safeParse(data.formSchema);
+      if (!formResult.success) {
+        return NextResponse.json(
+          { error: formResult.error.issues[0]?.message ?? "Invalid formSchema" },
+          { status: 400 }
+        );
+      }
     }
 
     const window = await prisma.registrationWindow.create({

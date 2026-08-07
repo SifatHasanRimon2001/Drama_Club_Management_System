@@ -16,6 +16,8 @@ import { StatusPill } from "@/components/ui/badge";
 import { Modal } from "@/components/ui/modal";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
+import { Grid } from "@/components/ui/layout";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 interface ProfileMember extends Omit<Member, "departments" | "committeeRoles"> {
   user: { id: string; name: string; email: string; image: string | null };
@@ -82,6 +84,12 @@ export default function MemberProfilePage() {
     return () => clearTimeout(timer);
   }, [load]);
 
+  // Live: keep the profile in sync with role/department/status changes.
+  useRealtimeRefresh(
+    ["Member", "CommitteeMemberRole", "MemberDepartment", "Role"],
+    load
+  );
+
   if (loading && !member) return <PageLoader label="Loading profile…" />;
 
   if (failed || !member) {
@@ -95,8 +103,12 @@ export default function MemberProfilePage() {
   }
 
   const photo = member.photoUrl || member.user.image;
-  const activeRoles = member.committeeRoles.filter((r) => r.committee.isCurrent);
-  const pastRoles = member.committeeRoles.filter((r) => !r.committee.isCurrent);
+  const activeRoles = member.committeeRoles.filter(
+    (r) => r.committee.isCurrent && !r.endedAt
+  );
+  const pastRoles = member.committeeRoles.filter(
+    (r) => !r.committee.isCurrent || r.endedAt
+  );
 
   return (
     <div className="space-y-6">
@@ -137,8 +149,8 @@ export default function MemberProfilePage() {
         </CardBody>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
+      <Grid preset="split">
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle>Personal information</CardTitle>
           </CardHeader>
@@ -163,7 +175,7 @@ export default function MemberProfilePage() {
           </CardBody>
         </Card>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Departments</CardTitle>
@@ -205,7 +217,7 @@ export default function MemberProfilePage() {
             </CardBody>
           </Card>
         </div>
-      </div>
+      </Grid>
 
       {editing && (
         <EditProfileModal
@@ -240,12 +252,12 @@ function CommitteeSection({
             key={r.id}
             className="flex items-center justify-between gap-3 rounded-xl bg-black/[0.03] px-3.5 py-2.5 dark:bg-white/5"
           >
-            <div className="flex items-center gap-2.5">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300">
                 <Icon name="role" size={14} />
               </span>
-              <div>
-                <p className="text-[13.5px] font-semibold text-ink dark:text-gray-100">
+              <div className="min-w-0">
+                <p className="truncate text-[13.5px] font-semibold text-ink dark:text-gray-100">
                   {r.role.name}
                 </p>
                 <p className="text-[12px] text-sub dark:text-gray-400">{r.committee.year}</p>
@@ -315,7 +327,7 @@ function EditProfileModal({
             </p>
           </div>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <Grid preset="fields">
           <Field label="Phone">
             <Input
               value={form.phone}
@@ -330,7 +342,7 @@ function EditProfileModal({
               onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
             />
           </Field>
-        </div>
+        </Grid>
         <Field label="Address">
           <Input
             value={form.address}

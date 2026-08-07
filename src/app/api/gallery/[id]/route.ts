@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { galleryAlbumSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { deleteR2Object } from "@/lib/r2";
 import { ZodError } from "zod";
 
 export async function PATCH(
@@ -83,8 +84,21 @@ export async function DELETE(
       return NextResponse.json({ error: "Album not found" }, { status: 404 });
     }
 
+    // Collect object keys before the cascade so we can clean up R2 storage.
+    const itemKeys = await prisma.galleryItem.findMany({
+      where: { albumId: id },
+      select: { r2Key: true },
+    });
+
     // Items cascade on album delete (schema onDelete: Cascade).
     await prisma.galleryAlbum.delete({ where: { id } });
+
+    // Best-effort object cleanup after the DB rows are gone.
+    try {
+      await Promise.all(itemKeys.map((i) => deleteR2Object(i.r2Key)));
+    } catch (r2Error) {
+      console.error("[Gallery Album DELETE] Failed to delete R2 objects:", r2Error);
+    }
 
     await logAudit({
       actorId: auth.userId,

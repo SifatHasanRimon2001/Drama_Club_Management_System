@@ -13,6 +13,7 @@ import { Modal, ConfirmDialog } from "@/components/ui/modal";
 import { Pagination as Pager } from "@/components/ui/pagination";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 interface ContactMessage {
   id: string;
@@ -58,6 +59,9 @@ export default function ContactMessagesPage() {
     return () => clearTimeout(timer);
   }, [load]);
 
+  // Live: new contact form submissions arrive in real time.
+  useRealtimeRefresh(["ContactSubmission"], load);
+
   const setHandled = async (m: ContactMessage, handled: boolean) => {
     setBusy(true);
     try {
@@ -101,6 +105,7 @@ export default function ContactMessagesPage() {
       </div>
 
       <Segmented<Filter>
+        scrollable
         value={filter}
         onChange={(v) => {
           setFilter(v);
@@ -141,11 +146,11 @@ export default function ContactMessagesPage() {
                       {m.name}
                     </p>
                     {m.handledAt ? (
-                      <span className="shrink-0 rounded-full bg-green-500/10 px-2 py-0.5 text-[11px] font-semibold text-green-600 dark:text-green-400">
+                      <span className="shrink-0 rounded-full bg-green/12 px-2 py-0.5 text-[11px] font-semibold text-green dark:bg-green/20 dark:text-green-300">
                         Handled
                       </span>
                     ) : (
-                      <span className="shrink-0 rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                      <span className="shrink-0 rounded-full bg-orange/12 px-2 py-0.5 text-[11px] font-semibold text-orange dark:bg-orange/20 dark:text-orange-400">
                         Open
                       </span>
                     )}

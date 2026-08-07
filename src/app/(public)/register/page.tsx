@@ -5,6 +5,7 @@ import { useState } from "react";
 import { apiPost } from "@/lib/client/api";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/input";
+import { Grid } from "@/components/ui/layout";
 import { Icon } from "@/components/icons";
 
 export default function RegisterPage() {
@@ -38,7 +39,7 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center px-4">
+      <div className="flex min-h-[70dvh] flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-white/80 p-8 text-center shadow-pop backdrop-blur-2xl dark:bg-[#1c1c1e]/90 dark:border-white/10">
           <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-green/12 text-[#248a3d] dark:text-green-400">
             <Icon name="check" size={26} />
@@ -52,7 +53,7 @@ export default function RegisterPage() {
           </p>
           <Link
             href="/login"
-            className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-accent text-[15px] font-medium text-white transition hover:bg-accent-hover"
+            className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-accent text-[15px] font-medium text-white transition hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Go to Sign In
           </Link>
@@ -63,21 +64,12 @@ export default function RegisterPage() {
 
   return (
     <div
-      className="flex min-h-dvh flex-col items-center justify-center px-4 py-16"
+      className="flex min-h-[80dvh] flex-col items-center justify-center px-4 py-12"
       style={{
         background:
           "radial-gradient(900px 450px at 80% -10%, rgba(175,82,222,0.12), transparent 60%), radial-gradient(700px 400px at 10% 110%, rgba(0,113,227,0.1), transparent 55%)",
       }}
     >
-      <Link href="/" className="mb-8 flex items-center gap-2.5">
-        <span className="flex size-9 items-center justify-center rounded-xl bg-accent text-white shadow-[0_4px_14px_rgba(0,113,227,0.35)]">
-          <Icon name="sparkles" size={17} />
-        </span>
-        <span className="text-[17px] font-bold tracking-tight text-ink dark:text-gray-100">
-          Drama Club
-        </span>
-      </Link>
-
       <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-white/80 p-8 shadow-pop backdrop-blur-2xl dark:bg-[#1c1c1e]/90 dark:border-white/10">
         <h1 className="text-[24px] font-bold tracking-tight text-ink dark:text-gray-100">
           Create your account
@@ -93,17 +85,20 @@ export default function RegisterPage() {
           <Field label="Email" error={errors.email}>
             <Input type="email" placeholder="you@university.edu" value={form.email} onChange={(e) => set("email", e.target.value)} />
           </Field>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <Grid preset="fields">
             <Field label="Password" error={errors.password}>
               <Input type="password" placeholder="••••••••" value={form.password} onChange={(e) => set("password", e.target.value)} />
             </Field>
             <Field label="Confirm" error={errors.confirm}>
               <Input type="password" placeholder="••••••••" value={form.confirm} onChange={(e) => set("confirm", e.target.value)} />
             </Field>
-          </div>
+          </Grid>
 
           {errors.form && (
-            <p className="flex items-center gap-2 rounded-xl bg-red/10 px-3.5 py-2.5 text-[13px] font-medium text-red">
+            <p
+              role="alert"
+              className="flex items-center gap-2 rounded-xl bg-red/10 px-3.5 py-2.5 text-[13px] font-medium text-red"
+            >
               <Icon name="warn" size={14} className="shrink-0" />
               {errors.form}
             </p>

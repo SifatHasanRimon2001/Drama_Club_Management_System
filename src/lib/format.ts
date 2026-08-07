@@ -77,23 +77,27 @@ export const TASK_STATUSES = ["TODO", "IN_PROGRESS", "DONE"] as const;
 export const UPDATE_CATEGORIES = ["ANNOUNCEMENT", "NOTICE", "ACHIEVEMENT", "PRODUCTION", "RECRUITMENT", "EVENT"] as const;
 export const ALBUM_CATEGORIES = ["PRODUCTIONS", "WORKSHOPS", "BEHIND_THE_SCENES", "FESTIVALS", "REHEARSALS", "CLUB_LIFE"] as const;
 
-export const EVENT_TYPE_ICONS: Record<string, string> = {
+const EVENT_TYPE_ICONS_LITERAL = {
   WORKSHOP: "note",
   REHEARSAL: "clock",
   PERFORMANCE: "star",
   AUDITION: "music",
   FESTIVAL: "trophy",
   TRAINING: "doc",
-};
+} as const satisfies Record<(typeof EVENT_TYPES)[number], string>;
 
-export const EVENT_TYPE_TONES: Record<string, string> = {
+export const EVENT_TYPE_ICONS: Record<string, string> = EVENT_TYPE_ICONS_LITERAL;
+
+const EVENT_TYPE_TONES_LITERAL = {
   WORKSHOP: "blue",
   REHEARSAL: "teal",
   PERFORMANCE: "purple",
   AUDITION: "pink",
   FESTIVAL: "orange",
   TRAINING: "indigo",
-};
+} as const satisfies Record<(typeof EVENT_TYPES)[number], string>;
+
+export const EVENT_TYPE_TONES: Record<string, string> = EVENT_TYPE_TONES_LITERAL;
 
 export function membershipStatusLabel(s: string): string {
   const map: Record<string, string> = {

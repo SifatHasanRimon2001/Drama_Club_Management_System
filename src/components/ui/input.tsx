@@ -1,6 +1,16 @@
 "use client";
 
-import { forwardRef, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import {
+  cloneElement,
+  forwardRef,
+  isValidElement,
+  useId,
+  type InputHTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+  type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
+} from "react";
 import { cn } from "@/lib/cn";
 
 const baseField =
@@ -43,6 +53,19 @@ export const Select = forwardRef<
 ));
 Select.displayName = "Select";
 
+const CONTROL_NAMES = new Set(["Input", "Select", "Textarea"]);
+
+function isFormControl(node: ReactNode): node is ReactElement {
+  if (!isValidElement(node)) return false;
+  if (typeof node.type === "string") {
+    return ["input", "select", "textarea"].includes(node.type);
+  }
+  const type = node.type as { displayName?: string };
+  return typeof type === "function" || typeof type === "object"
+    ? CONTROL_NAMES.has(type.displayName ?? "")
+    : false;
+}
+
 export function Field({
   label,
   htmlFor,
@@ -60,19 +83,35 @@ export function Field({
   children: ReactNode;
   className?: string;
 }) {
+  const autoId = useId();
+  const controlId = htmlFor ?? autoId;
+  const errorId = `${controlId}-error`;
+  const hintId = `${controlId}-hint`;
+
+  const control = isFormControl(children)
+    ? cloneElement(children as ReactElement<Record<string, unknown>>, {
+        id: controlId,
+        ...(error ? { "aria-invalid": true, "aria-describedby": errorId } : hint ? { "aria-describedby": hintId } : {}),
+      })
+    : children;
+
   return (
     <div className={cn("space-y-1.5", className)}>
       {label && (
-        <label htmlFor={htmlFor} className="block text-[13px] font-medium text-sub dark:text-gray-400">
+        <label htmlFor={controlId} className="block text-[13px] font-medium text-sub dark:text-gray-400">
           {label}
           {optional && <span className="ml-1 text-[12px] font-normal text-faint">(optional)</span>}
         </label>
       )}
-      {children}
+      {control}
       {error ? (
-        <p className="text-[13px] text-red">{error}</p>
+        <p id={errorId} role="alert" className="text-[13px] text-red">
+          {error}
+        </p>
       ) : hint ? (
-        <p className="text-[13px] text-faint">{hint}</p>
+        <p id={hintId} className="text-[13px] text-faint">
+          {hint}
+        </p>
       ) : null}
     </div>
   );
@@ -80,11 +119,12 @@ export function Field({
 
 export function SearchInput({
   className,
+  "aria-label": ariaLabel = "Search",
   ...props
 }: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div className={cn("relative", className)}>
-      <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-faint">
+      <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-faint" aria-hidden="true">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
@@ -92,6 +132,7 @@ export function SearchInput({
       </span>
       <input
         type="search"
+        aria-label={ariaLabel}
         className={cn(baseField, "pl-10 rounded-full", className)}
         {...props}
       />

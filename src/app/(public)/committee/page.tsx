@@ -5,6 +5,7 @@ import { Icon } from "@/components/icons";
 import { Avatar } from "@/components/ui/avatar";
 import { Card, CardBody } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
+import { Container, Grid } from "@/components/ui/layout";
 
 export const metadata = { title: "Committee" };
 
@@ -13,13 +14,13 @@ export default async function CommitteePage() {
 
   if (!committee) {
     return (
-      <div className="mx-auto max-w-3xl px-4 pb-24 pt-28 sm:px-6">
+      <Container size="form" className="pb-24 pt-28">
         <EmptyState
           icon="trophy"
           title="No active committee yet"
           message="The current committee will be announced soon."
         />
-      </div>
+      </Container>
     );
   }
 
@@ -34,7 +35,7 @@ export default async function CommitteePage() {
   const entries = [...roles.entries()].sort((a, b) => b[1].length - a[1].length);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 sm:px-6">
+    <Container size="page" className="pb-24 pt-28">
       <div className="max-w-3xl">
         <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">
           Leadership
@@ -71,7 +72,7 @@ export default async function CommitteePage() {
                 <span className="h-5 w-1 rounded-full bg-accent" />
                 {roleName}
               </h2>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <Grid preset="stats" className="mt-5">
                 {members.map((mr) => (
                   <Card key={mr.id}>
                     <CardBody className="flex flex-col items-center px-5 py-7 text-center">
@@ -85,7 +86,7 @@ export default async function CommitteePage() {
                     </CardBody>
                   </Card>
                 ))}
-              </div>
+              </Grid>
             </section>
           ))}
         </div>
@@ -100,7 +101,7 @@ export default async function CommitteePage() {
             {committee.departments.map((d) => (
               <span
                 key={d.id}
-                className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-4 py-2 text-[13.5px] font-medium text-ink shadow-card dark:bg-[#1c1c1e] dark:border-white/10 dark:text-gray-200"
+                className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3.5 py-1.5 text-[13px] font-medium text-ink shadow-card dark:bg-[#1c1c1e] dark:border-white/10 dark:text-gray-200"
               >
                 <Icon name="folder" size={14} className="text-purple" />
                 {d.name}
@@ -109,6 +110,6 @@ export default async function CommitteePage() {
           </div>
         </div>
       )}
-    </div>
+    </Container>
   );
 }

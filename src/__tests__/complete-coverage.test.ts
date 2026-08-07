@@ -1546,9 +1546,10 @@ describe("Complete Backend Coverage", () => {
         mockRequest(`/api/members/${member.id}`, { method: "PATCH", body: { status: "SUSPENDED" } }),
         { params: Promise.resolve({ id: member.id }) }
       );
+      // Stale-JWT guard: a suspended member loses API access immediately,
+      // even though their session token has not expired yet.
       const res = await MEMBER_GET(mockRequest(`/api/members/${member.id}`), { params: Promise.resolve({ id: member.id }) });
-      const data = await res.json();
-      expect(data.status).toBe("SUSPENDED");
+      expect(res.status).toBe(403);
     });
 
     it("Committee creation archives old current committee", async () => {

@@ -5,6 +5,8 @@ import { formatDate, formatDateTime } from "@/lib/format";
 import { Icon } from "@/components/icons";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusPill } from "@/components/ui/badge";
+import { Container, Grid } from "@/components/ui/layout";
+import { cn } from "@/lib/cn";
 
 export const metadata = { title: "Home" };
 
@@ -30,12 +32,13 @@ export default async function HomePage() {
               "radial-gradient(1200px 500px at 50% -10%, rgba(0,113,227,0.14), transparent 60%), radial-gradient(800px 400px at 85% 0%, rgba(175,82,222,0.1), transparent 55%)",
           }}
         />
-        <div className="relative mx-auto flex min-h-[72dvh] max-w-6xl flex-col items-center justify-center px-4 pt-20 pb-16 text-center sm:px-6">
-          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-white/70 px-4 py-1.5 text-[13px] font-medium text-sub backdrop-blur dark:bg-white/10 dark:text-gray-300">
-            <Icon name="sparkles" size={14} className="text-accent" />
+        <Container size="page" className="relative flex min-h-[72dvh] flex-col items-center justify-center pt-20 pb-16 text-center">
+          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-white/70 px-4 py-2 text-[13px] font-medium text-sub backdrop-blur dark:bg-white/10 dark:text-gray-300">
+            <Icon name="sparkles" size={14} className="text-accent" aria-hidden="true" />
             {about?.activeMemberCount != null && (
               <span>
-                {about.activeMemberCount} active members · {about.departmentCount} departments
+                {about.activeMemberCount} active members
+                {about.departmentCount != null ? ` · ${about.departmentCount} departments` : ""}
               </span>
             )}
           </span>
@@ -61,18 +64,18 @@ export default async function HomePage() {
               Our Productions
             </Link>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* ---------- Committee ---------- */}
       {home?.committee ? (
-        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <Container size="page" className="py-16">
           <SectionHeader
             eyebrow="Current Committee"
             title={`Committee ${home.committee.year}`}
             link={{ href: "/committee", label: "View full committee" }}
           />
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Grid preset="stats" className="mt-8 lg:grid-cols-4">
             {home.committee.memberRoles.slice(0, 8).map((mr) => (
               <div
                 key={mr.id}
@@ -92,19 +95,19 @@ export default async function HomePage() {
                 Committee roles will be announced soon.
               </p>
             )}
-          </div>
-        </section>
+          </Grid>
+        </Container>
       ) : null}
 
       {/* ---------- Latest updates ---------- */}
       {home?.recentUpdates && home.recentUpdates.length > 0 ? (
-        <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <Container size="page" className="py-8">
           <SectionHeader
             eyebrow="Latest News"
             title="Club Updates"
             link={{ href: "/updates", label: "All updates" }}
           />
-          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Grid preset="cards" className="mt-8">
             {home.recentUpdates.slice(0, 6).map((u) => (
               <Link
                 key={u.id}
@@ -118,19 +121,18 @@ export default async function HomePage() {
                 <h3 className="mt-3 line-clamp-2 text-[16.5px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-gray-100">
                   {u.title}
                 </h3>
-                <div
-                  className="rich-text mt-2 line-clamp-3 text-[13.5px] text-sub dark:text-gray-400"
-                  dangerouslySetInnerHTML={{ __html: u.bodyRichText }}
-                />
+                <p className="mt-2 line-clamp-3 text-[13.5px] leading-relaxed text-sub dark:text-gray-400">
+                  {stripHtml(u.bodyRichText)}
+                </p>
               </Link>
             ))}
-          </div>
-        </section>
+          </Grid>
+        </Container>
       ) : null}
 
       {/* ---------- Upcoming events ---------- */}
       {home?.upcomingEvents && home.upcomingEvents.length > 0 ? (
-        <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <Container size="page" className="py-8">
           <SectionHeader
             eyebrow="Mark Your Calendar"
             title="Upcoming Events"
@@ -173,18 +175,18 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
-        </section>
+        </Container>
       ) : null}
 
       {/* ---------- Departments ---------- */}
       {home?.departments && home.departments.length > 0 ? (
-        <section className="mx-auto max-w-6xl px-4 py-8 pb-20 sm:px-6">
+        <Container size="page" className="py-8 pb-20">
           <SectionHeader
             eyebrow="Behind Every Curtain"
             title="Our Departments"
             link={{ href: "/departments", label: "All departments" }}
           />
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Grid preset="cards" className="mt-8">
             {home.departments.map((d) => (
               <Link
                 key={d.id}
@@ -217,12 +219,12 @@ export default async function HomePage() {
                 </div>
               </Link>
             ))}
-          </div>
-        </section>
+          </Grid>
+        </Container>
       ) : null}
 
       {/* ---------- CTA ---------- */}
-      <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+      <Container size="page" className="pb-24">
         <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-accent to-indigo px-6 py-14 text-center shadow-pop sm:px-12">
           <div
             className="pointer-events-none absolute inset-0"
@@ -254,7 +256,7 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
-      </section>
+      </Container>
     </div>
   );
 }
@@ -269,22 +271,32 @@ function SectionHeader({
   link: { href: string; label: string };
 }) {
   return (
-    <div className="flex items-end justify-between gap-4">
+    <div className="flex flex-wrap items-end justify-between gap-3">
       <div>
         <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">
           {eyebrow}
         </p>
-        <h2 className="mt-1.5 text-[26px] font-bold tracking-tight text-ink sm:text-[30px] dark:text-gray-100">
+        <h2 className="mt-1.5 text-[24px] font-bold tracking-tight text-ink sm:text-[30px] dark:text-gray-100">
           {title}
         </h2>
       </div>
       <Link
         href={link.href}
-        className="hidden shrink-0 items-center gap-1 text-[14px] font-medium text-accent transition hover:underline sm:inline-flex"
+        className={cn(
+          "inline-flex shrink-0 items-center gap-1 rounded-full border border-line bg-white/70 px-4 py-2 text-[14px] font-medium text-accent backdrop-blur transition hover:bg-white dark:bg-white/10 dark:hover:bg-white/20",
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        )}
       >
         {link.label}
         <Icon name="chevron-right" size={14} />
       </Link>
     </div>
   );
+}
+
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }

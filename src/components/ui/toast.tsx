@@ -54,19 +54,24 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed inset-x-0 top-4 z-[100] flex flex-col items-center gap-2 px-4">
+      <div
+        className="pointer-events-none fixed inset-x-0 top-4 z-[100] flex flex-col items-center gap-2 px-4"
+        aria-live="polite"
+        aria-atomic="false"
+      >
         {toasts.map((t) => {
           const s = kindStyles[t.kind];
           return (
             <div
               key={t.id}
+              role={t.kind === "error" ? "alert" : "status"}
               className={cn(
                 "animate-toast pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl bg-white/90 p-3.5 shadow-pop ring-1 backdrop-blur-xl",
                 s.ring,
                 "dark:bg-[#2c2c2e]/90"
               )}
             >
-              <span className={cn("mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full", s.iconColor)}>
+              <span className={cn("mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full", s.iconColor)} aria-hidden="true">
                 <Icon name={s.icon} size={13} />
               </span>
               <div className="min-w-0 flex-1">
@@ -77,8 +82,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               </div>
               <button
                 onClick={() => dismiss(t.id)}
-                className="rounded-full p-1 text-faint hover:bg-black/5 dark:hover:bg-white/10"
-                aria-label="Dismiss"
+                className="rounded-full p-1.5 text-faint hover:bg-black/5 dark:hover:bg-white/10"
+                aria-label={`Dismiss notification: ${t.title}`}
               >
                 <Icon name="close" size={14} />
               </button>

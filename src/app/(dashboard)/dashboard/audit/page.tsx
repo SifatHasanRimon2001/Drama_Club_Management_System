@@ -5,12 +5,13 @@ import { apiGet } from "@/lib/client/api";
 import { cn } from "@/lib/cn";
 import { formatDateTime } from "@/lib/format";
 import { Icon, type IconName } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/input";
+import { Button, ActionIcon } from "@/components/ui/button";
+import { Field, Select } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Pagination } from "@/components/ui/pagination";
 import { Avatar } from "@/components/ui/avatar";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 interface AuditEntry {
   id: string;
@@ -41,9 +42,9 @@ const ENTITY_META: Record<string, { icon: IconName; tone: string }> = {
   ClubUpdate: { icon: "note", tone: "bg-indigo/12 text-indigo dark:bg-indigo/20 dark:text-indigo-300" },
   GalleryAlbum: { icon: "gallery", tone: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300" },
   GalleryItem: { icon: "image", tone: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300" },
-  SystemSetting: { icon: "settings", tone: "bg-gray-500/10 text-sub dark:text-gray-300" },
-  Notification: { icon: "bell", tone: "bg-yellow/12 text-yellow-600 dark:bg-yellow/20 dark:text-yellow-300" },
-  ContactSubmission: { icon: "mail", tone: "bg-gray-500/10 text-sub dark:text-gray-300" },
+  SystemSetting: { icon: "settings", tone: "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-gray-300" },
+  Notification: { icon: "bell", tone: "bg-yellow/12 text-yellow dark:bg-yellow/20 dark:text-yellow-300" },
+  ContactSubmission: { icon: "mail", tone: "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-gray-300" },
 };
 
 const ACTION_TONES: Record<string, string> = {
@@ -107,6 +108,9 @@ export default function AuditPage() {
     return () => clearTimeout(timer);
   }, [load]);
 
+  // Live: stream new admin actions into the trail in real time.
+  useRealtimeRefresh(["AuditLog"], load, 500);
+
   const filtered = useMemo(
     () => action !== "" || entityType !== "",
     [action, entityType]
@@ -142,26 +146,24 @@ export default function AuditPage() {
       <Card className="p-4">
         <div className="flex flex-wrap items-end gap-3">
           <div className="w-full sm:w-64">
-            <label className="mb-1.5 block text-[13px] font-medium text-sub dark:text-gray-400">
-              Action
-            </label>
-            <Select value={action} onChange={(v) => { setAction(v); setPage(1); }}>
-              <option value="">All actions</option>
-              {actions.map((a) => (
-                <option key={a} value={a}>{a}</option>
-              ))}
-            </Select>
+            <Field label="Action">
+              <Select value={action} onChange={(v) => { setAction(v); setPage(1); }}>
+                <option value="">All actions</option>
+                {actions.map((a) => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </Select>
+            </Field>
           </div>
           <div className="w-full sm:w-64">
-            <label className="mb-1.5 block text-[13px] font-medium text-sub dark:text-gray-400">
-              Entity type
-            </label>
-            <Select value={entityType} onChange={(v) => { setEntityType(v); setPage(1); }}>
-              <option value="">All entities</option>
-              {entityTypes.map((t) => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </Select>
+            <Field label="Entity type">
+              <Select value={entityType} onChange={(v) => { setEntityType(v); setPage(1); }}>
+                <option value="">All entities</option>
+                {entityTypes.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </Select>
+            </Field>
           </div>
           {filtered && (
             <Button variant="subtle" size="sm" onClick={clearFilters} icon="close">
@@ -182,12 +184,9 @@ export default function AuditPage() {
           title="Couldn't load the audit log"
           message={error}
           action={
-            <button
-              onClick={() => void load()}
-              className="rounded-full bg-accent px-5 py-2.5 text-[14px] font-medium text-white hover:bg-accent-hover"
-            >
+            <Button variant="secondary" onClick={() => void load()}>
               Try again
-            </button>
+            </Button>
           }
         />
       ) : entries.length === 0 ? (
@@ -239,17 +238,13 @@ export default function AuditPage() {
                     </div>
                   </div>
                   {hasMetadata && (
-                    <button
+                    <ActionIcon
+                      icon="chevron-down"
+                      label={isOpen ? "Hide details" : "Show details"}
+                      size="xs"
                       onClick={() => toggleExpand(entry.id)}
-                      aria-label={isOpen ? "Hide details" : "Show details"}
-                      className="flex size-8 shrink-0 items-center justify-center rounded-full text-faint transition hover:bg-black/[0.05] dark:hover:bg-white/10"
-                    >
-                      <Icon
-                        name="chevron-down"
-                        size={16}
-                        className={cn("transition-transform duration-200", isOpen && "rotate-180")}
-                      />
-                    </button>
+                      className={cn("transition-transform duration-200", isOpen && "rotate-180")}
+                    />
                   )}
                 </div>
                 {hasMetadata && isOpen && (

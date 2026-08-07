@@ -43,14 +43,23 @@ describe("buildDynamicSchema (extracted registration form schema builder)", () =
     expect(schema.safeParse({ dept: "anything" }).success).toBe(true);
   });
 
-  it("requires checkboxes to be booleans and ignores required on them", () => {
+  it("requires checkboxes to be booleans; a required checkbox must be true", () => {
     const schema = buildDynamicSchema({
       fields: [{ name: "agree", type: "checkbox", required: true }],
     });
     expect(schema.safeParse({ agree: true }).success).toBe(true);
-    expect(schema.safeParse({ agree: false }).success).toBe(true); // required is a no-op for booleans
+    expect(schema.safeParse({ agree: false }).success).toBe(false); // explicit false cannot pass for a required checkbox
     expect(schema.safeParse({ agree: "yes" }).success).toBe(false);
-    expect(schema.safeParse({}).success).toBe(false); // still required by the shape
+    expect(schema.safeParse({}).success).toBe(false);
+  });
+
+  it("allows false for an optional checkbox", () => {
+    const schema = buildDynamicSchema({
+      fields: [{ name: "updates", type: "checkbox", required: false }],
+    });
+    expect(schema.safeParse({}).success).toBe(true);
+    expect(schema.safeParse({ updates: false }).success).toBe(true);
+    expect(schema.safeParse({ updates: true }).success).toBe(true);
   });
 
   it("rejects an empty string for a number field (no silent 0)", () => {

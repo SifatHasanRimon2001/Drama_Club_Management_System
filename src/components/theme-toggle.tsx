@@ -27,6 +27,7 @@ export function ThemeToggle({ className, asSegmented }: ThemeToggleProps) {
         {ORDER.map((t) => (
           <button
             key={t}
+            type="button"
             onClick={() => setTheme(t)}
             aria-pressed={theme === t}
             className={cn(
@@ -51,10 +52,12 @@ export function ThemeToggle({ className, asSegmented }: ThemeToggleProps) {
 
   return (
     <button
+      type="button"
       onClick={() => setTheme(next())}
       className={cn(
-        "flex size-9 items-center justify-center rounded-full text-sub transition hover:bg-black/[0.05] hover:text-ink active:scale-95",
+        "flex size-10 items-center justify-center rounded-full text-sub transition hover:bg-black/[0.05] hover:text-ink active:scale-95",
         "dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-gray-100",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         className
       )}
       aria-label={`Appearance: ${theme}. Click to switch theme.`}

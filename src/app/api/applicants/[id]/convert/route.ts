@@ -57,12 +57,16 @@ export async function POST(
     const tempPassword = password || generateTempPassword();
     const passwordHash = await bcrypt.hash(tempPassword, 12);
 
+    // Normalize to lowercase so the created account matches the register
+    // flow and login is case-insensitive.
+    const email = applicant.email.toLowerCase().trim();
+
     const result = await prisma.$transaction(async (tx) => {
       // Create user
       const user = await tx.user.create({
         data: {
           name: applicant.name,
-          email: applicant.email,
+          email,
           passwordHash,
         },
       });
@@ -114,7 +118,7 @@ export async function POST(
       entityId: id,
       metadata: {
         name: applicant.name,
-        email: applicant.email,
+        email,
         memberId: result.member.id,
         memberCode: result.memberCode,
       },

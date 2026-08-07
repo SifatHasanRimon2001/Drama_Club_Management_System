@@ -3,14 +3,16 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
+import Underline from "@tiptap/extension-underline";
 import { useCallback, useEffect, useState } from "react";
 import { apiDelete, apiGet, apiPatch, apiPost } from "@/lib/client/api";
 import type { ClubUpdate, Pagination } from "@/lib/types";
 import { UPDATE_CATEGORIES, updateCategoryLabel, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { Icon, type IconName } from "@/components/icons";
-import { Button } from "@/components/ui/button";
+import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/input";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +21,7 @@ import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Modal } from "@/components/ui/modal";
 import { ConfirmDialog } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 const CATEGORY_TONES: Record<string, string> = {
   ANNOUNCEMENT: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
@@ -58,6 +61,9 @@ export default function UpdatesPage() {
     const timer = setTimeout(() => void load(), 0);
     return () => clearTimeout(timer);
   }, [load]);
+
+  // Live: refresh published updates in real time.
+  useRealtimeRefresh(["ClubUpdate"], load);
 
   const remove = async () => {
     if (!deleting) return;
@@ -118,20 +124,14 @@ export default function UpdatesPage() {
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
-                  <button
-                    onClick={() => setEditing(u)}
-                    className="flex size-8 items-center justify-center rounded-full text-faint transition hover:bg-black/[0.05] hover:text-ink dark:hover:bg-white/10 dark:hover:text-gray-200"
-                    aria-label="Edit update"
-                  >
-                    <Icon name="edit" size={14} />
-                  </button>
-                  <button
+                  <ActionIcon icon="edit" label="Edit update" size="xs" onClick={() => setEditing(u)} />
+                  <ActionIcon
+                    icon="trash"
+                    label="Delete update"
+                    size="xs"
+                    className="hover:bg-red/10 hover:text-red dark:hover:bg-red/20 dark:hover:text-red-300"
                     onClick={() => setDeleting(u)}
-                    className="flex size-8 items-center justify-center rounded-full text-faint transition hover:bg-red/10 hover:text-red"
-                    aria-label="Delete update"
-                  >
-                    <Icon name="trash" size={14} />
-                  </button>
+                  />
                 </div>
               </CardHeader>
               <CardBody>
@@ -213,15 +213,17 @@ function ToolbarButton({
       type="button"
       title={label}
       aria-label={label}
+      aria-pressed={active === undefined ? undefined : active}
       onClick={onClick}
       className={cn(
-        "flex size-8 items-center justify-center rounded-lg transition",
+        "flex size-9 items-center justify-center rounded-lg transition",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         active
           ? "bg-accent text-white"
           : "text-sub hover:bg-black/[0.05] hover:text-ink dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-gray-100"
       )}
     >
-      <Icon name={icon} size={15} />
+      <Icon name={icon} size={16} />
     </button>
   );
 }
@@ -229,9 +231,11 @@ function ToolbarButton({
 function RichEditor({ value, onChange }: { value: string; onChange: (html: string) => void }) {
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ link: { openOnClick: false } }),
+      StarterKit,
+      Link.configure({ openOnClick: false }),
       Image,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
+      Underline,
     ],
     content: value,
     editorProps: {
@@ -253,18 +257,24 @@ function RichEditor({ value, onChange }: { value: string; onChange: (html: strin
 
   return (
     <div className="overflow-hidden rounded-2xl border border-line bg-white dark:border-white/10 dark:bg-[#1c1c1e]">
-      <div className="flex flex-wrap items-center gap-0.5 border-b border-line px-2 py-1.5 dark:border-white/10">
-        <ToolbarButton icon="edit" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} label="Bold" />
-        <ToolbarButton icon="note" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} label="Italic" />
-        <ToolbarButton icon="note" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} label="Underline" />
-        <span className="mx-1 h-5 w-px bg-line dark:bg-white/10" />
+      <div
+        role="toolbar"
+        aria-label="Formatting tools"
+        className="flex flex-wrap items-center gap-0.5 border-b border-line px-2 py-1.5 dark:border-white/10"
+      >
+        <ToolbarButton icon="bold" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} label="Bold" />
+        <ToolbarButton icon="italic" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} label="Italic" />
+        <ToolbarButton icon="underline" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} label="Underline" />
+        <span className="mx-1 h-5 w-px bg-line dark:bg-white/10" aria-hidden="true" />
         <ToolbarButton icon="list" active={editor.isActive("bulletList")} onClick={() => editor.chain().focus().toggleBulletList().run()} label="Bullet list" />
         <ToolbarButton icon="list" active={editor.isActive("orderedList")} onClick={() => editor.chain().focus().toggleOrderedList().run()} label="Numbered list" />
-        <span className="mx-1 h-5 w-px bg-line dark:bg-white/10" />
-        <ToolbarButton icon="chevron-left" onClick={() => editor.chain().focus().toggleBlockquote().run()} label="Quote" />
+        <span className="mx-1 h-5 w-px bg-line dark:bg-white/10" aria-hidden="true" />
+        <ToolbarButton icon="quote" active={editor.isActive("blockquote")} onClick={() => editor.chain().focus().toggleBlockquote().run()} label="Quote" />
         <ToolbarButton icon="code" active={editor.isActive("codeBlock")} onClick={() => editor.chain().focus().toggleCodeBlock().run()} label="Code block" />
-        <ToolbarButton icon="arrow-right" active={editor.isActive({ textAlign: "left" })} onClick={() => editor.chain().focus().setTextAlign("left").run()} label="Align left" />
-        <ToolbarButton icon="arrow-right" active={editor.isActive({ textAlign: "center" })} onClick={() => editor.chain().focus().setTextAlign("center").run()} label="Align center" />
+        <span className="mx-1 h-5 w-px bg-line dark:bg-white/10" aria-hidden="true" />
+        <ToolbarButton icon="align-left" active={editor.isActive({ textAlign: "left" })} onClick={() => editor.chain().focus().setTextAlign("left").run()} label="Align left" />
+        <ToolbarButton icon="align-center" active={editor.isActive({ textAlign: "center" })} onClick={() => editor.chain().focus().setTextAlign("center").run()} label="Align center" />
+        <ToolbarButton icon="align-right" active={editor.isActive({ textAlign: "right" })} onClick={() => editor.chain().focus().setTextAlign("right").run()} label="Align right" />
       </div>
       <EditorContent editor={editor} />
     </div>

@@ -1,6 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import { cn } from "@/lib/cn";
 
 export function Dropdown({
@@ -18,6 +27,7 @@ export function Dropdown({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const menuId = useId();
 
   const toggle = () => setOpen((o) => !o);
 
@@ -39,13 +49,24 @@ export function Dropdown({
     };
   }, [open]);
 
+  // Inject accessible state onto whichever element the trigger renders.
+  const triggerNode = trigger(open, toggle);
+  const labelledTrigger = isValidElement(triggerNode)
+    ? cloneElement(triggerNode as ReactElement<Record<string, unknown>>, {
+        "aria-expanded": open,
+        "aria-haspopup": "menu",
+        "aria-controls": open ? menuId : undefined,
+      })
+    : triggerNode;
+
   return (
     <div ref={ref} className="relative">
-      {trigger(open, toggle)}
+      {labelledTrigger}
       {open && (
         <div
+          id={menuId}
           className={cn(
-            "animate-sheet absolute top-full z-[60] mt-2 origin-top overflow-hidden rounded-2xl border border-line bg-white/95 shadow-pop backdrop-blur-2xl",
+            "animate-sheet absolute top-full z-[60] mt-2 max-w-[calc(100vw-2rem)] origin-top overflow-hidden rounded-2xl border border-line bg-white/95 shadow-pop backdrop-blur-2xl",
             "dark:bg-[#2c2c2e]/95 dark:border-white/10",
             align === "end" ? "right-0" : "left-0",
             width,

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
-import { registrationWindowSchema } from "@/lib/validations";
+import { registrationWindowSchema, registrationFormSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { auth } from "@/lib/auth";
 import { can } from "@/lib/permissions";
@@ -71,6 +71,17 @@ export async function PATCH(
     if (parsed.error) return parsed.error;
     const body = parsed.body;
     const data = registrationWindowSchema.partial().parse(body);
+
+    // Validate the custom form definition when it is part of the update
+    if (data.formSchema) {
+      const formResult = registrationFormSchema.safeParse(data.formSchema);
+      if (!formResult.success) {
+        return NextResponse.json(
+          { error: formResult.error.issues[0]?.message ?? "Invalid formSchema" },
+          { status: 400 }
+        );
+      }
+    }
 
     const existing = await prisma.registrationWindow.findUnique({ where: { id } });
     if (!existing) {

@@ -2,16 +2,18 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { apiDelete, apiGet, apiPatch, apiPost } from "@/lib/client/api";
+import { useSession } from "@/lib/client/session";
 import type { Permission, Role } from "@/lib/types";
 import { cn } from "@/lib/cn";
 import { Icon, type IconName } from "@/components/icons";
-import { Button } from "@/components/ui/button";
+import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/input";
+import { Grid } from "@/components/ui/layout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Modal, ConfirmDialog } from "@/components/ui/modal";
-import { Toggle } from "@/components/ui/toggle";
 import { useToast } from "@/components/ui/toast";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 const PERMISSION_GROUPS: { key: string; label: string; icon: string; tone: string }[] = [
   { key: "member", label: "Member management", icon: "members", tone: "text-blue" },
@@ -24,14 +26,17 @@ const PERMISSION_GROUPS: { key: string; label: string; icon: string; tone: strin
   { key: "event", label: "Events", icon: "calendar", tone: "text-blue" },
   { key: "update", label: "Updates", icon: "note", tone: "text-indigo" },
   { key: "gallery", label: "Gallery", icon: "gallery", tone: "text-teal" },
-  { key: "settings", label: "Settings", icon: "settings", tone: "text-gray-500" },
-  { key: "audit", label: "Audit log", icon: "list", tone: "text-gray-500" },
+  { key: "settings", label: "Settings", icon: "settings", tone: "text-gray" },
+  { key: "audit", label: "Audit log", icon: "list", tone: "text-gray" },
 ];
 
 export default function RolesPage() {
+  const { user } = useSession();
+  const canManage = user?.permissions?.includes("permissions.manage") ?? false;
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<Role | null>(null);
   const [deleting, setDeleting] = useState<Role | null>(null);
@@ -46,6 +51,9 @@ export default function RolesPage() {
       ]);
       setRoles(r);
       setPermissions(p);
+      setLoadError("");
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Failed to load roles");
     } finally {
       setLoading(false);
     }
@@ -55,6 +63,9 @@ export default function RolesPage() {
     const timer = setTimeout(() => void load(), 0);
     return () => clearTimeout(timer);
   }, [load]);
+
+  // Live: refresh role/permission changes in real time.
+  useRealtimeRefresh(["Role", "Permission", "RolePermission"], load);
 
   const grouped = permissions.reduce<Record<string, Permission[]>>((acc, p) => {
     const group = p.key.split(".")[0];
@@ -86,13 +97,26 @@ export default function RolesPage() {
             Define roles and the permissions they grant
           </p>
         </div>
-        <Button icon="plus" onClick={() => setCreating(true)}>
-          New Role
-        </Button>
+        {canManage && (
+          <Button icon="plus" onClick={() => setCreating(true)}>
+            New Role
+          </Button>
+        )}
       </div>
 
       {loading ? (
         <PageLoader label="Loading roles…" />
+      ) : loadError ? (
+        <EmptyState
+          icon="warn"
+          title="Couldn't load roles"
+          message={loadError}
+          action={
+            <Button variant="secondary" onClick={() => void load()}>
+              Try again
+            </Button>
+          }
+        />
       ) : roles.length === 0 ? (
         <EmptyState
           icon="shield"
@@ -100,9 +124,9 @@ export default function RolesPage() {
           message="Create your first role to define what members can do."
         />
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <Grid preset="cards">
           {roles.map((r) => (
-            <Card key={r.id}>
+            <Card key={r.id} className="min-w-0">
               <CardHeader className="flex-row items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="flex size-9 items-center justify-center rounded-xl bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300">
@@ -116,16 +140,20 @@ export default function RolesPage() {
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
-                  <Button size="sm" variant="secondary" onClick={() => setEditing(r)}>
-                    Edit
-                  </Button>
-                  <button
-                    onClick={() => setDeleting(r)}
-                    className="flex size-8 items-center justify-center rounded-full text-faint transition hover:bg-red/10 hover:text-red"
-                    aria-label="Delete role"
-                  >
-                    <Icon name="trash" size={14} />
-                  </button>
+                  {canManage && (
+                    <>
+                      <Button size="sm" variant="secondary" onClick={() => setEditing(r)}>
+                        Edit
+                      </Button>
+                      <ActionIcon
+                        icon="trash"
+                        label={`Delete ${r.name}`}
+                        size="xs"
+                        className="hover:bg-red/10 hover:text-red dark:hover:bg-red/20 dark:hover:text-red-300"
+                        onClick={() => setDeleting(r)}
+                      />
+                    </>
+                  )}
                 </div>
               </CardHeader>
               <CardBody className="flex flex-wrap gap-1.5">
@@ -144,7 +172,7 @@ export default function RolesPage() {
               </CardBody>
             </Card>
           ))}
-        </div>
+        </Grid>
       )}
 
       {(creating || editing) && (
@@ -238,7 +266,7 @@ function RoleModal({
   return (
     <Modal open onClose={onClose} title={role ? `Edit ${role.name}` : "New Role"} size="lg">
       <form onSubmit={save} className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <Grid preset="fields">
           <Field label="Role name">
             <Input
               autoFocus
@@ -254,7 +282,7 @@ function RoleModal({
               placeholder="What does this role do?"
             />
           </Field>
-        </div>
+        </Grid>
 
         <div>
           <p className="mb-2 text-[13px] font-medium text-sub dark:text-gray-400">
@@ -275,31 +303,52 @@ function RoleModal({
                     {meta?.label ?? group}
                   </p>
                   <div className="grid gap-1.5 sm:grid-cols-2">
-                    {perms.map((p) => (
-                      <button
-                        type="button"
-                        key={p.id}
-                        onClick={() => toggle(p.id)}
-                        className={cn(
-                          "flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition",
-                          selected.has(p.id)
-                            ? "border-accent/50 bg-accent-soft/40 dark:bg-accent/15"
-                            : "border-line hover:border-line-strong dark:border-white/10"
-                        )}
-                      >
-                        <span className="min-w-0">
-                          <span className="block truncate text-[12.5px] font-medium text-ink dark:text-gray-200">
-                            {p.key}
-                          </span>
-                          {p.description && (
-                            <span className="block truncate text-[11px] text-faint">
-                              {p.description}
-                            </span>
+                    {perms.map((p) => {
+                      const active = selected.has(p.id);
+                      return (
+                        <label
+                          key={p.id}
+                          className={cn(
+                            "flex cursor-pointer items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition",
+                            "focus-within:border-accent/70 focus-within:ring-2 focus-within:ring-accent/20",
+                            active
+                              ? "border-accent/50 bg-accent-soft/40 dark:bg-accent/15"
+                              : "border-line hover:border-line-strong dark:border-white/10"
                           )}
-                        </span>
-                        <Toggle checked={selected.has(p.id)} onChange={() => toggle(p.id)} />
-                      </button>
-                    ))}
+                        >
+                          <span className="min-w-0">
+                            <span className="block truncate text-[12.5px] font-medium text-ink dark:text-gray-200">
+                              {p.key}
+                            </span>
+                            {p.description && (
+                              <span className="block truncate text-[11px] text-faint dark:text-gray-500">
+                                {p.description}
+                              </span>
+                            )}
+                          </span>
+                          <input
+                            type="checkbox"
+                            className="peer sr-only"
+                            checked={active}
+                            onChange={() => toggle(p.id)}
+                          />
+                          <span
+                            aria-hidden="true"
+                            className={cn(
+                              "relative inline-flex h-[31px] w-[51px] shrink-0 items-center rounded-full transition-colors duration-200",
+                              active ? "bg-green" : "bg-black/20 dark:bg-white/25"
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "absolute size-[27px] rounded-full bg-white shadow-[0_2px_5px_rgba(0,0,0,0.3)] transition-all duration-200",
+                                active ? "left-[22px]" : "left-[2px]"
+                              )}
+                            />
+                          </span>
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               );

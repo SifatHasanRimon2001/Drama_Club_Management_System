@@ -5,6 +5,7 @@ import { apiPost } from "@/lib/client/api";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea, Select } from "@/components/ui/input";
+import { Grid } from "@/components/ui/layout";
 import { Toggle } from "@/components/ui/toggle";
 import { Icon } from "@/components/icons";
 import type { FormFieldSpec } from "@/lib/types";
@@ -75,7 +76,8 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
     return Object.keys(e).length === 0;
   };
 
-  const submit = async () => {
+  const submit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
     try {
@@ -90,7 +92,20 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
         portfolioUrl: form.portfolioUrl || undefined,
         customResponses:
           fields.length > 0
-            ? Object.fromEntries(fields.map((f) => [f.name, form[f.name] ?? undefined]))
+            ? Object.fromEntries(
+                fields.map((f) => {
+                  const v = form[f.name];
+                  // Omit untouched optional fields entirely: the server-side
+                  // dynamic schema rejects "" for select/number fields even
+                  // when optional (z.enum/z.coerce.number).
+                  const empty =
+                    v === undefined ||
+                    v === null ||
+                    v === "" ||
+                    (f.type === "number" && v === "");
+                  return [f.name, empty ? undefined : v];
+                })
+              )
             : undefined,
       });
       setDone(true);
@@ -119,8 +134,12 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
   }
 
   return (
-    <div className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-[#1c1c1e] dark:border-white/10">
-      <div className="grid gap-5 sm:grid-cols-2">
+    <form
+      onSubmit={submit}
+      noValidate
+      className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-[#1c1c1e] dark:border-white/10"
+    >
+      <Grid preset="split">
         <Field label="Full name" error={errors.name}>
           <Input
             placeholder="Jane Doe"
@@ -150,7 +169,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
             onChange={(e) => set("studentId", e.target.value)}
           />
         </Field>
-      </div>
+      </Grid>
 
       <div className="mt-5">
         <p className="text-[13px] font-medium text-sub dark:text-gray-400">
@@ -164,10 +183,11 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
                 key={d.id}
                 type="button"
                 onClick={() => togglePref(d.id)}
+                aria-pressed={active}
                 className={`rounded-full border px-3.5 py-1.5 text-[13.5px] font-medium transition ${
                   active
                     ? "border-accent bg-accent text-white"
-                    : "border-line bg-white text-sub hover:border-accent/50 dark:bg-[#2c2c2e] dark:text-gray-300"
+                    : "border-line bg-white text-sub hover:border-accent/50 dark:bg-white/10 dark:text-gray-300"
                 }`}
               >
                 {d.name}
@@ -175,7 +195,11 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
             );
           })}
         </div>
-        {errors.prefs && <p className="mt-1.5 text-[13px] text-red">{errors.prefs}</p>}
+        {errors.prefs && (
+          <p role="alert" className="mt-1.5 text-[13px] text-red">
+            {errors.prefs}
+          </p>
+        )}
       </div>
 
       <div className="mt-5">
@@ -194,8 +218,9 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
           ))}
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <input
-            className="w-full max-w-[220px] rounded-xl border border-line bg-white px-3.5 py-2 text-[14px] text-ink placeholder:text-faint focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/15 dark:bg-[#1c1c1e] dark:text-gray-100"
+          <Input
+            aria-label="Add a skill"
+            className="w-full max-w-[220px]"
             placeholder="Type a skill…"
             value={skillInput}
             onChange={(e) => setSkillInput(e.target.value)}
@@ -226,7 +251,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
         </div>
       </div>
 
-      <div className="mt-5 grid gap-5 sm:grid-cols-2">
+      <Grid preset="split" className="mt-5">
         <Field label="Acting experience">
           <Textarea
             rows={3}
@@ -242,20 +267,20 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
             onChange={(e) => set("portfolioUrl", e.target.value)}
           />
         </Field>
-      </div>
+      </Grid>
 
       {fields.length > 0 && (
         <div className="mt-6 border-t border-line pt-6 dark:border-white/10">
           <p className="text-[13px] font-semibold uppercase tracking-wider text-faint">
             Additional questions
           </p>
-          <div className="mt-4 grid gap-5 sm:grid-cols-2">
+          <Grid preset="split" className="mt-4">
             {fields.map((f) => {
               const val = form[f.name];
               const error = errors[f.name];
               if (f.type === "textarea") {
                 return (
-                  <Field key={f.name} label={f.label || f.name} error={error} className={f.type === "textarea" ? "sm:col-span-2" : ""}>
+                  <Field key={f.name} label={f.label || f.name} error={error} className="sm:col-span-2">
                     <Textarea
                       rows={3}
                       value={val === undefined ? "" : String(val)}
@@ -311,18 +336,18 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
                 </Field>
               );
             })}
-          </div>
+          </Grid>
         </div>
       )}
 
       <div className="mt-7 flex flex-col items-center gap-3">
-        <Button onClick={submit} loading={submitting} size="lg" full>
+        <Button type="submit" loading={submitting} size="lg" full>
           Submit Application
         </Button>
-        <p className="text-[12.5px] text-faint">
+        <p className="text-[12.5px] text-faint dark:text-gray-500">
           You&apos;ll receive a confirmation email once reviewed. Max 1 application per window.
         </p>
       </div>
-    </div>
+    </form>
   );
 }

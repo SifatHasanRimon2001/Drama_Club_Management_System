@@ -58,13 +58,17 @@ export function buildDynamicSchema(
         fieldSchema = z.string();
     }
 
-    if (field.required && !(fieldSchema instanceof z.ZodBoolean)) {
-      // Only apply .min() for string schemas; number schemas use .min() with different semantics
-      if (fieldSchema instanceof z.ZodString) {
+    if (field.required) {
+      if (fieldSchema instanceof z.ZodBoolean) {
+        // A required checkbox must be checked: JSON can't distinguish a
+        // missing boolean from `false`, so require the literal value true.
+        fieldSchema = z.literal(true);
+      } else if (fieldSchema instanceof z.ZodString) {
+        // Only apply .min() for string schemas; number schemas use .min() with different semantics
         fieldSchema = fieldSchema.min(1, `${field.label || field.name} is required`);
       }
       // For ZodNumber with required, just ensure it's not optional (it's already required by default)
-    } else if (!field.required) {
+    } else {
       fieldSchema = fieldSchema.optional();
     }
 

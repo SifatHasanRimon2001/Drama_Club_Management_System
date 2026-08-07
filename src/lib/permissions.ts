@@ -64,6 +64,12 @@ export async function can(
 
   const member = user.memberProfile;
 
+  // Suspended/inactive members hold no API permissions even while a stale
+  // JWT session remains valid (login blocks them, but tokens live up to 24h).
+  if (member.status === "SUSPENDED" || member.status === "INACTIVE") {
+    return false;
+  }
+
   // Get current committee roles
   const currentRoles = member.committeeRoles.filter(
     (cr) => cr.committee?.isCurrent
@@ -121,6 +127,14 @@ export async function getUserPermissions(userId: string): Promise<string[]> {
 
   if (!user?.memberProfile) return [];
 
+  // Stale-JWT guard: suspended/inactive members keep no permissions.
+  if (
+    user.memberProfile.status === "SUSPENDED" ||
+    user.memberProfile.status === "INACTIVE"
+  ) {
+    return [];
+  }
+
   const currentRoles = user.memberProfile.committeeRoles.filter(
     (cr) => cr.committee.isCurrent
   );
@@ -168,6 +182,14 @@ export async function canAny(
   });
 
   if (!user?.memberProfile) return false;
+
+  // Stale-JWT guard: suspended/inactive members hold no permissions.
+  if (
+    user.memberProfile.status === "SUSPENDED" ||
+    user.memberProfile.status === "INACTIVE"
+  ) {
+    return false;
+  }
 
   const permSet = new Set<string>();
   for (const cr of user.memberProfile.committeeRoles) {

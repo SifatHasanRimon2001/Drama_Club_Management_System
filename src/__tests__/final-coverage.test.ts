@@ -357,13 +357,26 @@ describe("Final Coverage Gaps", () => {
       expect(data.status).toBe("INACTIVE");
     });
 
-    it("MemberStatus: INACTIVE -> ACTIVE via PATCH", async () => {
+    it("MemberStatus: INACTIVE member cannot self-reactivate via stale session", async () => {
       const { member } = await setupAdmin();
       await prisma.member.update({ where: { id: member.id }, data: { status: "INACTIVE" } });
       const { PATCH: MEMBER_PATCH } = await import("@/app/api/members/[id]/route");
       const res = await MEMBER_PATCH(
         mockRequest(`/api/members/${member.id}`, { method: "PATCH", body: { status: "ACTIVE" } }),
         { params: Promise.resolve({ id: member.id }) }
+      );
+      // Inactive members hold no permissions even with a still-valid session.
+      expect(res.status).toBe(403);
+    });
+
+    it("MemberStatus: ACTIVE admin can reactivate an INACTIVE member", async () => {
+      const { user } = await setupAdmin();
+      const target = await createTestMember({ status: "INACTIVE" });
+      mockAuth(user.user.id, ["member.edit"]);
+      const { PATCH: MEMBER_PATCH } = await import("@/app/api/members/[id]/route");
+      const res = await MEMBER_PATCH(
+        mockRequest(`/api/members/${target.id}`, { method: "PATCH", body: { status: "ACTIVE" } }),
+        { params: Promise.resolve({ id: target.id }) }
       );
       expect(res.status).toBe(200);
       const data = await res.json();

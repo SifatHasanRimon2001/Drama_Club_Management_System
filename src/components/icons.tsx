@@ -63,7 +63,16 @@ export type IconName =
   | "play"
   | "heart"
   | "phone"
-  | "code";
+  | "code"
+  | "bold"
+  | "italic"
+  | "underline"
+  | "quote"
+  | "align-left"
+  | "align-center"
+  | "align-right"
+  | "arrow-left"
+  | "arrow-down";
 
 const paths: Record<IconName, React.ReactNode> = {
   bell: (
@@ -386,6 +395,44 @@ const paths: Record<IconName, React.ReactNode> = {
       <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />
     </>
   ),
+  bold: (
+    <>
+      <path d="M6 4h8a4 4 0 0 1 0 8H6zM6 12h9a4 4 0 0 1 0 8H6z" />
+    </>
+  ),
+  italic: (
+    <>
+      <path d="M19 4h-9M14 20H5M15 4 9 20" />
+    </>
+  ),
+  underline: (
+    <>
+      <path d="M6 4v6a6 6 0 0 0 12 0V4M4 20h16" />
+    </>
+  ),
+  quote: (
+    <>
+      <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
+      <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" />
+    </>
+  ),
+  "align-left": (
+    <>
+      <path d="M17 10H3M21 6H3M21 14H3M17 18H3" />
+    </>
+  ),
+  "align-center": (
+    <>
+      <path d="M18 10H6M21 6H3M21 14H3M18 18H6" />
+    </>
+  ),
+  "align-right": (
+    <>
+      <path d="M21 10H7M21 6H3M21 14H3M21 18H7" />
+    </>
+  ),
+  "arrow-left": <path d="M19 12H5M12 19l-7-7 7-7" />,
+  "arrow-down": <path d="M12 5v14M19 12l-7 7-7-7" />,
 };
 
 interface IconProps extends SVGProps<SVGSVGElement> {

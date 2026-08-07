@@ -13,8 +13,9 @@ import {
 } from "@/lib/format";
 import { allowedTransitionsFor } from "@/lib/registration-window-transitions";
 import { Icon, type IconName } from "@/components/icons";
-import { Button } from "@/components/ui/button";
+import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Input, SearchInput, Select, Textarea } from "@/components/ui/input";
+import { Grid, Toolbar } from "@/components/ui/layout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, StatusPill } from "@/components/ui/badge";
 import { Segmented } from "@/components/ui/segmented";
@@ -23,6 +24,7 @@ import { Pagination as Pager } from "@/components/ui/pagination";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Toggle } from "@/components/ui/toggle";
 import { useToast } from "@/components/ui/toast";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 type Tab = "windows" | "applications";
 
@@ -103,6 +105,9 @@ function WindowsTab() {
     const timer = setTimeout(() => void load(), 0);
     return () => clearTimeout(timer);
   }, [load]);
+
+  // Live: refresh windows when their status/fields change in real time.
+  useRealtimeRefresh(["RegistrationWindow"], load);
 
   const changeStatus = async (w: RegistrationWindow, status: string) => {
     try {
@@ -332,7 +337,7 @@ function WindowModal({
             placeholder="https://…"
           />
         </Field>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <Grid preset="fields">
           <Field label="Start">
             <Input
               type="datetime-local"
@@ -347,7 +352,7 @@ function WindowModal({
               onChange={(e) => setForm({ ...form, endDate: e.target.value })}
             />
           </Field>
-        </div>
+        </Grid>
         <Field label="Status">
           <Select value={form.status} onChange={(v) => setForm({ ...form, status: v })}>
             {(window
@@ -426,14 +431,13 @@ function WindowModal({
                     onChange={(v) => updateField(i, { required: v })}
                     label="Required"
                   />
-                  <button
-                    type="button"
+                  <ActionIcon
+                    icon="trash"
+                    label="Remove field"
+                    size="xs"
+                    className="hover:bg-red/10 hover:text-red dark:hover:bg-red/20 dark:hover:text-red-300"
                     onClick={() => removeField(i)}
-                    className="flex size-8 items-center justify-center rounded-full text-faint transition hover:bg-red/10 hover:text-red"
-                    aria-label="Remove field"
-                  >
-                    <Icon name="trash" size={14} />
-                  </button>
+                  />
                 </div>
               </div>
             ))}
@@ -504,6 +508,9 @@ function ApplicationsTab({ canCreate }: { canCreate: boolean }) {
     return () => clearTimeout(t);
   }, [load, search]);
 
+  // Live: refresh the applicant queue as submissions/conversions arrive.
+  useRealtimeRefresh(["RegistrationWindow", "Applicant", "Member"], load);
+
   const decide = async (id: string, decision: string) => {
     try {
       await apiPatch(`/api/applicants/${id}`, { status: decision });
@@ -549,7 +556,7 @@ function ApplicationsTab({ canCreate }: { canCreate: boolean }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
+      <Toolbar>
         <div className="min-w-[220px] flex-1">
           <SearchInput
             value={search}
@@ -576,7 +583,7 @@ function ApplicationsTab({ canCreate }: { canCreate: boolean }) {
         <Button variant="secondary" icon="download" onClick={exportCsv} disabled={!windowId}>
           Export
         </Button>
-      </div>
+      </Toolbar>
 
       {loading && !rows.length ? (
         <PageLoader label="Loading applications…" />
@@ -745,7 +752,7 @@ function ApplicantModal({
           )}
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <Grid preset="split">
           {fields.map((f) => (
             <div key={f.label} className="flex items-center gap-3 rounded-2xl border border-line px-3.5 py-3 dark:border-white/10">
               <Icon name={f.icon} size={15} className="shrink-0 text-faint" />
@@ -755,7 +762,7 @@ function ApplicantModal({
               </div>
             </div>
           ))}
-        </div>
+        </Grid>
 
         <div className="rounded-2xl border border-line p-4 dark:border-white/10">
           <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-faint">

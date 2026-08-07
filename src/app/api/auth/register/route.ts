@@ -26,8 +26,12 @@ export async function POST(request: NextRequest) {
     const body = parsed.body;
     const data = registerSchema.parse(body);
 
+    // Normalize to lowercase so "A@x.com" and "a@x.com" are the same account
+    // (Postgres UNIQUE on User.email is case-sensitive).
+    const email = data.email.toLowerCase().trim();
+
     const existing = await prisma.user.findUnique({
-      where: { email: data.email },
+      where: { email },
     });
 
     if (existing) {
@@ -42,7 +46,7 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.create({
       data: {
         name: data.name,
-        email: data.email,
+        email,
         passwordHash,
       },
     });
@@ -52,7 +56,7 @@ export async function POST(request: NextRequest) {
       action: "user.registered",
       entityType: "User",
       entityId: user.id,
-      metadata: { email: data.email },
+      metadata: { email },
     });
 
     return NextResponse.json(

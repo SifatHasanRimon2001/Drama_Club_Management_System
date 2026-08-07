@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { publicFetch } from "@/lib/server";
 import type { Event } from "@/lib/types";
-import { formatDateTime, EVENT_TYPES } from "@/lib/format";
+import { formatDateTime, formatTime, EVENT_TYPES } from "@/lib/format";
 import { Icon } from "@/components/icons";
 import { StatusPill } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
+import { Container, Toolbar } from "@/components/ui/layout";
+import { cn } from "@/lib/cn";
 
 export const metadata = { title: "Events" };
 
@@ -28,7 +31,7 @@ export default async function EventsPage({
   const events = await publicFetch<Event[]>(`/api/public/events?${qs}`);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 sm:px-6">
+    <Container size="page" className="pb-24 pt-28">
       <div className="max-w-3xl">
         <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">
           What&apos;s happening
@@ -40,42 +43,51 @@ export default async function EventsPage({
         </p>
       </div>
 
-      <div className="mt-10 flex flex-wrap items-center gap-2.5">
-        <a
+      <Toolbar className="mt-10">
+        <Link
           href={`/events?upcoming=true${type ? `&type=${type}` : ""}`}
-          className={`rounded-full px-4 py-1.5 text-[13.5px] font-medium transition ${
+          aria-current={upcoming ? "true" : undefined}
+          className={cn(
+            "inline-flex items-center rounded-full px-4 py-2 text-[13.5px] font-medium transition",
+            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
             upcoming
               ? "bg-accent text-white"
-              : "border border-line bg-card text-sub hover:text-ink dark:bg-[#1c1c1e]"
-          }`}
+              : "border border-line bg-card text-sub hover:text-ink dark:bg-[#1c1c1e] dark:text-gray-400 dark:hover:text-gray-200"
+          )}
         >
           Upcoming
-        </a>
-        <a
+        </Link>
+        <Link
           href={`/events?upcoming=false${type ? `&type=${type}` : ""}`}
-          className={`rounded-full px-4 py-1.5 text-[13.5px] font-medium transition ${
+          aria-current={!upcoming ? "true" : undefined}
+          className={cn(
+            "inline-flex items-center rounded-full px-4 py-2 text-[13.5px] font-medium transition",
+            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
             !upcoming
               ? "bg-accent text-white"
-              : "border border-line bg-card text-sub hover:text-ink dark:bg-[#1c1c1e]"
-          }`}
+              : "border border-line bg-card text-sub hover:text-ink dark:bg-[#1c1c1e] dark:text-gray-400 dark:hover:text-gray-200"
+          )}
         >
           All
-        </a>
-        <span className="mx-1 h-5 w-px bg-line" />
+        </Link>
+        <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
         {EVENT_TYPES.map((t) => (
-          <a
+          <Link
             key={t}
             href={`/events?upcoming=${upcoming}&type=${type === t ? "" : t}`}
-            className={`rounded-full px-3.5 py-1.5 text-[13px] font-medium transition ${
+            aria-current={type === t ? "true" : undefined}
+            className={cn(
+              "inline-flex items-center rounded-full px-3.5 py-2 text-[13px] font-medium transition",
+              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
               type === t
                 ? "bg-black/[0.08] text-ink dark:bg-white/20 dark:text-white"
                 : "text-sub hover:text-ink dark:text-gray-400 dark:hover:text-gray-200"
-            }`}
+            )}
           >
             {t.charAt(0) + t.slice(1).toLowerCase()}
-          </a>
+          </Link>
         ))}
-      </div>
+      </Toolbar>
 
       {!events || events.length === 0 ? (
         <div className="mt-14">
@@ -98,7 +110,7 @@ export default async function EventsPage({
                 key={e.id}
                 className="group flex flex-wrap items-center gap-4 rounded-apple border border-line bg-card p-4 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover sm:px-6 dark:bg-[#1c1c1e] dark:border-white/10"
               >
-                <a href={`/events/${e.id}`} className="flex w-full flex-wrap items-center gap-4">
+                <Link href={`/events/${e.id}`} className="flex w-full flex-wrap items-center gap-4">
                 <div className="flex w-16 shrink-0 flex-col items-center rounded-2xl bg-accent-soft py-2.5 text-accent">
                   <span className="text-[22px] font-bold leading-none">{date.getDate()}</span>
                   <span className="mt-1 text-[11px] font-semibold uppercase tracking-wide">
@@ -116,7 +128,7 @@ export default async function EventsPage({
                     <span className="inline-flex items-center gap-1">
                       <Icon name="clock" size={13} />
                       {formatDateTime(e.startAt)}
-                      {e.endAt && ` – ${formatDateTime(e.endAt).split(", ").slice(1).join(", ")}`}
+                      {e.endAt && ` – ${formatTime(e.endAt)}`}
                     </span>
                     {e.location && (
                       <span className="inline-flex items-center gap-1">
@@ -133,15 +145,15 @@ export default async function EventsPage({
                   </p>
                 </div>
                 <StatusPill value={e.status} />
-                <span className="text-faint transition group-hover:text-accent">
+                <span className="text-faint transition group-hover:text-accent" aria-hidden="true">
                   <Icon name="chevron-right" size={16} />
                 </span>
-                </a>
+                </Link>
               </article>
             );
           })}
         </div>
       )}
-    </div>
+    </Container>
   );
 }

@@ -3,6 +3,7 @@ import type { PublicAbout, PublicDepartment, RegistrationWindow } from "@/lib/ty
 import { formatDate } from "@/lib/format";
 import { Icon } from "@/components/icons";
 import { ApplyForm } from "@/components/apply-form";
+import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
 
 export const metadata = { title: "Recruitment" };
@@ -57,10 +58,9 @@ export default async function RecruitmentPage() {
                     <h2 className="flex items-center gap-2.5 text-[22px] font-bold tracking-tight text-ink dark:text-gray-100">
                       {w.title}
                       {isOpen && (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-green/12 px-2.5 py-1 text-[12px] font-semibold text-[#248a3d] dark:text-green-400">
-                          <span className="size-1.5 animate-pulse-dot rounded-full bg-current" />
+                        <Badge tone="green" dot className="align-middle">
                           Open now
-                        </span>
+                        </Badge>
                       )}
                     </h2>
                     <p className="mt-1.5 flex items-center gap-2 text-[13.5px] text-sub dark:text-gray-400">

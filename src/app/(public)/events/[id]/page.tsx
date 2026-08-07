@@ -1,14 +1,24 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { publicFetch } from "@/lib/server";
 import type { Event } from "@/lib/types";
-import { EVENT_TYPES, formatDateTime } from "@/lib/format";
+import { EVENT_TYPES, formatDateTime, formatTime } from "@/lib/format";
 import { Icon } from "@/components/icons";
 import { StatusPill } from "@/components/ui/badge";
-
-export const metadata = { title: "Event" };
+import { Container } from "@/components/ui/layout";
 
 export const revalidate = 30;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const event = await publicFetch<Event>(`/api/public/events/${id}`);
+  return { title: event?.title ? `${event.title}` : "Event" };
+}
 
 export default async function EventDetailPage({
   params,
@@ -26,13 +36,13 @@ export default async function EventDetailPage({
     <div className="mx-auto max-w-4xl px-4 pb-24 pt-28 sm:px-6">
       <Link
         href="/events"
-        className="inline-flex items-center gap-1.5 text-[14px] font-medium text-accent transition hover:underline"
+        className="inline-flex items-center gap-1.5 text-[13.5px] font-medium text-sub transition hover:text-ink dark:text-gray-400 dark:hover:text-gray-100"
       >
-        <Icon name="chevron-left" size={15} />
+        <Icon name="chevron-left" size={14} />
         All events
       </Link>
 
-      <div className="mt-6 rounded-[28px] border border-line bg-card p-6 shadow-card sm:p-10 dark:bg-[#1c1c1e] dark:border-white/10">
+      <div className="mt-6 rounded-apple border border-line bg-card p-6 shadow-card sm:p-10 dark:bg-[#1c1c1e] dark:border-white/10">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex w-20 shrink-0 flex-col items-center rounded-2xl bg-accent-soft py-3 text-accent">
             <span className="text-[28px] font-bold leading-none">{date.getDate()}</span>
@@ -54,7 +64,7 @@ export default async function EventDetailPage({
               <span className="inline-flex items-center gap-1.5">
                 <Icon name="clock" size={14} />
                 {formatDateTime(event.startAt)}
-                {event.endAt && ` – ${formatDateTime(event.endAt).split(", ").slice(1).join(", ")}`}
+                {event.endAt && ` – ${formatTime(event.endAt)}`}
               </span>
               {event.location && (
                 <span className="inline-flex items-center gap-1.5">
@@ -85,7 +95,7 @@ export default async function EventDetailPage({
         )}
 
         <div className="mt-8 flex flex-wrap gap-3 border-t border-line pt-6 dark:border-white/10">
-          {EVENT_TYPES.map((t) => (
+          {EVENT_TYPES.filter((t) => t !== event.type).map((t) => (
             <Link
               key={t}
               href={`/events?type=${t}`}

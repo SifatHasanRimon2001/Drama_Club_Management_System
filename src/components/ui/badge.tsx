@@ -1,7 +1,17 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-export type Tone = "blue" | "green" | "red" | "orange" | "yellow" | "purple" | "gray" | "teal" | "pink" | "indigo";
+export type Tone =
+  | "blue"
+  | "green"
+  | "red"
+  | "orange"
+  | "yellow"
+  | "purple"
+  | "gray"
+  | "teal"
+  | "pink"
+  | "indigo";
 
 const tones: Record<Tone, string> = {
   blue: "bg-blue/10 text-blue dark:text-blue-300",
@@ -32,15 +42,23 @@ export function Badge({
       )}
       {...props}
     >
-      {dot && <span className="size-1.5 rounded-full bg-current" />}
+      {dot && <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />}
       {children}
     </span>
   );
 }
 
-export function StatusPill({ value, children, ...rest }: { value: string; children?: ReactNode } & HTMLAttributes<HTMLSpanElement>) {
+export function StatusPill({
+  value,
+  children,
+  className,
+  ...rest
+}: { value: string; children?: ReactNode; className?: string } & Omit<
+  HTMLAttributes<HTMLSpanElement>,
+  "children"
+>) {
   return (
-    <Badge tone={toneFor(value)} {...rest}>
+    <Badge tone={toneFor(value)} className={className} {...rest}>
       {children ?? prettyLabel(value)}
     </Badge>
   );

@@ -8,8 +8,10 @@ import { timeAgo } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { Icon, type IconName } from "@/components/icons";
 import { Card, CardBody } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Pagination as Pager } from "@/components/ui/pagination";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 const ICONS: Record<string, IconName> = {
   PROMOTION: "trend",
@@ -36,9 +38,11 @@ export default function NotificationsPage() {
   const [unread, setUnread] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadError("");
     try {
       const params = new URLSearchParams();
       if (page > 1) params.set("page", String(page));
@@ -50,6 +54,9 @@ export default function NotificationsPage() {
       setRows(data.notifications);
       setUnread(data.unreadCount);
       setPagination(data.pagination);
+    } catch (e) {
+      setRows([]);
+      setLoadError(e instanceof Error ? e.message : "Failed to load notifications");
     } finally {
       setLoading(false);
     }
@@ -59,6 +66,9 @@ export default function NotificationsPage() {
     const timer = setTimeout(() => void load(), 0);
     return () => clearTimeout(timer);
   }, [load]);
+
+  // Live: new notifications appear without refreshing the page.
+  useRealtimeRefresh(["Notification"], load, 300);
 
   const open = async (n: NotificationItem) => {
     if (!n.readAt) {
@@ -83,7 +93,18 @@ export default function NotificationsPage() {
         </p>
       </div>
 
-      {loading && !rows.length ? (
+      {loadError ? (
+        <EmptyState
+          icon="warn"
+          title="Couldn't load notifications"
+          message={loadError}
+          action={
+            <Button variant="secondary" onClick={() => void load()}>
+              Try again
+            </Button>
+          }
+        />
+      ) : loading && !rows.length ? (
         <PageLoader label="Loading notifications…" />
       ) : rows.length === 0 ? (
         <EmptyState
@@ -121,7 +142,7 @@ export default function NotificationsPage() {
                   <p className="mt-0.5 text-[13px] leading-relaxed text-sub dark:text-gray-400">
                     {n.message}
                   </p>
-                  <p className="mt-1 text-[11.5px] text-faint">{timeAgo(n.createdAt)}</p>
+                  <p className="mt-1 text-[11.5px] text-faint dark:text-gray-500">{timeAgo(n.createdAt)}</p>
                 </div>
               </button>
             ))}

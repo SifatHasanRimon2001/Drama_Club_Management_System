@@ -404,7 +404,7 @@ describe("Registration Apply POST — deep coverage", () => {
       expect(res.status).toBe(400);
     });
 
-    it("accepts explicit false for a required checkbox field", async () => {
+    it("rejects explicit false for a required checkbox field", async () => {
       const rw = await createLiveWindow({
         formSchema: {
           fields: [{ name: "agree", type: "checkbox", required: true }],
@@ -422,7 +422,9 @@ describe("Registration Apply POST — deep coverage", () => {
         }),
         { params: Promise.resolve({ id: rw.id }) }
       );
-      expect(res.status).toBe(201);
+      // A required checkbox must be checked: JSON cannot distinguish a missing
+      // boolean from false, so the server requires the literal value true.
+      expect(res.status).toBe(400);
     });
 
     it("accepts an absent optional checkbox field", async () => {

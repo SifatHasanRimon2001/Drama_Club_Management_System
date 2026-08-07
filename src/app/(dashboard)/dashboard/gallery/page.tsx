@@ -10,9 +10,11 @@ import { cn } from "@/lib/cn";
 import { Icon, type IconName } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/input";
+import { Grid } from "@/components/ui/layout";
 import { Modal, ConfirmDialog } from "@/components/ui/modal";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 const CATEGORY_TONES: Record<string, string> = {
   PRODUCTIONS: "bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300",
@@ -63,6 +65,9 @@ export default function GalleryPage() {
     return () => clearTimeout(timer);
   }, [load]);
 
+  // Live: refresh albums when new media is uploaded by anyone.
+  useRealtimeRefresh(["GalleryAlbum", "GalleryItem"], load);
+
   const confirmDelete = async () => {
     if (!deleting) return;
     try {
@@ -103,7 +108,7 @@ export default function GalleryPage() {
           message="Create an album to start collecting photos and videos."
         />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <Grid preset="media">
           {albums.map((a) => (
             <div
               key={a.id}
@@ -162,7 +167,7 @@ export default function GalleryPage() {
               )}
             </div>
           ))}
-        </div>
+        </Grid>
       )}
 
       {(creating || editing) && (
@@ -450,7 +455,7 @@ function AlbumModal({
             message={canUpload ? "Upload the first photo or video." : "Nothing here yet."}
           />
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <Grid preset="media">
             {items.map((item) => {
               const src = r2Url(item.r2Key);
               const isVideo = item.type === "VIDEO";
@@ -478,7 +483,7 @@ function AlbumModal({
                       </span>
                     </div>
                   )}
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2.5 pt-8 opacity-0 transition group-hover:opacity-100">
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2.5 pt-8 opacity-100 transition group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
                     <p className="truncate text-[12px] font-medium text-white">
                       {item.caption || item.fileName}
                     </p>
@@ -487,7 +492,7 @@ function AlbumModal({
                   {canManage && (
                     <button
                       onClick={() => setDeleteItemId(item.id)}
-                      className="absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur transition group-hover:opacity-100 hover:bg-red"
+                      className="absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-black/50 text-white opacity-100 backdrop-blur transition hover:bg-red focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                       aria-label="Delete item"
                     >
                       <Icon name="trash" size={14} />
@@ -496,7 +501,7 @@ function AlbumModal({
                 </div>
               );
             })}
-          </div>
+          </Grid>
         )}
       </div>
 

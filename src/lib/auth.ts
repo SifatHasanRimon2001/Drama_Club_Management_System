@@ -57,27 +57,31 @@ export const authProviders = [
         return null;
       }
 
+      // Normalize email case so login is case-insensitive and matches the
+      // lowercase emails written by register/apply/convert.
+      const email = (credentials.email as string).trim().toLowerCase();
+
       // Brute-force protection: reject early once the account is throttled.
       // Same null response as a bad password, so attackers cannot distinguish.
-      if (isLoginThrottled(credentials.email as string)) {
+      if (isLoginThrottled(email)) {
         return null;
       }
 
       try {
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
+          where: { email },
           include: { memberProfile: { select: { status: true } } },
         });
 
         if (!user || !user.passwordHash) {
-          recordLoginFailure(credentials.email as string);
+          recordLoginFailure(email);
           return null;
         }
 
         // Block suspended/inactive members from logging in
         if (user.memberProfile?.status === "SUSPENDED" || user.memberProfile?.status === "INACTIVE") {
           console.warn("[Auth] Blocked login for suspended/inactive user:", user.email);
-          recordLoginFailure(credentials.email as string);
+          recordLoginFailure(email);
           return null;
         }
 
@@ -87,11 +91,11 @@ export const authProviders = [
         );
 
         if (!isValid) {
-          recordLoginFailure(credentials.email as string);
+          recordLoginFailure(email);
           return null;
         }
 
-        clearLoginFailures(credentials.email as string);
+        clearLoginFailures(email);
 
         return {
           id: user.id,

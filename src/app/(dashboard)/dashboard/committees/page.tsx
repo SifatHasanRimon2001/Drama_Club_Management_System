@@ -2,27 +2,36 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiDelete, apiGet, apiPost } from "@/lib/client/api";
+import { useSession } from "@/lib/client/session";
 import type { Committee, Member, Role } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { Icon } from "@/components/icons";
-import { Button } from "@/components/ui/button";
+import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/input";
+import { Grid } from "@/components/ui/layout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 export default function CommitteesPage() {
+  const { user } = useSession();
+  const canManage = user?.permissions?.includes("committee.manage") ?? false;
   const [committees, setCommittees] = useState<Committee[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [creating, setCreating] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       setCommittees(await apiGet<Committee[]>("/api/committees?all=true"));
+      setLoadError("");
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Failed to load committees");
     } finally {
       setLoading(false);
     }
@@ -32,6 +41,9 @@ export default function CommitteesPage() {
     const timer = setTimeout(() => void load(), 0);
     return () => clearTimeout(timer);
   }, [load]);
+
+  // Live: refresh committees as roles/members are assigned elsewhere.
+  useRealtimeRefresh(["Committee", "Role", "Member", "CommitteeMemberRole"], load);
 
   return (
     <div className="space-y-6">
@@ -44,13 +56,26 @@ export default function CommitteesPage() {
             Executive committees by year
           </p>
         </div>
-        <Button icon="plus" onClick={() => setCreating(true)}>
-          New Committee
-        </Button>
+        {canManage && (
+          <Button icon="plus" onClick={() => setCreating(true)}>
+            New Committee
+          </Button>
+        )}
       </div>
 
       {loading ? (
         <PageLoader label="Loading committees…" />
+      ) : loadError ? (
+        <EmptyState
+          icon="warn"
+          title="Couldn't load committees"
+          message={loadError}
+          action={
+            <Button variant="secondary" onClick={() => void load()}>
+              Try again
+            </Button>
+          }
+        />
       ) : committees.length === 0 ? (
         <EmptyState
           icon="trophy"
@@ -60,7 +85,12 @@ export default function CommitteesPage() {
       ) : (
         <div className="space-y-4">
           {committees.map((c) => (
-            <CommitteeCard key={c.id} committee={c} onChanged={() => void load()} />
+            <CommitteeCard
+              key={c.id}
+              committee={c}
+              canManage={canManage}
+              onChanged={() => void load()}
+            />
           ))}
         </div>
       )}
@@ -83,12 +113,15 @@ export default function CommitteesPage() {
 function CommitteeCard({
   committee,
   onChanged,
+  canManage,
 }: {
   committee: Committee;
   onChanged: () => void;
+  canManage: boolean;
 }) {
   const toast = useToast();
   const [assigning, setAssigning] = useState(false);
+  const [loadingOptions, setLoadingOptions] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [form, setForm] = useState({ memberId: "", roleId: "" });
@@ -100,7 +133,7 @@ function CommitteeCard({
   );
 
   const openAssign = async () => {
-    setAssigning(true);
+    setLoadingOptions(true);
     try {
       const [r, m] = await Promise.all([
         apiGet<Role[]>("/api/roles"),
@@ -108,8 +141,11 @@ function CommitteeCard({
       ]);
       setRoles(r);
       setMembers(m.members);
+      setAssigning(true);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to load options");
+    } finally {
+      setLoadingOptions(false);
     }
   };
 
@@ -173,9 +209,16 @@ function CommitteeCard({
             </p>
           </div>
         </div>
-        <Button size="sm" icon="plus" onClick={() => void openAssign()}>
-          Assign Role
-        </Button>
+        {canManage && (
+          <Button
+            size="sm"
+            icon="plus"
+            loading={loadingOptions}
+            onClick={() => void openAssign()}
+          >
+            Assign Role
+          </Button>
+        )}
       </CardHeader>
       <CardBody>
         {active.length === 0 ? (
@@ -183,11 +226,11 @@ function CommitteeCard({
             No officers assigned to this committee yet.
           </p>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <Grid preset="list">
             {active.map((mr) => (
               <div
                 key={mr.id}
-                className="flex items-center gap-3 rounded-2xl border border-line px-3.5 py-3 dark:border-white/10"
+                className="flex min-w-0 items-center gap-3 rounded-2xl border border-line px-3.5 py-3 dark:border-white/10"
               >
                 <Avatar name={mr.member.user.name} src={mr.member.user.image} size={38} />
                 <div className="min-w-0 flex-1">
@@ -198,16 +241,18 @@ function CommitteeCard({
                     {mr.role.name}
                   </p>
                 </div>
-                <button
-                  onClick={() => void removeRole(mr.id)}
-                  className="flex size-7 items-center justify-center rounded-full text-faint transition hover:bg-red/10 hover:text-red"
-                  aria-label="End role"
-                >
-                  <Icon name="close" size={13} />
-                </button>
+                {canManage && (
+                  <ActionIcon
+                    icon="close"
+                    label="End role"
+                    size="xs"
+                    className="hover:bg-red/10 hover:text-red dark:hover:bg-red/20 dark:hover:text-red-300"
+                    onClick={() => void removeRole(mr.id)}
+                  />
+                )}
               </div>
             ))}
-          </div>
+          </Grid>
         )}
 
         {assigning && (
@@ -303,7 +348,7 @@ function CreateCommitteeModal({
   return (
     <Modal open onClose={onClose} title="New Committee">
       <form onSubmit={save} className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <Grid preset="fields">
           <Field label="Year">
             <Input
               autoFocus
@@ -319,8 +364,8 @@ function CreateCommitteeModal({
               onChange={(e) => setForm({ ...form, startDate: e.target.value })}
             />
           </Field>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        </Grid>
+        <Grid preset="fields">
           <Field label="End date" optional>
             <Input
               type="date"
@@ -329,16 +374,15 @@ function CreateCommitteeModal({
             />
           </Field>
           <Field label="Mark as current">
-            <select
+            <Select
               value={form.isCurrent ? "yes" : "no"}
-              onChange={(e) => setForm({ ...form, isCurrent: e.target.value === "yes" })}
-              className="w-full appearance-none rounded-xl border border-line bg-white px-3.5 py-2.5 text-[15px] text-ink outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/15 dark:border-white/15 dark:bg-[#1c1c1e] dark:text-gray-100"
+              onChange={(v) => setForm({ ...form, isCurrent: v === "yes" })}
             >
               <option value="yes">Yes — archive previous</option>
               <option value="no">No — archive only</option>
-            </select>
+            </Select>
           </Field>
-        </div>
+        </Grid>
         <div className="flex gap-3 pt-1">
           <Button variant="ghost" full type="button" onClick={onClose}>
             Cancel

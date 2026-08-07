@@ -15,11 +15,13 @@ import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusPill } from "@/components/ui/badge";
 import { Segmented } from "@/components/ui/segmented";
-import { Modal } from "@/components/ui/modal";
-import { ConfirmDialog } from "@/components/ui/modal";
+import { Modal, ConfirmDialog } from "@/components/ui/modal";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Dropdown } from "@/components/ui/dropdown";
+import { ActionIcon } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
+import { Grid } from "@/components/ui/layout";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 type Tab = "overview" | "tasks" | "members";
 
@@ -39,6 +41,7 @@ export default function DepartmentDetailPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [allMembers, setAllMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [tab, setTab] = useState<Tab>("overview");
   const [taskModal, setTaskModal] = useState<{ open: boolean; task?: Task }>({ open: false });
   const [addMemberOpen, setAddMemberOpen] = useState(false);
@@ -55,17 +58,24 @@ export default function DepartmentDetailPage() {
       setDept(d);
       setTasks(t);
       setAllMembers(m.members);
+      setLoadError("");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to load department");
+      setLoadError(e instanceof Error ? e.message : "Failed to load department");
     } finally {
       setLoading(false);
     }
-  }, [id, toast]);
+  }, [id]);
 
   useEffect(() => {
     const timer = setTimeout(() => void load(), 0);
     return () => clearTimeout(timer);
   }, [load]);
+
+  // Live: keep tasks, members and department details fresh in real time.
+  useRealtimeRefresh(
+    ["Department", "Task", "Member", "MemberDepartment", "CommitteeMemberRole"],
+    load
+  );
 
   const memberIds = useMemo(
     () => new Set(dept?.members.map((md) => md.member.id) ?? []),
@@ -116,6 +126,19 @@ export default function DepartmentDetailPage() {
   };
 
   if (loading && !dept) return <PageLoader label="Loading department…" />;
+  if (loadError)
+    return (
+      <EmptyState
+        icon="warn"
+        title="Couldn't load this department"
+        message={loadError}
+        action={
+          <Button variant="secondary" onClick={() => void load()}>
+            Try again
+          </Button>
+        }
+      />
+    );
   if (!dept)
     return (
       <EmptyState
@@ -168,8 +191,8 @@ export default function DepartmentDetailPage() {
       />
 
       {tab === "overview" && (
-        <div className="grid gap-6 lg:grid-cols-3">
-          <Card className="lg:col-span-2">
+        <Grid preset="detail">
+          <Card className="min-w-0 lg:col-span-2">
             <CardHeader>
               <CardTitle>About</CardTitle>
             </CardHeader>
@@ -179,7 +202,7 @@ export default function DepartmentDetailPage() {
               </p>
             </CardBody>
           </Card>
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Coordinator</CardTitle>
@@ -204,28 +227,28 @@ export default function DepartmentDetailPage() {
                 )}
               </CardBody>
             </Card>
-            <div className="grid grid-cols-3 gap-3">
+            <Grid preset="stats3">
               <div className="rounded-2xl border border-line bg-white p-4 text-center dark:border-white/10 dark:bg-[#1c1c1e]">
                 <p className="text-[22px] font-bold tabular-nums text-ink dark:text-gray-100">
                   {members.length}
                 </p>
-                <p className="text-[11.5px] font-medium text-faint">Members</p>
+                <p className="text-[11.5px] font-medium text-faint dark:text-gray-500">Members</p>
               </div>
               <div className="rounded-2xl border border-line bg-white p-4 text-center dark:border-white/10 dark:bg-[#1c1c1e]">
                 <p className="text-[22px] font-bold tabular-nums text-ink dark:text-gray-100">
                   {dept._count?.events ?? 0}
                 </p>
-                <p className="text-[11.5px] font-medium text-faint">Events</p>
+                <p className="text-[11.5px] font-medium text-faint dark:text-gray-500">Events</p>
               </div>
               <div className="rounded-2xl border border-line bg-white p-4 text-center dark:border-white/10 dark:bg-[#1c1c1e]">
                 <p className="text-[22px] font-bold tabular-nums text-ink dark:text-gray-100">
                   {taskCounts.DONE}/{tasks.length}
                 </p>
-                <p className="text-[11.5px] font-medium text-faint">Tasks done</p>
+                <p className="text-[11.5px] font-medium text-faint dark:text-gray-500">Tasks done</p>
               </div>
-            </div>
+            </Grid>
           </div>
-        </div>
+        </Grid>
       )}
 
       {tab === "tasks" && (
@@ -256,13 +279,16 @@ export default function DepartmentDetailPage() {
                       canManage &&
                       updateTaskStatus(t.id, t.status === "DONE" ? "TODO" : "DONE")
                     }
+                    disabled={!canManage}
                     className={cn(
-                      "flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition",
+                      "flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition",
                       t.status === "DONE"
                         ? "border-green bg-green text-white"
-                        : "border-line-strong text-transparent hover:border-accent"
+                        : "border-line-strong text-transparent hover:border-accent disabled:opacity-40",
+                      "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                     )}
-                    aria-label="Toggle done"
+                    aria-label={t.status === "DONE" ? "Mark task as not done" : "Mark task as done"}
+                    aria-pressed={t.status === "DONE"}
                   >
                     <Icon name="check" size={11} />
                   </button>
@@ -280,7 +306,7 @@ export default function DepartmentDetailPage() {
                         {t.description}
                       </p>
                     )}
-                    <p className="mt-0.5 text-[11.5px] text-faint">
+                    <p className="mt-0.5 text-[11.5px] text-faint dark:text-gray-500">
                       {t.dueDate ? `Due ${formatDateTime(t.dueDate)}` : "No due date"}
                       {t.assignee ? ` · ${t.assignee.user.name}` : ""}
                     </p>
@@ -327,22 +353,21 @@ export default function DepartmentDetailPage() {
                           </div>
                         )}
                       </Dropdown>
-                      <button
+                      <ActionIcon
+                        icon="edit"
+                        label="Edit task"
+                        size="xs"
                         onClick={() => {
                           setTaskModal({ open: true, task: t });
                         }}
-                        className="flex size-8 items-center justify-center rounded-full text-faint transition hover:bg-black/[0.05] hover:text-ink dark:hover:bg-white/10 dark:hover:text-gray-200"
-                        aria-label="Edit task"
-                      >
-                        <Icon name="edit" size={14} />
-                      </button>
-                      <button
+                      />
+                      <ActionIcon
+                        icon="trash"
+                        label="Delete task"
+                        size="xs"
+                        className="hover:bg-red/10 hover:text-red dark:hover:bg-red/20 dark:hover:text-red-300"
                         onClick={() => setDeleteTaskId(t.id)}
-                        className="flex size-8 items-center justify-center rounded-full text-faint transition hover:bg-red/10 hover:text-red"
-                        aria-label="Delete task"
-                      >
-                        <Icon name="trash" size={14} />
-                      </button>
+                      />
                     </div>
                   )}
                 </div>
@@ -391,13 +416,13 @@ export default function DepartmentDetailPage() {
                   </div>
                   <StatusPill value={m.status} />
                   {canManage && dept.coordinatorId !== m.id && (
-                    <button
+                    <ActionIcon
+                      icon="close"
+                      label="Remove member"
+                      size="xs"
+                      className="hover:bg-red/10 hover:text-red dark:hover:bg-red/20 dark:hover:text-red-300"
                       onClick={() => void removeMember(m.id)}
-                      className="flex size-8 items-center justify-center rounded-full text-faint transition hover:bg-red/10 hover:text-red"
-                      aria-label="Remove member"
-                    >
-                      <Icon name="close" size={15} />
-                    </button>
+                    />
                   )}
                 </div>
               ))
@@ -517,7 +542,7 @@ function TaskModal({
             placeholder="Details, notes, links…"
           />
         </Field>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <Grid preset="fields">
           <Field label="Assignee" optional>
             <Select
               value={form.assigneeId}
@@ -543,7 +568,7 @@ function TaskModal({
               ))}
             </Select>
           </Field>
-        </div>
+        </Grid>
         <Field label="Due date" optional>
           <Input
             type="datetime-local"

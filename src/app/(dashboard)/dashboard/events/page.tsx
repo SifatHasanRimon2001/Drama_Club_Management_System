@@ -14,14 +14,16 @@ import {
 } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { Icon, type IconName } from "@/components/icons";
-import { Button } from "@/components/ui/button";
+import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/input";
+import { Grid } from "@/components/ui/layout";
 import { StatusPill } from "@/components/ui/badge";
 import { Segmented } from "@/components/ui/segmented";
 import { Modal } from "@/components/ui/modal";
 import { Pagination as Pager } from "@/components/ui/pagination";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
+import { useRealtimeRefresh } from "@/lib/client/socket";
 
 type Filter = "all" | "upcoming" | Event["type"];
 
@@ -49,11 +51,13 @@ export default function EventsPage() {
   const [filter, setFilter] = useState<Filter>("upcoming");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<Event | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadError("");
     try {
       const params = new URLSearchParams();
       if (filter === "upcoming") params.set("upcoming", "true");
@@ -65,6 +69,9 @@ export default function EventsPage() {
       );
       setRows(data.events);
       setPagination(data.pagination);
+    } catch (e) {
+      setRows([]);
+      setLoadError(e instanceof Error ? e.message : "Failed to load events");
     } finally {
       setLoading(false);
     }
@@ -74,6 +81,9 @@ export default function EventsPage() {
     const timer = setTimeout(() => void load(), 0);
     return () => clearTimeout(timer);
   }, [load]);
+
+  // Live: refresh the calendar when events change in real time.
+  useRealtimeRefresh(["Event", "Department"], load);
 
   const transition = async (ev: Event, status: string) => {
     try {
@@ -102,6 +112,7 @@ export default function EventsPage() {
       </div>
 
       <Segmented<Filter>
+        scrollable
         value={filter}
         onChange={(v) => {
           setFilter(v);
@@ -114,7 +125,18 @@ export default function EventsPage() {
         ]}
       />
 
-      {loading && !rows.length ? (
+      {loadError ? (
+        <EmptyState
+          icon="warn"
+          title="Couldn't load events"
+          message={loadError}
+          action={
+            <Button variant="secondary" onClick={() => void load()}>
+              Try again
+            </Button>
+          }
+        />
+      ) : loading && !rows.length ? (
         <PageLoader label="Loading events…" />
       ) : rows.length === 0 ? (
         <EmptyState
@@ -127,7 +149,7 @@ export default function EventsPage() {
           {rows.map((ev) => (
             <div
               key={ev.id}
-              className="flex items-center gap-4 rounded-2xl border border-line bg-white px-4 py-3.5 transition hover:border-accent/30 dark:border-white/10 dark:bg-[#1c1c1e]"
+              className="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3.5 transition hover:border-accent/30 sm:flex-nowrap dark:border-white/10 dark:bg-[#1c1c1e]"
             >
               <span
                 className={cn(
@@ -137,7 +159,7 @@ export default function EventsPage() {
               >
                 <Icon name={(EVENT_TYPE_ICONS[ev.type] as IconName) || "calendar"} size={17} />
               </span>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 basis-52">
                 <p className="truncate text-[14.5px] font-semibold text-ink dark:text-gray-100">
                   {ev.title}
                 </p>
@@ -152,19 +174,18 @@ export default function EventsPage() {
                 {eventTypeLabel(ev.type)}
               </span>
               <StatusPill value={ev.status} />
-              <div className="flex items-center gap-1">
+              <div className="flex flex-wrap items-center gap-1">
                 {(ALLOWED_TRANSITIONS[ev.status] || []).map((s) => (
                   <Button key={s} size="xs" variant="secondary" onClick={() => void transition(ev, s)}>
                     {eventStatusLabel(s)}
                   </Button>
                 ))}
-                <button
+                <ActionIcon
+                  icon="edit"
+                  label="Edit event"
+                  size="xs"
                   onClick={() => setEditing(ev)}
-                  className="flex size-8 items-center justify-center rounded-full text-faint transition hover:bg-black/[0.05] hover:text-ink dark:hover:bg-white/10 dark:hover:text-gray-200"
-                  aria-label="Edit event"
-                >
-                  <Icon name="edit" size={14} />
-                </button>
+                />
               </div>
             </div>
           ))}
@@ -277,7 +298,7 @@ function EventModal({
             placeholder="e.g. Spring Festival: The Tempest"
           />
         </Field>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <Grid preset="fields">
           <Field label="Type">
             <Select value={form.type} onChange={(v) => setForm({ ...form, type: v })}>
               {EVENT_TYPES.map((t) => (
@@ -300,8 +321,8 @@ function EventModal({
               ))}
             </Select>
           </Field>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        </Grid>
+        <Grid preset="fields">
           <Field label="Starts">
             <Input
               type="datetime-local"
@@ -316,8 +337,8 @@ function EventModal({
               onChange={(e) => setForm({ ...form, endAt: e.target.value })}
             />
           </Field>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        </Grid>
+        <Grid preset="fields">
           <Field label="Location" optional>
             <Input
               value={form.location}
@@ -339,7 +360,7 @@ function EventModal({
               </Select>
             </Field>
           )}
-        </div>
+        </Grid>
         <Field label="Description" optional>
           <Textarea
             value={form.description}

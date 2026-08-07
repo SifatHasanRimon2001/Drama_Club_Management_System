@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { publicFetch } from "@/lib/server";
 import type { Event, PublicAbout, PublicHomeData } from "@/lib/types";
 import { Icon } from "@/components/icons";
 import { Card, CardBody, CardTitle, CardSubtitle } from "@/components/ui/card";
+import { Container, Grid } from "@/components/ui/layout";
 
 export const metadata = { title: "About" };
 
@@ -22,7 +24,7 @@ export default async function AboutPage() {
   const clubName = about?.clubName || "Drama Club";
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 sm:px-6">
+    <Container size="page" className="pb-24 pt-28">
       <div className="max-w-3xl">
         <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">About</p>
         <h1 className="display-title mt-3 text-ink dark:text-gray-50">The stage is our home.</h1>
@@ -32,7 +34,7 @@ export default async function AboutPage() {
         </p>
       </div>
 
-      <div className="mt-16 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <Grid preset="stats" className="mt-16">
         {[
           { label: "Active Members", value: about?.activeMemberCount ?? "—", icon: "members" as const },
           { label: "Departments", value: about?.departmentCount ?? "—", icon: "grid" as const },
@@ -51,12 +53,12 @@ export default async function AboutPage() {
             </CardBody>
           </Card>
         ))}
-      </div>
+      </Grid>
 
       <h2 className="mt-20 text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
         What we stand for
       </h2>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      <Grid preset="split" className="mt-6">
         {VALUES.map((v) => (
           <Card key={v.title}>
             <CardBody>
@@ -70,9 +72,9 @@ export default async function AboutPage() {
             </CardBody>
           </Card>
         ))}
-      </div>
+      </Grid>
 
-      <div className="mt-20 rounded-[28px] border border-line bg-card p-8 sm:p-12 dark:bg-[#1c1c1e] dark:border-white/10">
+      <Card className="mt-20 p-8 sm:p-12">
         <div className="grid items-center gap-8 sm:grid-cols-[1fr_auto]">
           <div>
             <h2 className="text-[24px] font-bold tracking-tight text-ink dark:text-gray-100">
@@ -83,14 +85,14 @@ export default async function AboutPage() {
               No experience required — just bring your enthusiasm.
             </p>
           </div>
-          <a
+          <Link
             href="/recruitment"
-            className="inline-flex h-12 items-center gap-2 rounded-full bg-accent px-7 text-[15px] font-medium text-white transition hover:bg-accent-hover active:scale-[0.98]"
+            className="inline-flex h-12 items-center gap-2 rounded-full bg-accent px-7 text-base font-medium text-white transition hover:bg-accent-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Join Us <Icon name="arrow-right" size={16} />
-          </a>
+          </Link>
         </div>
-      </div>
-    </div>
+      </Card>
+    </Container>
   );
 }

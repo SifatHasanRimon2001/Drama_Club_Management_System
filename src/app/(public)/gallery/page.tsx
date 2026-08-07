@@ -4,13 +4,14 @@ import type { GalleryAlbum } from "@/lib/types";
 import { ALBUM_CATEGORIES } from "@/lib/format";
 import { Icon } from "@/components/icons";
 import { EmptyState } from "@/components/ui/feedback";
+import { Grid } from "@/components/ui/layout";
 
 export const metadata = { title: "Gallery" };
 
 const CATEGORY_STYLES: Record<string, { icon: "camera" | "note" | "film" | "trophy" | "clock" | "heart" | "star"; grad: string }> = {
   PRODUCTIONS: { icon: "star", grad: "from-indigo/70 to-purple/70" },
   WORKSHOPS: { icon: "note", grad: "from-teal/70 to-cyan/70" },
-  BEHIND_THE_SCENES: { icon: "camera", grad: "from-gray-500/70 to-gray-700/70" },
+  BEHIND_THE_SCENES: { icon: "camera", grad: "from-faint/60 to-sub/70" },
   FESTIVALS: { icon: "trophy", grad: "from-orange/70 to-yellow/60" },
   REHEARSALS: { icon: "clock", grad: "from-blue/70 to-indigo/70" },
   CLUB_LIFE: { icon: "heart", grad: "from-pink/70 to-red/60" },
@@ -40,7 +41,7 @@ export default async function GalleryPage() {
           />
         </div>
       ) : (
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <Grid preset="cards" className="mt-14">
           {albums.map((album) => {
             const cover = album.items?.[0];
             const coverUrl = cover ? r2Url(cover.r2Key) : null;
@@ -49,7 +50,7 @@ export default async function GalleryPage() {
               <Link
                 key={album.id}
                 href={`/gallery/${album.id}`}
-                className="group overflow-hidden rounded-[22px] border border-line bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-card-hover dark:bg-[#1c1c1e] dark:border-white/10"
+                className="group overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-card-hover dark:bg-[#1c1c1e] dark:border-white/10"
               >
                 <div className="relative h-48 overflow-hidden bg-black/5 dark:bg-white/5">
                   {coverUrl ? (
@@ -92,7 +93,7 @@ export default async function GalleryPage() {
               </Link>
             );
           })}
-        </div>
+        </Grid>
       )}
     </div>
   );

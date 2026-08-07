@@ -2,6 +2,7 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -68,6 +69,20 @@ export async function getPresignedDownloadUrl(
   });
 
   return getSignedUrl(r2, command, { expiresIn });
+}
+
+/**
+ * Delete an object from the bucket. Throws when R2 is not configured or the
+ * delete fails — callers should treat this as best-effort cleanup so a media
+ * DB row can still be removed if storage is unavailable.
+ */
+export async function deleteR2Object(key: string): Promise<void> {
+  const { r2, config } = getR2();
+  const command = new DeleteObjectCommand({
+    Bucket: config.bucket,
+    Key: key,
+  });
+  await r2.send(command);
 }
 
 export function buildR2Key(

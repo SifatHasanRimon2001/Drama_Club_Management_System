@@ -60,6 +60,10 @@ export async function POST(
     // First validate base applicant fields
     const data = applicantSchema.parse(body);
 
+    // Normalize email so duplicates are detected case-insensitively and
+    // converted member accounts get the same lowercase email as register.
+    const email = data.email.toLowerCase().trim();
+
     // Validate department preferences exist
     if (data.departmentPrefs.length > 0) {
       const validDepts = await prisma.department.findMany({
@@ -111,7 +115,7 @@ export async function POST(
     const existing = await prisma.applicant.findFirst({
       where: {
         registrationWindowId: id,
-        email: data.email,
+        email,
       },
     });
 
@@ -126,7 +130,7 @@ export async function POST(
       data: {
         registrationWindowId: id,
         name: data.name,
-        email: data.email,
+        email,
         phone: data.phone,
         studentId: data.studentId,
         departmentPrefs: data.departmentPrefs,
@@ -145,7 +149,7 @@ export async function POST(
         action: "applicant.submitted",
         entityType: "Applicant",
         entityId: applicant.id,
-        metadata: { registrationWindowId: id, email: data.email },
+        metadata: { registrationWindowId: id, email },
       });
     } catch (auditError) {
       console.error("[Registration Apply POST] Failed to audit:", auditError);

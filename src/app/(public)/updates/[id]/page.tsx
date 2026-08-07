@@ -30,11 +30,11 @@ export default async function UpdateDetailPage({
 
       <div className="flex flex-wrap items-center gap-2.5">
         <StatusPill value={update.category} />
-        <span className="text-[13px] text-faint">
+        <span className="text-[13px] text-faint dark:text-gray-500">
           {formatDateTime(update.publishedAt)}
         </span>
         {update.author?.name && (
-          <span className="flex items-center gap-1.5 text-[13px] text-faint">
+          <span className="flex items-center gap-1.5 text-[13px] text-faint dark:text-gray-500">
             · <Icon name="user" size={12} /> {update.author.name}
           </span>
         )}
@@ -79,13 +79,14 @@ export default async function UpdateDetailPage({
         <div className="mt-4 flex flex-wrap justify-center gap-3">
           <Link
             href="/events"
-            className="rounded-full bg-accent px-5 py-2 text-[13.5px] font-medium text-white transition hover:bg-accent-hover"
+            className="inline-flex h-11 items-center gap-2 rounded-full bg-accent px-6 text-sm font-medium text-white transition hover:bg-accent-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Upcoming Events
+            <Icon name="chevron-right" size={14} />
           </Link>
           <Link
             href="/recruitment"
-            className="rounded-full border border-line px-5 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.03] dark:text-gray-100 dark:hover:bg-white/10"
+            className="inline-flex h-11 items-center rounded-full border border-line bg-card px-6 text-sm font-medium text-ink transition hover:bg-black/[0.03] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:bg-[#1c1c1e] dark:text-gray-100 dark:hover:bg-white/10"
           >
             Join the Club
           </Link>

@@ -59,7 +59,8 @@ export const departmentUpdateSchema = departmentSchema.partial();
 export const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  assigneeId: z.string().cuid().optional(),
+  // nullish so a PATCH can clear the assignee (null => unassigned)
+  assigneeId: z.string().cuid().nullish(),
   status: z.enum(["TODO", "IN_PROGRESS", "DONE"]).optional(),
   dueDate: z.string().datetime().optional(),
 });
@@ -74,8 +75,35 @@ export const registrationWindowSchema = z.object({
   status: z
     .enum(["DRAFT", "SCHEDULED", "LIVE", "CLOSED"])
     .optional(),
-  formSchema: z.record(z.unknown()).default({}),
+  // NOTE: no .default({}) here — .partial() applies defaults for missing
+  // keys, so a status-only PATCH would silently wipe the custom form fields.
+  formSchema: z.record(z.unknown()).optional(),
 });
+
+// Server-side shape check for the custom application form definition.
+// Mirrors what the public apply route consumes via buildDynamicSchema.
+const FIELD_TYPES = ["text", "textarea", "select", "checkbox", "number"] as const;
+
+export const formFieldSpecSchema = z.object({
+  name: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/^[a-zA-Z0-9_]+$/, "Field name may only contain letters, numbers and underscores"),
+  type: z.enum(FIELD_TYPES),
+  label: z.string().min(1).max(200).optional(),
+  required: z.boolean().optional(),
+  options: z.array(z.string().min(1)).optional(),
+});
+
+export const registrationFormSchema = z
+  .object({
+    fields: z.array(formFieldSpecSchema).min(1).max(50),
+  })
+  .refine(
+    (form) => new Set(form.fields.map((f) => f.name)).size === form.fields.length,
+    { message: "Field names must be unique" }
+  );
 
 // Applicant
 export const applicantSchema = z.object({

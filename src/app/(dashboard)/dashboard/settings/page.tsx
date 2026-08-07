@@ -8,6 +8,7 @@ import { Field, Input, Textarea } from "@/components/ui/input";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
 import { PageLoader } from "@/components/ui/feedback";
+import { Grid } from "@/components/ui/layout";
 import { useToast } from "@/components/ui/toast";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -35,6 +36,7 @@ export default function SettingsPage() {
   const toast = useToast();
   const [settings, setSettings] = useState<SettingsMap | null>(null);
   const [storage, setStorage] = useState<StorageStatus | null>(null);
+  const [storageFailed, setStorageFailed] = useState(false);
   const [form, setForm] = useState({
     clubName: "",
     clubDescription: "",
@@ -46,27 +48,36 @@ export default function SettingsPage() {
   });
   const [toggles, setToggles] = useState({ registrationEnabled: false, maintenanceMode: false });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    void apiGet<SettingsMap>("/api/settings").then((s) => {
-      setSettings(s);
-      setForm({
-        clubName: s.clubName ?? "",
-        clubDescription: s.clubDescription ?? "",
-        contactEmail: s.contactEmail ?? "",
-        contactPhone: s.contactPhone ?? "",
-        socialLinks: s.socialLinks ? JSON.stringify(s.socialLinks, null, 2) : "",
-        logoUrl: s.logoUrl ?? "",
-        bannerUrl: s.bannerUrl ?? "",
-      });
-      setToggles({
-        registrationEnabled: s.registrationEnabled ?? false,
-        maintenanceMode: s.maintenanceMode ?? false,
-      });
-    });
+    apiGet<SettingsMap>("/api/settings")
+      .then((s) => {
+        setSettings(s);
+        setForm({
+          clubName: s.clubName ?? "",
+          clubDescription: s.clubDescription ?? "",
+          contactEmail: s.contactEmail ?? "",
+          contactPhone: s.contactPhone ?? "",
+          socialLinks: s.socialLinks ? JSON.stringify(s.socialLinks, null, 2) : "",
+          logoUrl: s.logoUrl ?? "",
+          bannerUrl: s.bannerUrl ?? "",
+        });
+        setToggles({
+          registrationEnabled: s.registrationEnabled ?? false,
+          maintenanceMode: s.maintenanceMode ?? false,
+        });
+      })
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load settings"));
     apiGet<StorageStatus>("/api/settings/storage")
-      .then(setStorage)
-      .catch(() => setStorage(null));
+      .then((s) => {
+        setStorage(s);
+        setStorageFailed(false);
+      })
+      .catch(() => {
+        setStorage(null);
+        setStorageFailed(true);
+      });
   }, []);
 
   const save = async (e: React.FormEvent) => {
@@ -84,13 +95,13 @@ export default function SettingsPage() {
         }
       }
       await apiPatch("/api/settings", {
-        ...(form.clubName ? { clubName: form.clubName } : {}),
-        ...(form.clubDescription ? { clubDescription: form.clubDescription } : {}),
-        ...(form.contactEmail ? { contactEmail: form.contactEmail } : {}),
-        ...(form.contactPhone ? { contactPhone: form.contactPhone } : {}),
+        clubName: form.clubName,
+        clubDescription: form.clubDescription,
+        contactEmail: form.contactEmail,
+        contactPhone: form.contactPhone,
         ...(socialLinks ? { socialLinks } : {}),
-        ...(form.logoUrl ? { logoUrl: form.logoUrl } : {}),
-        ...(form.bannerUrl ? { bannerUrl: form.bannerUrl } : {}),
+        logoUrl: form.logoUrl,
+        bannerUrl: form.bannerUrl,
         registrationEnabled: toggles.registrationEnabled,
         maintenanceMode: toggles.maintenanceMode,
       });
@@ -102,7 +113,20 @@ export default function SettingsPage() {
     }
   };
 
-  if (!settings) return <PageLoader label="Loading settings…" />;
+  if (!settings) {
+    if (error) {
+      return (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-line-strong/60 px-6 py-16 text-center">
+          <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-red/10 text-red" aria-hidden="true">
+            <Icon name="warn" size={26} />
+          </span>
+          <h3 className="text-[16px] font-semibold text-ink dark:text-gray-100">Couldn&apos;t load settings</h3>
+          <p className="mt-1 max-w-sm text-sm text-sub dark:text-gray-400">{error}</p>
+        </div>
+      );
+    }
+    return <PageLoader label="Loading settings…" />;
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -121,7 +145,7 @@ export default function SettingsPage() {
             <CardTitle>Club identity</CardTitle>
           </CardHeader>
           <CardBody className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <Grid preset="fields">
               <Field label="Club name">
                 <Input
                   value={form.clubName}
@@ -137,7 +161,7 @@ export default function SettingsPage() {
                   placeholder="club@university.edu"
                 />
               </Field>
-            </div>
+            </Grid>
             <Field label="Description">
               <Textarea
                 value={form.clubDescription}
@@ -146,7 +170,7 @@ export default function SettingsPage() {
                 className="min-h-24"
               />
             </Field>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <Grid preset="fields">
               <Field label="Contact phone" optional>
                 <Input
                   value={form.contactPhone}
@@ -161,7 +185,7 @@ export default function SettingsPage() {
                   placeholder="https://…"
                 />
               </Field>
-            </div>
+            </Grid>
             <Field label="Banner URL" optional>
               <Input
                 value={form.bannerUrl}
@@ -215,6 +239,7 @@ export default function SettingsPage() {
               <Toggle
                 checked={toggles.registrationEnabled}
                 onChange={(v) => setToggles({ ...toggles, registrationEnabled: v })}
+                label="Allow registration"
               />
             </div>
             <div className="flex items-start justify-between gap-4 border-t border-line pt-5 dark:border-white/10">
@@ -229,6 +254,7 @@ export default function SettingsPage() {
               <Toggle
                 checked={toggles.maintenanceMode}
                 onChange={(v) => setToggles({ ...toggles, maintenanceMode: v })}
+                label="Maintenance mode"
               />
             </div>
           </CardBody>
@@ -239,10 +265,34 @@ export default function SettingsPage() {
             <CardTitle>Club storage (Cloudflare R2)</CardTitle>
           </CardHeader>
           <CardBody>
-            {storage ? (
+            {storageFailed ? (
+              <div className="flex items-start gap-3 rounded-2xl bg-red/10 px-4 py-3.5 dark:bg-red/15">
+                <Icon name="warn" size={17} className="mt-0.5 shrink-0 text-red dark:text-red-300" />
+                <div>
+                  <p className="text-[14px] font-semibold text-ink dark:text-gray-100">
+                    Couldn&apos;t check storage configuration
+                  </p>
+                  <p className="mt-0.5 text-[13px] text-sub dark:text-gray-400">
+                    The storage status endpoint didn&apos;t respond.{" "}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStorageFailed(false);
+                        apiGet<StorageStatus>("/api/settings/storage")
+                          .then((s) => setStorage(s))
+                          .catch(() => setStorageFailed(true));
+                      }}
+                      className="font-medium text-accent underline-offset-2 hover:underline"
+                    >
+                      Try again
+                    </button>
+                  </p>
+                </div>
+              </div>
+            ) : storage ? (
               storage.configured ? (
-                <div className="flex items-start gap-3 rounded-2xl bg-green-500/8 px-4 py-3.5 dark:bg-green-500/10">
-                  <span className="mt-1 size-2.5 shrink-0 rounded-full bg-green-500" />
+                <div className="flex items-start gap-3 rounded-2xl bg-green/12 px-4 py-3.5 dark:bg-green/20">
+                  <span className="mt-1 size-2.5 shrink-0 rounded-full bg-green" />
                   <div>
                     <p className="text-[14px] font-semibold text-ink dark:text-gray-100">
                       Connected to {storage.bucket}
@@ -256,8 +306,12 @@ export default function SettingsPage() {
                   </div>
                 </div>
               ) : (
-                <div className="flex items-start gap-3 rounded-2xl bg-amber-500/10 px-4 py-3.5">
-                  <Icon name="warn" size={17} className="mt-0.5 shrink-0 text-amber-500" />
+                <div className="flex items-start gap-3 rounded-2xl bg-orange/12 px-4 py-3.5 dark:bg-orange/20">
+                  <Icon
+                    name="warn"
+                    size={17}
+                    className="mt-0.5 shrink-0 text-orange dark:text-orange-400"
+                  />
                   <div>
                     <p className="text-[14px] font-semibold text-ink dark:text-gray-100">
                       Storage is not configured
@@ -281,14 +335,16 @@ export default function SettingsPage() {
                         R2_PUBLIC_URL
                       </code>
                     </div>
-                    <p className="mt-2.5 text-[12.5px] text-faint">
+                    <p className="mt-2.5 text-[12.5px] text-faint dark:text-gray-500">
                       Restart the server after updating environment variables.
                     </p>
                   </div>
                 </div>
               )
             ) : (
-              <p className="text-[13.5px] text-faint">Checking storage configuration…</p>
+              <p className="text-[13.5px] text-sub dark:text-gray-400">
+                Checking storage configuration…
+              </p>
             )}
           </CardBody>
         </Card>
