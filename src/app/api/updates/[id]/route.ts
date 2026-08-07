@@ -4,6 +4,7 @@ import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { clubUpdateSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { notifyAllActiveMembers } from "@/lib/notifications";
+import { sanitizeRichText } from "@/lib/sanitize";
 import { ZodError } from "zod";
 
 export async function GET(
@@ -66,7 +67,7 @@ export async function PATCH(
       where: { id },
       data: {
         title: data.title,
-        bodyRichText: data.bodyRichText,
+        bodyRichText: data.bodyRichText ? sanitizeRichText(data.bodyRichText) : undefined,
         category: data.category,
         mediaUrls: data.mediaUrls,
         publishedAt: data.publishedAt ? new Date(data.publishedAt) : undefined,

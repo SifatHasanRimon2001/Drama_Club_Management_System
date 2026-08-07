@@ -25,6 +25,10 @@ export async function GET(
         member: {
           include: { user: { select: { id: true, name: true, email: true } } },
         },
+        currentRole: { select: { id: true, name: true } },
+        proposedRole: { select: { id: true, name: true } },
+        submittedBy: { select: { id: true, name: true } },
+        reviewedBy: { select: { id: true, name: true } },
       },
     });
 

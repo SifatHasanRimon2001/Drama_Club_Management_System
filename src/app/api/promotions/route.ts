@@ -47,6 +47,10 @@ export async function GET(request: NextRequest) {
               user: { select: { id: true, name: true, email: true } },
             },
           },
+          currentRole: { select: { id: true, name: true } },
+          proposedRole: { select: { id: true, name: true } },
+          submittedBy: { select: { id: true, name: true } },
+          reviewedBy: { select: { id: true, name: true } },
         },
         orderBy: { createdAt: "desc" },
         skip,
@@ -143,6 +147,9 @@ export async function POST(request: NextRequest) {
         member: {
           include: { user: { select: { id: true, name: true, email: true } } },
         },
+        currentRole: { select: { id: true, name: true } },
+        proposedRole: { select: { id: true, name: true } },
+        submittedBy: { select: { id: true, name: true } },
       },
     });
 

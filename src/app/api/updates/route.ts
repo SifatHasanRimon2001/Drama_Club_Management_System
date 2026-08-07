@@ -4,6 +4,7 @@ import { getPaginationParams, requireAuth, validateEnumParam, parseJsonBody } fr
 import { clubUpdateSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { notifyAllActiveMembers } from "@/lib/notifications";
+import { sanitizeRichText } from "@/lib/sanitize";
 import { ZodError } from "zod";
 
 const VALID_UPDATE_CATEGORIES = [
@@ -34,6 +35,9 @@ export async function GET(request: NextRequest) {
         orderBy: { publishedAt: "desc" },
         skip,
         take: limit,
+        include: {
+          author: { select: { id: true, name: true } },
+        },
       }),
       prisma.clubUpdate.count({ where }),
     ]);
@@ -64,7 +68,7 @@ export async function POST(request: NextRequest) {
     const update = await prisma.clubUpdate.create({
       data: {
         title: data.title,
-        bodyRichText: data.bodyRichText,
+        bodyRichText: sanitizeRichText(data.bodyRichText),
         category: data.category,
         mediaUrls: data.mediaUrls || [],
         publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),

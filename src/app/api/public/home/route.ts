@@ -28,7 +28,7 @@ export async function GET() {
                 user: { select: { id: true, name: true } },
               },
             },
-            _count: { select: { members: true } },
+            _count: { select: { members: true, events: true } },
           },
         }),
         prisma.clubUpdate.findMany({

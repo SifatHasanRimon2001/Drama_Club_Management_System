@@ -60,6 +60,15 @@ export async function POST(
           reviewedById: auth.userId,
           reviewedAt: new Date(),
         },
+        include: {
+          member: {
+            include: { user: { select: { id: true, name: true, email: true } } },
+          },
+          currentRole: { select: { id: true, name: true } },
+          proposedRole: { select: { id: true, name: true } },
+          submittedBy: { select: { id: true, name: true } },
+          reviewedBy: { select: { id: true, name: true } },
+        },
       });
 
       // PRD §4: On APPROVED: create new CommitteeMemberRole, do NOT delete old one
@@ -135,7 +144,7 @@ export async function POST(
         title: `Promotion ${data.status.toLowerCase()}`,
         message: `Your promotion request has been ${data.status.toLowerCase()}.`,
         payload: { promotionId: id, status: data.status },
-        link: `/promotions/${id}`,
+        link: `/dashboard/promotions`,
       });
     } catch (notifError) {
       console.error("[Promotion Decision] Failed to send notification:", notifError);

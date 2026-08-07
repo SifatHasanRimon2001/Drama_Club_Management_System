@@ -672,7 +672,7 @@ describe("Final Coverage Gaps", () => {
       expect(data.applicants.some((a: { email: string }) => a.email === searchEmail)).toBe(true);
     });
 
-    it("PATCH /api/registration-windows/:id/applicants/:applicantId rejects UNDER_REVIEW status (not in schema)", async () => {
+    it("PATCH /api/registration-windows/:id/applicants/:applicantId accepts UNDER_REVIEW", async () => {
       const { user } = await setupAdmin();
       const rw = await prisma.registrationWindow.create({ data: { title: `RW${uniqueSuffix()}`, description: "Test description", status: "LIVE", startDate: new Date("2020-01-01"), endDate: new Date("2030-12-31") } });
       const applicant = await prisma.applicant.create({ data: { name: `App${uniqueSuffix()}`, email: `app-${uniqueSuffix()}@test.com`, phone: "1234567890", studentId: `SID-${uniqueSuffix()}`, departmentPrefs: [], registrationWindowId: rw.id, status: "SUBMITTED" } });
@@ -681,10 +681,10 @@ describe("Final Coverage Gaps", () => {
         mockRequest(`/api/registration-windows/${rw.id}/applicants/${applicant.id}`, { method: "PATCH", body: { status: "UNDER_REVIEW" } }),
         { params: Promise.resolve({ id: rw.id, applicantId: applicant.id }) }
       );
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(200);
     });
 
-    it("PATCH /api/applicants/:id rejects UNDER_REVIEW status (not in schema)", async () => {
+    it("PATCH /api/applicants/:id accepts UNDER_REVIEW", async () => {
       const { user } = await setupAdmin();
       const rw = await prisma.registrationWindow.create({ data: { title: `RW${uniqueSuffix()}`, description: "Test description", status: "LIVE", startDate: new Date("2020-01-01"), endDate: new Date("2030-12-31") } });
       const applicant = await prisma.applicant.create({ data: { name: `App${uniqueSuffix()}`, email: `app-${uniqueSuffix()}@test.com`, phone: "1234567890", studentId: `SID-${uniqueSuffix()}`, departmentPrefs: [], registrationWindowId: rw.id, status: "SUBMITTED" } });
@@ -693,7 +693,7 @@ describe("Final Coverage Gaps", () => {
         mockRequest(`/api/applicants/${applicant.id}`, { method: "PATCH", body: { status: "UNDER_REVIEW" } }),
         { params: Promise.resolve({ id: applicant.id }) }
       );
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(200);
     });
 
     it("POST /api/applicants/:id/convert with ACCEPTED applicant", async () => {

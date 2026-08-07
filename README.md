@@ -286,8 +286,7 @@ The seed script creates:
 - **RegistrationWindow** — Configurable form schema, status lifecycle (DRAFT/SCHEDULED/LIVE/CLOSED)
 - **Applicant** — Submission with state machine (SUBMITTED → UNDER_REVIEW → ACCEPTED/REJECTED/CONVERTED)
 - **PromotionRequest** — DRAFT → SUBMITTED/PENDING_APPROVAL → APPROVED/REJECTED; approval soft-ends the old CommitteeMemberRole (sets `endedAt`) instead of deleting history
-- **Event** — Typed (WORKSHOP/REHEARSAL/PERFORMANCE/AUDITION/FESTIVAL/TRAINING)
-- **EventRsvp** — Member RSVP per event (GOING/MAYBE/NOT_GOING)
+- **Event** — Typed (WORKSHOP/REHEARSAL/PERFORMANCE/AUDITION/FESTIVAL/TRAINING) with status lifecycle (DRAFT/UPCOMING/ONGOING/COMPLETED/CANCELLED)
 - **ClubUpdate** — Rich text with category
 - **GalleryAlbum** — Category-scoped, optional department
 - **GalleryItem** — R2-stored media with type (IMAGE/VIDEO)

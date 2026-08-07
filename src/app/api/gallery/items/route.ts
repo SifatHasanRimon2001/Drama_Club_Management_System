@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
         title: `New media uploaded`,
         message: `A new ${item.type.toLowerCase()} has been added to ${item.album.name}.`,
         payload: { itemId: item.id, albumId: item.albumId },
+        link: `/gallery/${item.albumId}`,
         excludeUserId: auth.userId,
       });
     }

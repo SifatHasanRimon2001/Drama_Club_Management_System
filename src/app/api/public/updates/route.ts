@@ -28,6 +28,9 @@ export async function GET(request: NextRequest) {
       where,
       orderBy: { publishedAt: "desc" },
       take: limit,
+      include: {
+        author: { select: { id: true, name: true } },
+      },
     });
 
     return NextResponse.json(updates);

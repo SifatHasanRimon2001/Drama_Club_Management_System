@@ -9,7 +9,7 @@ const tables = [
   "User", "Member", "Role", "Permission", "RolePermission", "Committee",
   "CommitteeMemberRole", "Department", "MemberDepartment", "Task",
   "RegistrationWindow", "Applicant", "ContactSubmission", "PromotionRequest",
-  "Event", "EventRsvp", "ClubUpdate", "GalleryAlbum", "GalleryItem",
+  "Event", "ClubUpdate", "GalleryAlbum", "GalleryItem",
   "Notification", "AuditLog", "SystemSetting",
 ];
 

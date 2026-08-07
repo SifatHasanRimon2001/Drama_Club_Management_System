@@ -5,6 +5,7 @@ export async function GET() {
   try {
     const committee = await prisma.committee.findFirst({
       where: { isCurrent: true },
+      orderBy: { startDate: "desc" },
       include: {
         memberRoles: {
           include: {

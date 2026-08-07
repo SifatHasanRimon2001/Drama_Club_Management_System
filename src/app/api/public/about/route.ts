@@ -18,8 +18,13 @@ export async function GET() {
       clubName: settingsMap.clubName || "Drama Club",
       clubDescription: settingsMap.clubDescription || "",
       logoUrl: settingsMap.logoUrl || null,
+      contactEmail: settingsMap.contactEmail || null,
+      contactPhone: settingsMap.contactPhone || null,
+      socialLinks: (settingsMap.socialLinks as Record<string, string> | undefined) || null,
       departmentCount,
       activeMemberCount: memberCount,
+      registrationEnabled: settingsMap.registrationEnabled !== false,
+      maintenanceMode: settingsMap.maintenanceMode === true,
     });
   } catch (error) {
     console.error("[Public About GET]", error);

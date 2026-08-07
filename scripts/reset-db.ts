@@ -20,7 +20,6 @@ async function main() {
     "GalleryItem",
     "GalleryAlbum",
     "Notification",
-    "EventRsvp",
     "Event",
     "ClubUpdate",
     "Applicant",

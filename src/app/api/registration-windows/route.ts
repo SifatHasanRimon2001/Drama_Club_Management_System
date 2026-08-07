@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth, getPaginationParams, validateEnumParam, parseJsonBody } from "@/lib/api-helpers";
+import { can } from "@/lib/permissions";
 import { registrationWindowSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
@@ -15,8 +16,16 @@ const VALID_REGISTRATION_STATUSES = [
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await requireAuth("registration.manage");
+    // Reviewers (registration.review) need the window list to filter/appraise
+    // applicants; managers (registration.manage) get full access.
+    const auth = await requireAuth();
     if (auth.error) return auth.error;
+
+    const canManage = await can(auth.userId, "registration.manage");
+    const canReview = await can(auth.userId, "registration.review");
+    if (!canManage && !canReview) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const { page, limit, skip } = getPaginationParams(request);
 

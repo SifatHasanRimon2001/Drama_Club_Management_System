@@ -176,7 +176,6 @@ export async function cleanupTestData() {
     "GalleryItem",
     "GalleryAlbum",
     "Notification",
-    "EventRsvp",
     "Event",
     "ClubUpdate",
     "Applicant",

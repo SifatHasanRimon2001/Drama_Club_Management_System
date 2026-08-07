@@ -4,6 +4,8 @@ import { getPaginationParams, requireAuth, validateEnumParam, parseJsonBody } fr
 import { eventSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { notifyDepartmentMembers, notifyAllActiveMembers } from "@/lib/notifications";
+import { can } from "@/lib/permissions";
+import { auth } from "@/lib/auth";
 import { ZodError } from "zod";
 
 const VALID_EVENT_TYPES = [
@@ -25,11 +27,17 @@ export async function GET(request: NextRequest) {
 
     const departmentId = url.searchParams.get("departmentId");
     const upcoming = url.searchParams.get("upcoming") === "true";
+    const includeDrafts = url.searchParams.get("includeDrafts") === "1";
 
-    // Filter out DRAFT events for public read (PRD §5: public read published)
-    const where: Record<string, unknown> = {
-      status: { not: "DRAFT" },
-    };
+    // Filter out DRAFT events for public read (PRD §5: public read published).
+    // Event managers may opt in to seeing drafts via ?includeDrafts=1.
+    const session = await auth();
+    const sessionUser = session?.user as { id?: string } | undefined;
+    const isManager =
+      !!sessionUser?.id && (await can(sessionUser.id, "events.manage"));
+
+    const where: Record<string, unknown> = {};
+    if (!(includeDrafts && isManager)) where.status = { not: "DRAFT" };
     if (typeResult.value) where.type = typeResult.value;
     if (departmentId) where.departmentId = departmentId;
     if (upcoming) where.startAt = { gte: new Date() };

@@ -27,6 +27,10 @@ blob-report/
 .DS_Store
 *.pem
 
+# local runtime / throwaway test scripts
+dev-server.log
+scripts/_ui-smoke-tmp.mjs
+
 # debug
 npm-debug.log*
 yarn-debug.log*

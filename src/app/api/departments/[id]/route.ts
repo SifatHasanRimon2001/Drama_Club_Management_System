@@ -106,12 +106,24 @@ export async function PATCH(
       }
     }
 
+    // Validate committee exists if provided
+    if (data.committeeId) {
+      const committee = await prisma.committee.findUnique({ where: { id: data.committeeId } });
+      if (!committee) {
+        return NextResponse.json(
+          { error: "Committee not found" },
+          { status: 404 }
+        );
+      }
+    }
+
     const department = await prisma.department.update({
       where: { id },
       data: {
         name: data.name,
         description: data.description,
         coordinatorId: data.coordinatorId,
+        committeeId: data.committeeId,
       },
     });
 
@@ -129,6 +141,65 @@ export async function PATCH(
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error("[Department PATCH]", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const auth = await requireAuth("department.manage");
+    if (auth.error) return auth.error;
+
+    const { id } = await params;
+
+    const existing = await prisma.department.findUnique({
+      where: { id },
+      include: {
+        _count: { select: { events: true, tasks: true, members: true } },
+      },
+    });
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Department not found" },
+        { status: 404 }
+      );
+    }
+
+    // Tasks and member links cascade; events and albums keep history with
+    // department set to null. Only block deletion while real data is attached
+    // so archives are not silently destroyed.
+    if (existing._count.events > 0 || existing._count.tasks > 0) {
+      return NextResponse.json(
+        {
+          error: "Cannot delete a department with events or tasks. Archive it instead, or reassign its events and delete its tasks first.",
+        },
+        { status: 409 }
+      );
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.memberDepartment.deleteMany({ where: { departmentId: id } });
+      await tx.department.delete({ where: { id } });
+    });
+
+    await logAudit({
+      actorId: auth.userId,
+      action: "department.deleted",
+      entityType: "Department",
+      entityId: id,
+      metadata: { name: existing.name },
+    });
+
+    return NextResponse.json({ message: "Department deleted" });
+  } catch (error) {
+    console.error("[Department DELETE]", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

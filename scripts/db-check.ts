@@ -44,7 +44,6 @@ async function main() {
         "CommitteeMemberRole",
         "MemberDepartment",
         "RolePermission",
-        "EventRsvp",
       ].map(async (table) => {
         try {
           const c = await prisma.$queryRawUnsafe(`SELECT COUNT(*) AS c FROM "${table}"`);

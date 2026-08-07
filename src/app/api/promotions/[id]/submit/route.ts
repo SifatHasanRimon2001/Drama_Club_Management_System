@@ -20,6 +20,8 @@ export async function POST(
         member: {
           include: { user: { select: { id: true, name: true } } },
         },
+        currentRole: { select: { id: true, name: true } },
+        proposedRole: { select: { id: true, name: true } },
       },
     });
 
@@ -94,7 +96,7 @@ export async function POST(
               title: "New Promotion Request",
               message: `${promotion.member.user.name} has submitted a promotion request for review.`,
               payload: { promotionId: id } as Prisma.InputJsonValue,
-              link: `/promotions/${id}`,
+              link: `/dashboard/promotions`,
             })),
           });
         }

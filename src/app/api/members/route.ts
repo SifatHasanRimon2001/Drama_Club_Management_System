@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         address: data.address,
         emergencyContact: data.emergencyContact,
         photoUrl: data.photoUrl,
-        status: "PENDING",
+        status: data.status ?? "PENDING",
       },
       include: {
         user: { select: { id: true, name: true, email: true } },

@@ -76,7 +76,6 @@ model Member {
   coordinatedDepts Department[]          @relation("DepartmentCoordinator")
   sourceApplicant  Applicant?
   assignedTasks    Task[]
-  eventRsvps       EventRsvp[]
 
   @@index([status])
 }
@@ -302,7 +301,6 @@ model Event {
   location     String?
   description  String?
   department   Department? @relation(fields: [departmentId], references: [id])
-  rsvps        EventRsvp[]
   createdAt    DateTime    @default(now())
 
   @@index([departmentId])
@@ -325,26 +323,6 @@ enum EventStatus {
   ONGOING
   COMPLETED
   CANCELLED
-}
-
-model EventRsvp {
-  id        String  @id @default(cuid())
-  eventId   String
-  memberId  String
-  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  member    Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  status    RsvpStatus @default(GOING)
-  createdAt DateTime @default(now())
-
-  @@unique([eventId, memberId])
-  @@index([eventId])
-  @@index([memberId])
-}
-
-enum RsvpStatus {
-  GOING
-  MAYBE
-  NOT_GOING
 }
 
 model ClubUpdate {

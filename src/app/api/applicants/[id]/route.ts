@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { applicantDecisionSchema } from "@/lib/validations";
+import { canTransition } from "@/lib/applicant-transitions";
 import { logAudit } from "@/lib/audit";
 import { sendEmail, applicantStatusEmail } from "@/lib/email";
 import { ZodError } from "zod";
@@ -66,15 +67,11 @@ export async function PATCH(
       );
     }
 
-    // PRD §4: State machine — only SUBMITTED/UNDER_REVIEW can be ACCEPTED/REJECTED
-    const validTransitions: Record<string, string[]> = {
-      SUBMITTED: ["UNDER_REVIEW", "ACCEPTED", "REJECTED"],
-      UNDER_REVIEW: ["ACCEPTED", "REJECTED"],
-    };
-    const allowed = validTransitions[applicant.status];
-    if (!allowed || !allowed.includes(data.status)) {
+    // PRD §4: State machine — SUBMITTED -> [UNDER_REVIEW, ACCEPTED, REJECTED], UNDER_REVIEW -> [ACCEPTED, REJECTED]
+    const transition = canTransition(applicant.status, data.status);
+    if (!transition.ok) {
       return NextResponse.json(
-        { error: `Cannot transition from ${applicant.status} to ${data.status}` },
+        { error: transition.error },
         { status: 400 }
       );
     }
@@ -85,20 +82,22 @@ export async function PATCH(
       data: { status: data.status },
     });
 
-    // Send email notification to applicant
-    try {
-      const emailContent = applicantStatusEmail(
-        applicant.name,
-        data.status === "ACCEPTED" ? "accepted" : "rejected",
-        applicant.registrationWindow.title
-      );
-      await sendEmail({
-        to: applicant.email,
-        subject: emailContent.subject,
-        html: emailContent.html,
-      });
-    } catch (emailError) {
-      console.error("[Applicant PATCH] Failed to send email:", emailError);
+    // Send email notification to applicant (only on accept/reject)
+    if (data.status === "ACCEPTED" || data.status === "REJECTED") {
+      try {
+        const emailContent = applicantStatusEmail(
+          applicant.name,
+          data.status === "ACCEPTED" ? "accepted" : "rejected",
+          applicant.registrationWindow.title
+        );
+        await sendEmail({
+          to: applicant.email,
+          subject: emailContent.subject,
+          html: emailContent.html,
+        });
+      } catch (emailError) {
+        console.error("[Applicant PATCH] Failed to send email:", emailError);
+      }
     }
 
     await logAudit({

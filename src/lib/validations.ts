@@ -91,7 +91,7 @@ export const applicantSchema = z.object({
 });
 
 export const applicantDecisionSchema = z.object({
-  status: z.enum(["ACCEPTED", "REJECTED"]),
+  status: z.enum(["UNDER_REVIEW", "ACCEPTED", "REJECTED"]),
 });
 
 // Promotion

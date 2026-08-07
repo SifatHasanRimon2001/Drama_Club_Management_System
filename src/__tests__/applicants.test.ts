@@ -199,7 +199,7 @@ describe("Applicants API", () => {
       expect(data.status).toBe("REJECTED");
     });
 
-    it("rejects invalid status (UNDER_REVIEW not in schema)", async () => {
+    it("accepts SUBMITTED -> UNDER_REVIEW", async () => {
       const app = await createTestApplicant({ status: "SUBMITTED" });
       const res = await PATCH(
         mockRequest(`/api/applicants/${app.id}`, {
@@ -208,7 +208,9 @@ describe("Applicants API", () => {
         }),
         { params: Promise.resolve({ id: app.id }) }
       );
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.status).toBe("UNDER_REVIEW");
     });
 
     it("rejects ACCEPTED -> SUBMITTED (backward transition)", async () => {

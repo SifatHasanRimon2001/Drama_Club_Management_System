@@ -1,21 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { ToastProvider } from "@/components/ui/toast";
+import { ThemeProvider } from "@/lib/theme";
 
 export const metadata: Metadata = {
-  title: "Drama Club Management System",
-  description: "Centralized web platform for managing drama club operations, members, productions, and events.",
+  title: {
+    default: "Drama Club",
+    template: "%s — Drama Club",
+  },
+  description:
+    "Centralized platform for managing drama club operations, members, productions, and events.",
 };
+
+function ThemeBootstrap() {
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `try{var t=localStorage.getItem('dcms-theme')||'system';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);var h=document.documentElement;if(d){h.classList.add('dark')}h.style.colorScheme=d?'dark':'light';}catch(e){}`,
+      }}
+    />
+  );
+}
 
 export default function RootLayout({
   children,
@@ -23,11 +28,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <ThemeBootstrap />
+      </head>
+      <body className="min-h-full bg-canvas text-ink dark:bg-black dark:text-gray-100">
+        <ThemeProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
