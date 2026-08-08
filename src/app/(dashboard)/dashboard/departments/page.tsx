@@ -9,17 +9,19 @@ import { Icon } from "@/components/icons";
 import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/input";
 import { Grid } from "@/components/ui/layout";
+import { PageHeader } from "@/components/ui/page";
 import { Avatar } from "@/components/ui/avatar";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Modal, ConfirmDialog } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
 interface DepartmentRow extends Department {
   committee: { id: string; year: string; isCurrent: boolean };
 }
 
-export default function DepartmentsPage() {
+function DepartmentsPage() {
   const { user } = useSession();
   const canManage = user?.permissions?.includes("department.manage") ?? false;
 
@@ -66,21 +68,18 @@ export default function DepartmentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-            Departments
-          </h1>
-          <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-            {depts.length} departments across club committees
-          </p>
-        </div>
-        {canManage && (
-          <Button icon="plus" onClick={() => setCreating(true)}>
-            New Department
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        icon="grid"
+        title="Departments"
+        subtitle={`${depts.length} departments across club committees`}
+        actions={
+          canManage && (
+            <Button icon="plus" onClick={() => setCreating(true)}>
+              New Department
+            </Button>
+          )
+        }
+      />
 
       {loading ? (
         <PageLoader label="Loading departments…" />
@@ -106,11 +105,11 @@ export default function DepartmentsPage() {
           {depts.map((d) => (
             <div
               key={d.id}
-              className="flex flex-col rounded-[22px] border border-line bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-card dark:border-white/10 dark:bg-[#1c1c1e]"
+              className="flex flex-col rounded-apple border border-line bg-card p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-card-hover dark:border-white/10 dark:bg-[#0f172a]"
             >
               <Link href={`/dashboard/departments/${d.id}`} className="group block">
                 <div className="flex items-start justify-between">
-                  <span className="flex size-11 items-center justify-center rounded-2xl bg-accent-soft text-accent dark:bg-accent/20 dark:text-blue-300">
+                  <span className="flex size-11 items-center justify-center rounded-2xl bg-accent-soft text-accent dark:bg-accent/20">
                     <Icon name="folder" size={20} />
                   </span>
                   {d.committee.isCurrent && (
@@ -119,13 +118,13 @@ export default function DepartmentsPage() {
                     </span>
                   )}
                 </div>
-                <h3 className="mt-4 text-[16.5px] font-bold tracking-tight text-ink group-hover:text-accent dark:text-gray-100">
+                <h3 className="mt-4 truncate text-[16.5px] font-bold tracking-tight text-ink group-hover:text-accent dark:text-slate-100">
                   {d.name}
                 </h3>
-                <p className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-sub dark:text-gray-400">
+                <p className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-sub dark:text-slate-400">
                   {d.description || "No description yet."}
                 </p>
-                <div className="mt-4 flex items-center gap-3 text-[12.5px] text-sub dark:text-gray-400">
+                <div className="mt-4 flex items-center gap-3 text-[12.5px] text-sub dark:text-slate-400">
                   <span className="flex items-center gap-1.5">
                     <Icon name="members" size={14} />
                     {d._count?.members ?? 0} members
@@ -147,7 +146,7 @@ export default function DepartmentsPage() {
                       <Avatar name={d.coordinator.user.name} size={22} />
                       <div className="min-w-0 leading-tight">
                         <p className="text-[11px] text-faint">Coordinator</p>
-                        <p className="truncate text-[12.5px] font-semibold text-ink dark:text-gray-200">
+                        <p className="truncate text-[12.5px] font-semibold text-ink dark:text-slate-200">
                           {d.coordinator.user.name}
                         </p>
                       </div>
@@ -202,6 +201,14 @@ export default function DepartmentsPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function DepartmentsPageRoute() {
+  return (
+    <RequirePermission permission="department.view">
+      <DepartmentsPage />
+    </RequirePermission>
   );
 }
 

@@ -1,3 +1,5 @@
+import { buildLoginUrl } from "@/lib/callback-url";
+
 export class ApiError extends Error {
   status: number;
 
@@ -6,6 +8,32 @@ export class ApiError extends Error {
     this.name = "ApiError";
     this.status = status;
   }
+}
+
+let redirectingToLogin = false;
+
+/**
+ * A 401 from any authenticated endpoint means the session is invalid/expired.
+ * Reset the client-side auth state (so no stale user data survives) and send
+ * the user to /login, preserving the page they were on as callbackUrl.
+ */
+function handleUnauthorized(currentPath: string): void {
+  if (typeof window === "undefined") return;
+  if (redirectingToLogin) return;
+  redirectingToLogin = true;
+  // Reset the guard shortly after; if the navigation above was interrupted
+  // (e.g. a beforeunload prompt) later 401s must be able to redirect again.
+  setTimeout(() => {
+    redirectingToLogin = false;
+  }, 5000);
+
+  window.dispatchEvent(new CustomEvent("dcms:unauthorized"));
+  window.location.assign(buildLoginUrl(currentPath, { expired: true }));
+}
+
+export function getCurrentPath(): string {
+  if (typeof window === "undefined") return "";
+  return window.location.pathname + window.location.search;
 }
 
 async function parseError(res: Response): Promise<ApiError> {
@@ -27,7 +55,12 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
       ...init?.headers,
     },
   });
-  if (!res.ok) throw await parseError(res);
+  if (!res.ok) {
+    // Session expired or invalidated server-side: exit to the unauthenticated
+    // state immediately instead of letting stale data render in the shell.
+    if (res.status === 401) handleUnauthorized(getCurrentPath());
+    throw await parseError(res);
+  }
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
 }

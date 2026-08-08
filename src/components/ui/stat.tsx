@@ -26,14 +26,14 @@ export function StatCard({
     purple: "bg-purple/12 text-purple dark:text-purple-300",
     red: "bg-red/10 text-red dark:text-red-400",
     teal: "bg-teal/10 text-teal dark:text-teal-300",
-    gray: "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-gray-400",
+    gray: "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-slate-400",
   };
 
   return (
     <div
       className={cn(
         "rounded-apple border border-line bg-card p-5 shadow-card transition-shadow hover:shadow-card-hover",
-        "dark:bg-[#1c1c1e] dark:border-white/10",
+        "dark:bg-[#0f172a] dark:border-white/10",
         className
       )}
     >
@@ -44,10 +44,10 @@ export function StatCard({
         {action}
       </div>
       <div className="mt-4">
-        <div className="text-[28px] font-bold leading-none tracking-tight text-ink dark:text-gray-100">
+        <div className="font-display text-[29px] font-bold leading-none tracking-tight text-ink dark:text-slate-100">
           {value}
         </div>
-        <div className="mt-1.5 text-[13px] font-medium text-sub dark:text-gray-400">{label}</div>
+        <div className="mt-1.5 text-[13px] font-medium text-sub dark:text-slate-400">{label}</div>
         {sub && <div className="mt-2 text-[13px] text-faint">{sub}</div>}
       </div>
     </div>
@@ -84,7 +84,7 @@ export function Chip({ children, className }: { children: ReactNode; className?:
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full bg-black/[0.05] px-2.5 py-1 text-[12.5px] font-medium text-sub",
-        "dark:bg-white/10 dark:text-gray-300",
+        "dark:bg-white/10 dark:text-slate-300",
         className
       )}
     >

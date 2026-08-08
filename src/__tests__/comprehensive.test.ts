@@ -1017,7 +1017,7 @@ describe("Comprehensive Backend Coverage Expansion", () => {
       const { GET: PUB_ABOUT } = await import("@/app/api/public/about/route");
       const res = await PUB_ABOUT();
       const data = await res.json();
-      expect(data.clubName).toBe("Drama Club");
+      expect(data.clubName).toBe("BRAC University Drama Club");
     });
   });
 

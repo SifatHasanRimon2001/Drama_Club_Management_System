@@ -17,6 +17,7 @@ import { Icon, type IconName } from "@/components/icons";
 import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/input";
 import { Grid } from "@/components/ui/layout";
+import { PageHeader } from "@/components/ui/page";
 import { StatusPill } from "@/components/ui/badge";
 import { Segmented } from "@/components/ui/segmented";
 import { Modal } from "@/components/ui/modal";
@@ -24,6 +25,7 @@ import { Pagination as Pager } from "@/components/ui/pagination";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
 type Filter = "all" | "upcoming" | Event["type"];
 
@@ -44,7 +46,7 @@ const TONE_CLASSES: Record<string, string> = {
   indigo: "bg-indigo/12 text-indigo dark:bg-indigo/20 dark:text-indigo-300",
 };
 
-export default function EventsPage() {
+function EventsPage() {
   const toast = useToast();
   const [rows, setRows] = useState<Event[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -97,19 +99,16 @@ export default function EventsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-            Events
-          </h1>
-          <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-            {pagination ? `${pagination.total} events` : "Club calendar"}
-          </p>
-        </div>
-        <Button icon="calendar" onClick={() => setCreating(true)}>
-          New Event
-        </Button>
-      </div>
+      <PageHeader
+        icon="calendar"
+        title="Events"
+        subtitle={pagination ? `${pagination.total} events` : "Club calendar"}
+        actions={
+          <Button icon="calendar" onClick={() => setCreating(true)}>
+            New Event
+          </Button>
+        }
+      />
 
       <Segmented<Filter>
         scrollable
@@ -149,7 +148,7 @@ export default function EventsPage() {
           {rows.map((ev) => (
             <div
               key={ev.id}
-              className="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3.5 transition hover:border-accent/30 sm:flex-nowrap dark:border-white/10 dark:bg-[#1c1c1e]"
+              className="flex flex-wrap items-center gap-3 rounded-apple border border-line bg-card px-4 py-3.5 shadow-card transition hover:border-accent/30 sm:flex-nowrap dark:border-white/10 dark:bg-[#0f172a]"
             >
               <span
                 className={cn(
@@ -160,17 +159,17 @@ export default function EventsPage() {
                 <Icon name={(EVENT_TYPE_ICONS[ev.type] as IconName) || "calendar"} size={17} />
               </span>
               <div className="min-w-0 flex-1 basis-52">
-                <p className="truncate text-[14.5px] font-semibold text-ink dark:text-gray-100">
+                <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
                   {ev.title}
                 </p>
-                <p className="truncate text-[12.5px] text-sub dark:text-gray-400">
+                <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
                   {formatDateTime(ev.startAt)}
                   {ev.endAt ? ` → ${formatDateTime(ev.endAt)}` : ""}
                   {ev.location ? ` · ${ev.location}` : ""}
                   {ev.department ? ` · ${ev.department.name}` : ""}
                 </p>
               </div>
-              <span className="hidden rounded-full bg-black/[0.05] px-2.5 py-1 text-[11.5px] font-medium text-sub sm:block dark:bg-white/10 dark:text-gray-300">
+              <span className="hidden rounded-full bg-black/[0.05] px-2.5 py-1 text-[11.5px] font-medium text-sub sm:block dark:bg-white/10 dark:text-slate-300">
                 {eventTypeLabel(ev.type)}
               </span>
               <StatusPill value={ev.status} />
@@ -220,6 +219,14 @@ export default function EventsPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function EventsPageRoute() {
+  return (
+    <RequirePermission permission="events.manage">
+      <EventsPage />
+    </RequirePermission>
   );
 }
 

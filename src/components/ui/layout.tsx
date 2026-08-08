@@ -14,30 +14,34 @@ const CONTAINER_SIZES = {
   page: "max-w-6xl",
   wide: "max-w-7xl",
   narrow: "max-w-5xl",
+  article: "max-w-4xl",
   form: "max-w-3xl",
+  panel: "max-w-2xl",
 } as const;
 
 export function Container({
   size = "page",
+  id,
   className,
   children,
 }: {
   size?: keyof typeof CONTAINER_SIZES;
+  id?: string;
   className?: string;
   children: ReactNode;
 }) {
   return (
-    <div className={cn("mx-auto w-full px-4 sm:px-6 lg:px-8", CONTAINER_SIZES[size], className)}>
+    <div id={id} className={cn("mx-auto w-full px-4 sm:px-6 lg:px-8", CONTAINER_SIZES[size], className)}>
       {children}
     </div>
   );
 }
 
 export const GRID = {
-  /** Single column (mobile), 2 up on tablet+, 3 up on desktop+. */
+  /** Single column (phone), 2 up on tablet+, 3 up on desktop+. */
   cards: "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3",
-  /** Single column, 2 on tablet+, 3 on desktop+, 4 on wide screens. */
-  cards4: "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+  /** Single column (phone), 2 on tablet, 3 on desktop, 4 on wide screens. */
+  cards4: "grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4",
   /** Two equal columns from tablet up (forms, detail rows). */
   split: "grid grid-cols-1 gap-5 sm:grid-cols-2",
   /** Stat tiles: 1 on phone, 2 on tablet, 4 on desktop. */

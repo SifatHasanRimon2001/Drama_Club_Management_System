@@ -126,7 +126,7 @@ async function main() {
   const revert = await fetch(`${BASE}/api/settings`, {
     method: "PATCH",
     headers,
-    body: JSON.stringify({ clubName: "Drama Club" }),
+    body: JSON.stringify({ clubName: "BRAC University Drama Club" }),
   });
   console.log(`  [cleanup] settings revert → ${revert.status}`);
 

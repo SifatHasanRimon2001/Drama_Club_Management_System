@@ -6,11 +6,11 @@ import { RealtimeProvider } from "@/lib/client/socket";
 
 export const metadata: Metadata = {
   title: {
-    default: "Drama Club",
-    template: "%s — Drama Club",
+    default: "BRAC University Drama Club",
+    template: "%s — BRAC University Drama Club",
   },
   description:
-    "Centralized platform for managing drama club operations, members, productions, and events.",
+    "Centralized platform for managing BRAC University Drama Club operations, members, productions, and events.",
 };
 
 function ThemeBootstrap() {
@@ -33,7 +33,7 @@ export default function RootLayout({
       <head>
         <ThemeBootstrap />
       </head>
-      <body className="min-h-full bg-canvas text-ink dark:bg-black dark:text-gray-100">
+      <body className="min-h-full bg-canvas text-ink dark:bg-[#0b1220] dark:text-slate-100">
         <ThemeProvider>
           <ToastProvider>
             <RealtimeProvider>{children}</RealtimeProvider>

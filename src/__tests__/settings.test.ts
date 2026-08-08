@@ -44,13 +44,13 @@ describe("Settings API", () => {
 
   describe("GET /api/settings", () => {
     it("returns settings as key-value map", async () => {
-      await prisma.systemSetting.create({ data: { key: "clubName", value: "Drama Club" } });
+      await prisma.systemSetting.create({ data: { key: "clubName", value: "BRAC University Drama Club" } });
 
       const res = await GET();
       const data = await res.json();
 
       expect(res.status).toBe(200);
-      expect(data.clubName).toBe("Drama Club");
+      expect(data.clubName).toBe("BRAC University Drama Club");
     });
 
     it("returns empty object when no settings", async () => {

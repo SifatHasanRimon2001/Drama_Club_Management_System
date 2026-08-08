@@ -296,7 +296,7 @@ describe("Public API Endpoints", () => {
     it("returns defaults when no settings", async () => {
       const res = await ABOUT_GET();
       const data = await res.json();
-      expect(data.clubName).toBe("Drama Club");
+      expect(data.clubName).toBe("BRAC University Drama Club");
     });
 
     it("returns configured settings and real counts", async () => {

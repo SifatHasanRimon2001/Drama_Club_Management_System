@@ -1,6 +1,6 @@
-# Drama Club Management System (DCMS)
+# BRAC University Drama Club Management System (DCMS)
 
-A centralized web platform for managing the complete lifecycle of a drama club — from member registration and department management to productions, club announcements, media galleries, and promotion workflows — now with **real-time updates** via Socket.IO.
+A centralized web platform for managing the complete lifecycle of the **BRAC University Drama Club** — from member registration and department management to productions, club announcements, media galleries, and promotion workflows — now with **real-time updates** via Socket.IO.
 
 **Version:** 1.2 | **Status:** MVP Complete + Realtime
 
@@ -101,9 +101,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "C:\path\to\project\run-webs
 
 `run-website.ps1` clears the console, checks Node/npm, creates `.env` from
 `.env.example` if missing, installs deps, runs `prisma generate` + `db push`,
-seeds the demo data, opens the browser and starts the server on
-`http://localhost:3000`. Flags: `-Prod`, `-SkipInstall`, `-SkipDb`,
-`-SkipSeed`, `-NoBrowser`, `-Port <n>`.
+**resets the database and seeds a clean demo dataset** (`db:reset`), verifies
+database integrity (`verify-db.ts` — aborts if any orphaned rows exist), opens
+the browser and starts the server on `http://localhost:3000`. Flags:
+`-Prod`, `-SkipInstall`, `-SkipDb`, `-SkipSeed`, `-SkipVerify`, `-FullCheck`
+(runs `tsc --noEmit` + `npm test` before seeding), `-NoBrowser`, `-Port <n>`.
 
 ### Manual setup
 
@@ -154,7 +156,9 @@ EMAIL_FROM="noreply@dcms.local"
 
 ### Seed Data
 
-The idempotent seed (`prisma/seed.ts`) creates a rich, realistic dataset:
+The self-healing seed (`prisma/seed.ts`) rebuilds user + content data and upserts
+reference data (roles, committees, departments, windows, albums, settings) so
+re-running it always yields an identical, clean dataset:
 
 | Data                          | Count / Notes                                                        |
 | ----------------------------- | -------------------------------------------------------------------- |
@@ -162,15 +166,15 @@ The idempotent seed (`prisma/seed.ts`) creates a rich, realistic dataset:
 | Roles                         | 13 (Admin, Member, President, VP, Treasurer, Secretary, coordinators…) |
 | Committees                    | 3 (2023–24, 2024–25 dissolved + current 2025–26 ACTIVE)              |
 | Departments                   | 10 current + 4 past-committee departments, with coordinators          |
-| Members                       | 30 named members (Active/Pending/Alumni/Inactive/Suspended) + admin + demo + converted applicants |
+| Members                       | 72 Bangladeshi named members (Active/Pending/Alumni/Inactive/Suspended) + admin + demo + converted applicants |
 | Committee roles               | Officers assigned on current + past committees with history           |
-| Tasks                         | 16 department tasks across TODO / IN_PROGRESS / DONE                  |
-| Events                        | 29 (completed, ongoing, upcoming, drafts, cancelled)                  |
+| Tasks                         | 36 department tasks across TODO / IN_PROGRESS / DONE                  |
+| Events                        | 56 (completed, ongoing, upcoming, drafts, cancelled)                  |
 | Registration windows          | 5 (closed, LIVE Fall 2026, draft, scheduled)                          |
-| Applicants                    | 52 submissions across windows with responses & skills                |
-| Club updates                  | 16 rich-text announcements                                           |
-| Gallery                       | 8 albums / 34 items                                                  |
-| Promotions                    | 14 requests in every workflow state                                  |
+| Applicants                    | 96 submissions across windows with responses & skills                |
+| Club updates                  | 26 rich-text announcements                                           |
+| Gallery                       | 12 albums / 52 items                                                 |
+| Promotions                    | 26 requests in every workflow state                                  |
 | Notifications / Audit logs    | Seeded per user + audit trail                                        |
 
 **Test accounts**
@@ -179,10 +183,12 @@ The idempotent seed (`prisma/seed.ts`) creates a rich, realistic dataset:
 | ------ | --------------------- | ------------ |
 | Admin  | `admin@dcms.local`    | `admin123`   |
 | Member | `demo@dcms.local`     | `demo123`    |
-| Members| any `DCMS-xxx` member (e.g. `sarah.chen@university.edu`) | `member123` |
+| Members| any `DCMS-xxx` member (e.g. `rafiqul.islam@bracu.ac.bd`) | `member123` |
 
 > ⚠️ **`npm test` truncates the dev database** (unit tests share the
 > `DATABASE_URL` in `.env`). After running tests, re-seed with `npm run db:seed`.
+> `npm run db:seed` rebuilds the demo dataset from scratch (user + content rows),
+> so it also repairs any stale or partially-seeded data.
 
 ## API Routes (62 route modules)
 

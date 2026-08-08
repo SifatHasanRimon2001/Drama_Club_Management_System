@@ -5,6 +5,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Card, CardBody } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
 import { Container, Grid } from "@/components/ui/layout";
+import { PageIntro } from "@/components/ui/page";
 
 export const metadata = { title: "Departments" };
 
@@ -15,16 +16,11 @@ export default async function DepartmentsPage() {
 
   return (
     <Container size="page" className="pb-24 pt-28">
-      <div className="max-w-3xl">
-        <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">
-          How we work
-        </p>
-        <h1 className="display-title mt-3 text-ink dark:text-gray-50">Departments</h1>
-        <p className="mt-5 max-w-2xl text-[17px] leading-relaxed text-sub dark:text-gray-400">
-          Every production is a team effort. Our departments cover everything from script
-          to spotlight, marketing to stage management.
-        </p>
-      </div>
+      <PageIntro
+        eyebrow="How we work"
+        title="Departments"
+        subtitle="Every production is a team effort. Our departments cover everything from script to spotlight, marketing to stage management."
+      />
 
       {!departments || departments.length === 0 ? (
         <div className="mt-14">
@@ -50,11 +46,11 @@ export default async function DepartmentsPage() {
                     {d._count.members} member{d._count.members === 1 ? "" : "s"}
                   </span>
                 </div>
-                <h2 className="mt-5 text-[19px] font-bold tracking-tight text-ink dark:text-gray-100">
+                <h2 className="mt-5 truncate text-[19px] font-bold tracking-tight text-ink dark:text-slate-100">
                   {d.name}
                 </h2>
                 {d.description && (
-                  <p className="mt-2 text-[14px] leading-relaxed text-sub dark:text-gray-400">
+                  <p className="mt-2 text-[14px] leading-relaxed text-sub dark:text-slate-400">
                     {d.description}
                   </p>
                 )}
@@ -62,9 +58,9 @@ export default async function DepartmentsPage() {
                   {d.coordinator ? (
                     <>
                       <Avatar name={d.coordinator.user.name} src={d.coordinator.user.image} size={30} />
-                      <p className="min-w-0 truncate text-[13px] text-sub dark:text-gray-400">
+                      <p className="min-w-0 truncate text-[13px] text-sub dark:text-slate-400">
                         Coordinated by{" "}
-                        <span className="font-medium text-ink dark:text-gray-200">
+                        <span className="font-medium text-ink dark:text-slate-200">
                           {d.coordinator.user.name}
                         </span>
                       </p>

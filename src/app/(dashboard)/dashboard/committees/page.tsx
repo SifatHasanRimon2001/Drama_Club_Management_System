@@ -10,14 +10,16 @@ import { Icon } from "@/components/icons";
 import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/input";
 import { Grid } from "@/components/ui/layout";
+import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
-export default function CommitteesPage() {
+function CommitteesPage() {
   const { user } = useSession();
   const canManage = user?.permissions?.includes("committee.manage") ?? false;
   const [committees, setCommittees] = useState<Committee[]>([]);
@@ -47,21 +49,18 @@ export default function CommitteesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-            Committees
-          </h1>
-          <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-            Executive committees by year
-          </p>
-        </div>
-        {canManage && (
-          <Button icon="plus" onClick={() => setCreating(true)}>
-            New Committee
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        icon="trophy"
+        title="Committees"
+        subtitle="Executive committees by year"
+        actions={
+          canManage && (
+            <Button icon="plus" onClick={() => setCreating(true)}>
+              New Committee
+            </Button>
+          )
+        }
+      />
 
       {loading ? (
         <PageLoader label="Loading committees…" />
@@ -105,6 +104,14 @@ export default function CommitteesPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function CommitteesPageRoute() {
+  return (
+    <RequirePermission permission="committee.manage">
+      <CommitteesPage />
+    </RequirePermission>
   );
 }
 
@@ -187,8 +194,8 @@ function CommitteeCard({
             className={cn(
               "flex size-10 items-center justify-center rounded-xl",
               committee.isCurrent
-                ? "bg-accent text-white"
-                : "bg-black/[0.05] text-sub dark:bg-white/10 dark:text-gray-400"
+                ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white"
+                : "bg-black/[0.05] text-sub dark:bg-white/10 dark:text-slate-400"
             )}
           >
             <Icon name="trophy" size={18} />
@@ -202,7 +209,7 @@ function CommitteeCard({
                 </span>
               )}
             </CardTitle>
-            <p className="text-[12.5px] text-sub dark:text-gray-400">
+            <p className="text-[12.5px] text-sub dark:text-slate-400">
               {formatDate(committee.startDate)}
               {committee.endDate ? ` → ${formatDate(committee.endDate)}` : ""} ·{" "}
               {active.length} officers · {committee.departments.length} departments
@@ -222,7 +229,7 @@ function CommitteeCard({
       </CardHeader>
       <CardBody>
         {active.length === 0 ? (
-          <p className="py-4 text-center text-[13.5px] text-sub dark:text-gray-400">
+          <p className="py-4 text-center text-[13.5px] text-sub dark:text-slate-400">
             No officers assigned to this committee yet.
           </p>
         ) : (
@@ -234,7 +241,7 @@ function CommitteeCard({
               >
                 <Avatar name={mr.member.user.name} src={mr.member.user.image} size={38} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13.5px] font-semibold text-ink dark:text-gray-100">
+                  <p className="truncate text-[13.5px] font-semibold text-ink dark:text-slate-100">
                     {mr.member.user.name}
                   </p>
                   <p className="truncate text-[12px] font-medium text-accent">

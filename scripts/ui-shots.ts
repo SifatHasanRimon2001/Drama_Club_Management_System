@@ -52,12 +52,10 @@ async function main() {
   mkdirSync(OUT, { recursive: true });
   const browser: Browser = await chromium.launch({ channel: "chrome" });
 
-  for (const { width, label } of WIDTHS) {
+  for (const { width } of WIDTHS) {
     const page: Page = await browser.newPage({ viewport: { width, height: 900 } });
-    let shotLabel = label;
     if (width === 375) {
       await login(page);
-      shotLabel = "phone";
     }
     for (const path of SHOTS) {
       if (path === "/dashboard" && width !== 375) continue; // already authed only on phone pass

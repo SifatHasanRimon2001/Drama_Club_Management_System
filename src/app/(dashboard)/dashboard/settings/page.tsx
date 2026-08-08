@@ -9,8 +9,10 @@ import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
 import { PageLoader } from "@/components/ui/feedback";
 import { Grid } from "@/components/ui/layout";
+import { PageHeader } from "@/components/ui/page";
 import { useToast } from "@/components/ui/toast";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { RequirePermission } from "@/components/require-permission";
 
 interface SettingsMap {
   clubName?: string;
@@ -32,7 +34,7 @@ interface StorageStatus {
   missing: string[];
 }
 
-export default function SettingsPage() {
+function SettingsPage() {
   const toast = useToast();
   const [settings, setSettings] = useState<SettingsMap | null>(null);
   const [storage, setStorage] = useState<StorageStatus | null>(null);
@@ -120,8 +122,8 @@ export default function SettingsPage() {
           <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-red/10 text-red" aria-hidden="true">
             <Icon name="warn" size={26} />
           </span>
-          <h3 className="text-[16px] font-semibold text-ink dark:text-gray-100">Couldn&apos;t load settings</h3>
-          <p className="mt-1 max-w-sm text-sm text-sub dark:text-gray-400">{error}</p>
+          <h3 className="text-[16px] font-semibold text-ink dark:text-slate-100">Couldn&apos;t load settings</h3>
+          <p className="mt-1 max-w-sm text-sm text-sub dark:text-slate-400">{error}</p>
         </div>
       );
     }
@@ -130,14 +132,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-          Settings
-        </h1>
-        <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-          Club identity and site configuration
-        </p>
-      </div>
+      <PageHeader icon="settings" title="Settings" subtitle="Club identity and site configuration" />
 
       <form onSubmit={save} className="space-y-6">
         <Card>
@@ -150,7 +145,7 @@ export default function SettingsPage() {
                 <Input
                   value={form.clubName}
                   onChange={(e) => setForm({ ...form, clubName: e.target.value })}
-                  placeholder="Drama Club"
+                  placeholder="BRAC University Drama Club"
                 />
               </Field>
               <Field label="Contact email">
@@ -158,7 +153,7 @@ export default function SettingsPage() {
                   type="email"
                   value={form.contactEmail}
                   onChange={(e) => setForm({ ...form, contactEmail: e.target.value })}
-                  placeholder="club@university.edu"
+                  placeholder="club@bracu.ac.bd"
                 />
               </Field>
             </Grid>
@@ -175,7 +170,7 @@ export default function SettingsPage() {
                 <Input
                   value={form.contactPhone}
                   onChange={(e) => setForm({ ...form, contactPhone: e.target.value })}
-                  placeholder="+1 (555) 000-0000"
+                  placeholder="+880 1XXX-XXXXXX"
                 />
               </Field>
               <Field label="Logo URL" optional>
@@ -213,8 +208,8 @@ export default function SettingsPage() {
           </CardHeader>
           <CardBody className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-[14.5px] font-medium text-ink dark:text-gray-100">Theme</p>
-              <p className="mt-0.5 text-[12.5px] text-sub dark:text-gray-400">
+              <p className="text-[14.5px] font-medium text-ink dark:text-slate-100">Theme</p>
+              <p className="mt-0.5 text-[12.5px] text-sub dark:text-slate-400">
                 System matches your device automatically.
               </p>
             </div>
@@ -229,10 +224,10 @@ export default function SettingsPage() {
           <CardBody className="space-y-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[14.5px] font-medium text-ink dark:text-gray-100">
+                <p className="text-[14.5px] font-medium text-ink dark:text-slate-100">
                   Allow registration
                 </p>
-                <p className="mt-0.5 text-[12.5px] text-sub dark:text-gray-400">
+                <p className="mt-0.5 text-[12.5px] text-sub dark:text-slate-400">
                   Show open registration windows on the public site.
                 </p>
               </div>
@@ -244,10 +239,10 @@ export default function SettingsPage() {
             </div>
             <div className="flex items-start justify-between gap-4 border-t border-line pt-5 dark:border-white/10">
               <div>
-                <p className="text-[14.5px] font-medium text-ink dark:text-gray-100">
+                <p className="text-[14.5px] font-medium text-ink dark:text-slate-100">
                   Maintenance mode
                 </p>
-                <p className="mt-0.5 text-[12.5px] text-sub dark:text-gray-400">
+                <p className="mt-0.5 text-[12.5px] text-sub dark:text-slate-400">
                   Temporarily hide the public site.
                 </p>
               </div>
@@ -269,10 +264,10 @@ export default function SettingsPage() {
               <div className="flex items-start gap-3 rounded-2xl bg-red/10 px-4 py-3.5 dark:bg-red/15">
                 <Icon name="warn" size={17} className="mt-0.5 shrink-0 text-red dark:text-red-300" />
                 <div>
-                  <p className="text-[14px] font-semibold text-ink dark:text-gray-100">
+                  <p className="text-[14px] font-semibold text-ink dark:text-slate-100">
                     Couldn&apos;t check storage configuration
                   </p>
-                  <p className="mt-0.5 text-[13px] text-sub dark:text-gray-400">
+                  <p className="mt-0.5 text-[13px] text-sub dark:text-slate-400">
                     The storage status endpoint didn&apos;t respond.{" "}
                     <button
                       type="button"
@@ -294,10 +289,10 @@ export default function SettingsPage() {
                 <div className="flex items-start gap-3 rounded-2xl bg-green/12 px-4 py-3.5 dark:bg-green/20">
                   <span className="mt-1 size-2.5 shrink-0 rounded-full bg-green" />
                   <div>
-                    <p className="text-[14px] font-semibold text-ink dark:text-gray-100">
+                    <p className="text-[14px] font-semibold text-ink dark:text-slate-100">
                       Connected to {storage.bucket}
                     </p>
-                    <p className="mt-0.5 text-[13px] text-sub dark:text-gray-400">
+                    <p className="mt-0.5 text-[13px] text-sub dark:text-slate-400">
                       Gallery uploads are stored in Cloudflare R2.
                       {storage.publicUrl
                         ? ` Public URL: ${storage.publicUrl}`
@@ -313,10 +308,10 @@ export default function SettingsPage() {
                     className="mt-0.5 shrink-0 text-orange dark:text-orange-400"
                   />
                   <div>
-                    <p className="text-[14px] font-semibold text-ink dark:text-gray-100">
+                    <p className="text-[14px] font-semibold text-ink dark:text-slate-100">
                       Storage is not configured
                     </p>
-                    <p className="mt-0.5 text-[13px] leading-relaxed text-sub dark:text-gray-400">
+                    <p className="mt-0.5 text-[13px] leading-relaxed text-sub dark:text-slate-400">
                       Gallery uploads will be disabled until the following environment variables
                       are set in <code className="rounded bg-black/[0.06] px-1.5 py-0.5 font-mono text-[12px] dark:bg-white/10">.env</code>:
                     </p>
@@ -325,24 +320,24 @@ export default function SettingsPage() {
                         (v) => (
                           <code
                             key={v}
-                            className="rounded-full bg-black/[0.06] px-2.5 py-1 font-mono text-[11.5px] font-medium text-ink dark:bg-white/10 dark:text-gray-200"
+                            className="rounded-full bg-black/[0.06] px-2.5 py-1 font-mono text-[11.5px] font-medium text-ink dark:bg-white/10 dark:text-slate-200"
                           >
                             {v}
                           </code>
                         )
                       )}
-                      <code className="rounded-full bg-black/[0.06] px-2.5 py-1 font-mono text-[11.5px] font-medium text-ink dark:bg-white/10 dark:text-gray-200">
+                      <code className="rounded-full bg-black/[0.06] px-2.5 py-1 font-mono text-[11.5px] font-medium text-ink dark:bg-white/10 dark:text-slate-200">
                         R2_PUBLIC_URL
                       </code>
                     </div>
-                    <p className="mt-2.5 text-[12.5px] text-faint dark:text-gray-500">
+                    <p className="mt-2.5 text-[12.5px] text-faint dark:text-slate-400">
                       Restart the server after updating environment variables.
                     </p>
                   </div>
                 </div>
               )
             ) : (
-              <p className="text-[13.5px] text-sub dark:text-gray-400">
+              <p className="text-[13.5px] text-sub dark:text-slate-400">
                 Checking storage configuration…
               </p>
             )}
@@ -356,5 +351,13 @@ export default function SettingsPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function SettingsPageRoute() {
+  return (
+    <RequirePermission permission="settings.manage">
+      <SettingsPage />
+    </RequirePermission>
   );
 }

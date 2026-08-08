@@ -17,7 +17,9 @@ import { Modal } from "@/components/ui/modal";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
 import { Grid } from "@/components/ui/layout";
+import { BackLink } from "@/components/ui/page";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
 interface ProfileMember extends Omit<Member, "departments" | "committeeRoles"> {
   user: { id: string; name: string; email: string; image: string | null };
@@ -42,20 +44,20 @@ function DetailRow({
 }) {
   return (
     <div className="flex items-start gap-3 py-2.5">
-      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-faint dark:bg-white/10 dark:text-gray-500">
+      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-faint dark:bg-white/10 dark:text-slate-400">
         <Icon name={icon as "user"} size={15} />
       </span>
       <div className="min-w-0">
-        <p className="text-[12px] font-medium uppercase tracking-wide text-faint dark:text-gray-500">
+        <p className="text-[12px] font-medium uppercase tracking-wide text-faint dark:text-slate-400">
           {label}
         </p>
-        <p className="mt-0.5 text-[14px] font-medium text-ink dark:text-gray-100">{children}</p>
+        <p className="mt-0.5 text-[14px] font-medium text-ink dark:text-slate-100">{children}</p>
       </div>
     </div>
   );
 }
 
-export default function MemberProfilePage() {
+function MemberProfilePage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const { user } = useSession();
@@ -112,12 +114,7 @@ export default function MemberProfilePage() {
 
   return (
     <div className="space-y-6">
-      <Link
-        href="/dashboard/members"
-        className="inline-flex items-center gap-1 text-[13.5px] font-medium text-sub transition hover:text-ink dark:text-gray-400 dark:hover:text-gray-200"
-      >
-        <Icon name="chevron-left" size={15} /> Members
-      </Link>
+      <BackLink href="/dashboard/members">Members</BackLink>
 
       <Card>
         <CardBody>
@@ -125,7 +122,7 @@ export default function MemberProfilePage() {
             <Avatar name={member.user.name} src={photo} size={76} />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="text-[24px] font-bold tracking-tight text-ink dark:text-gray-100">
+                <h1 className="text-[24px] font-bold tracking-tight text-ink dark:text-slate-100">
                   {member.user.name}
                 </h1>
                 <StatusPill value={member.status} />
@@ -135,8 +132,8 @@ export default function MemberProfilePage() {
                   </span>
                 )}
               </div>
-              <p className="mt-1 text-[14px] text-sub dark:text-gray-400">{member.user.email}</p>
-              <p className="mt-1 text-[12.5px] text-faint dark:text-gray-500">
+              <p className="mt-1 text-[14px] text-sub dark:text-slate-400">{member.user.email}</p>
+              <p className="mt-1 text-[12.5px] text-faint dark:text-slate-400">
                 {member.memberCode} · Joined {formatDate(member.joiningDate)}
               </p>
             </div>
@@ -189,7 +186,7 @@ export default function MemberProfilePage() {
                     <Link
                       key={d.departmentId}
                       href={`/dashboard/departments/${d.department.id}`}
-                      className="rounded-full bg-black/[0.05] px-3 py-1.5 text-[13px] font-medium text-ink transition hover:bg-black/[0.08] dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15"
+                      className="rounded-full bg-black/[0.05] px-3 py-1.5 text-[13px] font-medium text-ink transition hover:bg-black/[0.08] dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/15"
                     >
                       {d.department.name}
                     </Link>
@@ -233,6 +230,19 @@ export default function MemberProfilePage() {
   );
 }
 
+export default function MemberProfilePageRoute() {
+  const params = useParams<{ id: string }>();
+  const { user } = useSession();
+  // Members can always open their own profile; viewing anyone else's profile
+  // requires the member.view permission.
+  const isOwner = !!user?.memberId && user.memberId === params.id;
+  return (
+    <RequirePermission permission="member.view" extraAllowed={isOwner}>
+      <MemberProfilePage />
+    </RequirePermission>
+  );
+}
+
 function CommitteeSection({
   title,
   roles,
@@ -243,7 +253,7 @@ function CommitteeSection({
   if (roles.length === 0) return null;
   return (
     <div>
-      <p className="text-[12px] font-semibold uppercase tracking-wide text-faint dark:text-gray-500">
+      <p className="text-[12px] font-semibold uppercase tracking-wide text-faint dark:text-slate-400">
         {title}
       </p>
       <div className="mt-2 space-y-2">
@@ -257,10 +267,10 @@ function CommitteeSection({
                 <Icon name="role" size={14} />
               </span>
               <div className="min-w-0">
-                <p className="truncate text-[13.5px] font-semibold text-ink dark:text-gray-100">
+                <p className="truncate text-[13.5px] font-semibold text-ink dark:text-slate-100">
                   {r.role.name}
                 </p>
-                <p className="text-[12px] text-sub dark:text-gray-400">{r.committee.year}</p>
+                <p className="text-[12px] text-sub dark:text-slate-400">{r.committee.year}</p>
               </div>
             </div>
             <span className="text-[12px] text-faint">
@@ -319,10 +329,10 @@ function EditProfileModal({
         <div className="flex items-center gap-3 rounded-2xl bg-black/[0.03] p-3 dark:bg-white/5">
           <Avatar name={member.user.name} src={member.photoUrl || member.user.image} size={40} />
           <div className="min-w-0">
-            <p className="truncate text-[14px] font-semibold text-ink dark:text-gray-100">
+            <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
               {member.user.name}
             </p>
-            <p className="truncate text-[12px] text-sub dark:text-gray-400">
+            <p className="truncate text-[12px] text-sub dark:text-slate-400">
               {member.memberCode} · {member.user.email}
             </p>
           </div>

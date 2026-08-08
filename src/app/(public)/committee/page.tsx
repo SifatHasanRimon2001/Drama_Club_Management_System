@@ -6,6 +6,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Card, CardBody } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
 import { Container, Grid } from "@/components/ui/layout";
+import { PageIntro } from "@/components/ui/page";
 
 export const metadata = { title: "Committee" };
 
@@ -36,25 +37,23 @@ export default async function CommitteePage() {
 
   return (
     <Container size="page" className="pb-24 pt-28">
-      <div className="max-w-3xl">
-        <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">
-          Leadership
-        </p>
-        <h1 className="display-title mt-3 text-ink dark:text-gray-50">
-          Committee {committee.year}
-        </h1>
-        <p className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[15px] text-sub dark:text-gray-400">
-          <span className="inline-flex items-center gap-1.5">
-            <Icon name="calendar" size={15} />
-            {formatDate(committee.startDate)}
-            {committee.endDate ? ` — ${formatDate(committee.endDate)}` : " — Present"}
+      <PageIntro
+        eyebrow="Leadership"
+        title={`Committee ${committee.year}`}
+        subtitle={
+          <span className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span className="inline-flex items-center gap-1.5">
+              <Icon name="calendar" size={15} />
+              {formatDate(committee.startDate)}
+              {committee.endDate ? ` — ${formatDate(committee.endDate)}` : " — Present"}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Icon name="users" size={15} />
+              {committee.memberRoles.filter((m) => !m.endedAt).length} members
+            </span>
           </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Icon name="users" size={15} />
-            {committee.memberRoles.filter((m) => !m.endedAt).length} members
-          </span>
-        </p>
-      </div>
+        }
+      />
 
       {entries.length === 0 ? (
         <div className="mt-14">
@@ -68,7 +67,7 @@ export default async function CommitteePage() {
         <div className="mt-14 space-y-12">
           {entries.map(([roleName, members]) => (
             <section key={roleName}>
-              <h2 className="flex items-center gap-2.5 text-[20px] font-bold tracking-tight text-ink dark:text-gray-100">
+              <h2 className="flex items-center gap-2.5 text-[20px] font-bold tracking-tight text-ink dark:text-slate-100">
                 <span className="h-5 w-1 rounded-full bg-accent" />
                 {roleName}
               </h2>
@@ -77,10 +76,10 @@ export default async function CommitteePage() {
                   <Card key={mr.id}>
                     <CardBody className="flex flex-col items-center px-5 py-7 text-center">
                       <Avatar name={mr.member.user.name} src={mr.member.user.image} size={64} />
-                      <p className="mt-4 text-[15.5px] font-semibold text-ink dark:text-gray-100">
+                      <p className="mt-4 truncate text-[15.5px] font-semibold text-ink dark:text-slate-100">
                         {mr.member.user.name}
                       </p>
-                      <p className="mt-1 text-[13px] text-sub dark:text-gray-400">
+                      <p className="mt-1 text-[13px] text-sub dark:text-slate-400">
                         Member since {formatDate(mr.startedAt).split(",")[0]}
                       </p>
                     </CardBody>
@@ -94,14 +93,14 @@ export default async function CommitteePage() {
 
       {committee.departments && committee.departments.length > 0 && (
         <div className="mt-20">
-          <h2 className="text-[20px] font-bold tracking-tight text-ink dark:text-gray-100">
+          <h2 className="text-[20px] font-bold tracking-tight text-ink dark:text-slate-100">
             Departments in this term
           </h2>
           <div className="mt-5 flex flex-wrap gap-2.5">
             {committee.departments.map((d) => (
               <span
                 key={d.id}
-                className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3.5 py-1.5 text-[13px] font-medium text-ink shadow-card dark:bg-[#1c1c1e] dark:border-white/10 dark:text-gray-200"
+                className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3.5 py-1.5 text-[13px] font-medium text-ink shadow-card dark:bg-[#0f172a] dark:border-white/10 dark:text-slate-200"
               >
                 <Icon name="folder" size={14} className="text-purple" />
                 {d.name}

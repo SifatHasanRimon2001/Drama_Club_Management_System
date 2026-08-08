@@ -75,7 +75,7 @@ emits a realtime `change` event that clients receive live.
 | ----- | ------------------ | -------- |
 | Admin | `admin@dcms.local` | `admin123` |
 | Member| `demo@dcms.local`  | `demo123` |
-| Member| any `DCMS-xxx` member (e.g. `sarah.chen@university.edu`) | `member123` |
+| Member| any `DCMS-xxx` member (e.g. `rafiqul.islam@bracu.ac.bd`) | `member123` |
 
 ## CI
 

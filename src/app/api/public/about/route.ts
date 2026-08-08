@@ -15,7 +15,7 @@ export async function GET() {
     }
 
     return NextResponse.json({
-      clubName: settingsMap.clubName || "Drama Club",
+      clubName: settingsMap.clubName || "BRAC University Drama Club",
       clubDescription: settingsMap.clubDescription || "",
       logoUrl: settingsMap.logoUrl || null,
       contactEmail: settingsMap.contactEmail || null,

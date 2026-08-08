@@ -11,6 +11,7 @@ import { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Field, Input, SearchInput, Select } from "@/components/ui/input";
 import { Toolbar } from "@/components/ui/layout";
+import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusPill } from "@/components/ui/badge";
@@ -20,6 +21,7 @@ import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
 import { Modal } from "@/components/ui/modal";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
 interface MemberRow extends Omit<Member, "departments" | "committeeRoles"> {
   departments: { departmentId: string; department: { id: string; name: string } }[];
@@ -29,7 +31,7 @@ interface MemberRow extends Omit<Member, "departments" | "committeeRoles"> {
   }[];
 }
 
-export default function MembersPage() {
+function MembersPage() {
   const { user } = useSession();
   const toast = useToast();
   const canCreate = user?.permissions?.includes("member.create") ?? false;
@@ -84,25 +86,22 @@ export default function MembersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-            Members
-          </h1>
-          <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-            {pagination ? `${pagination.total} members in the club` : "Club directory"}
-          </p>
-        </div>
-        {canCreate && (
-          <Link
-            href="/dashboard/members/new"
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-sm font-medium text-white shadow-[0_1px_2px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,113,227,0.25)] transition hover:bg-accent-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            <Icon name="plus" size={16} />
-            Add Member
-          </Link>
-        )}
-      </div>
+      <PageHeader
+        icon="members"
+        title="Members"
+        subtitle={pagination ? `${pagination.total} members in the club` : "Club directory"}
+        actions={
+          canCreate && (
+            <Link
+              href="/dashboard/members/new"
+              className="inline-flex h-11 items-center gap-2 rounded-full bg-gradient-to-br from-gold-light via-gold to-[#1e40af] px-5 text-sm font-bold text-white shadow-gold transition hover:brightness-110 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              <Icon name="plus" size={16} />
+              Add Member
+            </Link>
+          )
+        }
+      />
 
       <Toolbar>
         <div className="min-w-[220px] flex-1">
@@ -153,11 +152,11 @@ export default function MembersPage() {
                 <div className="min-w-0 flex-1">
                   <Link
                     href={`/dashboard/members/${m.id}`}
-                    className="truncate text-[14.5px] font-semibold text-ink transition hover:text-accent dark:text-gray-100 dark:hover:text-accent"
+                    className="truncate text-[14.5px] font-semibold text-ink transition hover:text-accent dark:text-slate-100 dark:hover:text-accent"
                   >
                     {m.user.name}
                   </Link>
-                  <p className="truncate text-[12.5px] text-sub dark:text-gray-400">
+                  <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
                     {m.memberCode} · {m.user.email}
                   </p>
                 </div>
@@ -165,7 +164,7 @@ export default function MembersPage() {
                   {m.departments.slice(0, 3).map((d) => (
                     <span
                       key={d.departmentId}
-                      className="rounded-full bg-black/[0.05] px-2.5 py-1 text-[11.5px] font-medium text-sub dark:bg-white/10 dark:text-gray-400"
+                      className="rounded-full bg-black/[0.05] px-2.5 py-1 text-[11.5px] font-medium text-sub dark:bg-white/10 dark:text-slate-400"
                     >
                       {d.department.name}
                     </span>
@@ -190,7 +189,7 @@ export default function MembersPage() {
                           "flex size-8 items-center justify-center rounded-full transition",
                           open
                             ? "bg-black/[0.07] dark:bg-white/15"
-                            : "text-faint hover:bg-black/[0.05] hover:text-ink dark:hover:bg-white/10 dark:hover:text-gray-200"
+                            : "text-faint hover:bg-black/[0.05] hover:text-ink dark:hover:bg-white/10 dark:hover:text-slate-200"
                         )}
                         aria-label="Member actions"
                       >
@@ -205,7 +204,7 @@ export default function MembersPage() {
                             setEditing(m);
                             close();
                           }}
-                          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:text-gray-200 dark:hover:bg-white/10"
+                          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:text-slate-200 dark:hover:bg-white/10"
                         >
                           <Icon name="edit" size={15} /> Edit details
                         </button>
@@ -216,7 +215,7 @@ export default function MembersPage() {
                               void updateStatus(m, s);
                               close();
                             }}
-                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:text-gray-200 dark:hover:bg-white/10"
+                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:text-slate-200 dark:hover:bg-white/10"
                           >
                             <Icon name="flag" size={15} /> Mark {membershipStatusLabel(s)}
                           </button>
@@ -257,6 +256,14 @@ export default function MembersPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function MembersPageRoute() {
+  return (
+    <RequirePermission permission="member.view">
+      <MembersPage />
+    </RequirePermission>
   );
 }
 
@@ -303,10 +310,10 @@ function EditMemberModal({
         <div className="flex items-center gap-3 rounded-2xl bg-black/[0.03] p-3 dark:bg-white/5">
           <Avatar name={member.user.name} src={member.user.image} size={40} />
           <div className="min-w-0">
-            <p className="truncate text-[14px] font-semibold text-ink dark:text-gray-100">
+            <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
               {member.user.name}
             </p>
-            <p className="truncate text-[12px] text-sub dark:text-gray-400">
+            <p className="truncate text-[12px] text-sub dark:text-slate-400">
               {member.memberCode} · {member.user.email}
             </p>
           </div>

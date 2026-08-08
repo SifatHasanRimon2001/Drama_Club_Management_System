@@ -11,6 +11,7 @@ import { Card, CardBody } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pagination as Pager } from "@/components/ui/pagination";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
+import { PageHeader } from "@/components/ui/page";
 import { useRealtimeRefresh } from "@/lib/client/socket";
 
 const ICONS: Record<string, IconName> = {
@@ -28,7 +29,7 @@ const TONES: Record<string, string> = {
   ANNOUNCEMENT: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
   EVENT: "bg-teal/12 text-teal dark:bg-teal/20 dark:text-teal-300",
   GALLERY: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300",
-  GENERAL: "bg-gray-500/10 text-sub dark:text-gray-400",
+  GENERAL: "bg-gray-500/10 text-sub dark:text-slate-400",
 };
 
 export default function NotificationsPage() {
@@ -84,14 +85,11 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-          Notifications
-        </h1>
-        <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-          {unread > 0 ? `${unread} unread` : "You're all caught up"}
-        </p>
-      </div>
+      <PageHeader
+        icon="bell"
+        title="Notifications"
+        subtitle={unread > 0 ? `${unread} unread` : "You're all caught up"}
+      />
 
       {loadError ? (
         <EmptyState
@@ -134,15 +132,15 @@ export default function NotificationsPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-[14.5px] font-semibold text-ink dark:text-gray-100">
+                    <p className="text-[14.5px] font-semibold text-ink dark:text-slate-100">
                       {n.title}
                     </p>
                     {!n.readAt && <span className="size-2 rounded-full bg-accent" />}
                   </div>
-                  <p className="mt-0.5 text-[13px] leading-relaxed text-sub dark:text-gray-400">
+                  <p className="mt-0.5 text-[13px] leading-relaxed text-sub dark:text-slate-400">
                     {n.message}
                   </p>
-                  <p className="mt-1 text-[11.5px] text-faint dark:text-gray-500">{timeAgo(n.createdAt)}</p>
+                  <p className="mt-1 text-[11.5px] text-faint dark:text-slate-400">{timeAgo(n.createdAt)}</p>
                 </div>
               </button>
             ))}

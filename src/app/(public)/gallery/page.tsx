@@ -4,7 +4,8 @@ import type { GalleryAlbum } from "@/lib/types";
 import { ALBUM_CATEGORIES } from "@/lib/format";
 import { Icon } from "@/components/icons";
 import { EmptyState } from "@/components/ui/feedback";
-import { Grid } from "@/components/ui/layout";
+import { Container, Grid } from "@/components/ui/layout";
+import { PageIntro } from "@/components/ui/page";
 
 export const metadata = { title: "Gallery" };
 
@@ -21,16 +22,12 @@ export default async function GalleryPage() {
   const albums = await publicFetch<GalleryAlbum[]>("/api/public/gallery");
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 sm:px-6">
-      <div className="max-w-3xl">
-        <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">
-          Moments on & off stage
-        </p>
-        <h1 className="display-title mt-3 text-ink dark:text-gray-50">Gallery</h1>
-        <p className="mt-5 max-w-2xl text-[17px] leading-relaxed text-sub dark:text-gray-400">
-          A visual record of our productions, workshops and club life.
-        </p>
-      </div>
+<Container size="page" className="pb-24 pt-28">
+      <PageIntro
+        eyebrow="Moments on & off stage"
+        title="Gallery"
+        subtitle="A visual record of our productions, workshops and club life."
+      />
 
       {!albums || albums.length === 0 ? (
         <div className="mt-14">
@@ -50,9 +47,9 @@ export default async function GalleryPage() {
               <Link
                 key={album.id}
                 href={`/gallery/${album.id}`}
-                className="group overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-card-hover dark:bg-[#1c1c1e] dark:border-white/10"
+                className="group overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-card-hover dark:bg-[#0f172a] dark:border-white/10"
               >
-                <div className="relative h-48 overflow-hidden bg-black/5 dark:bg-white/5">
+                <div className="relative h-48 bg-black/5 dark:bg-white/5">
                   {coverUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -74,10 +71,10 @@ export default async function GalleryPage() {
                 </div>
                 <div className="flex items-center justify-between gap-3 p-5">
                   <div className="min-w-0">
-                    <h2 className="truncate text-[16.5px] font-semibold tracking-tight text-ink dark:text-gray-100">
+                    <h2 className="truncate text-[16.5px] font-semibold tracking-tight text-ink dark:text-slate-100">
                       {album.name}
                     </h2>
-                    <p className="mt-0.5 text-[13px] text-sub dark:text-gray-400">
+                    <p className="mt-0.5 text-[13px] text-sub dark:text-slate-400">
                       {ALBUM_CATEGORIES.includes(album.category as (typeof ALBUM_CATEGORIES)[number])
                         ? album.category.charAt(0) + album.category.slice(1).toLowerCase().replace(/_/g, " ")
                         : album.category}
@@ -95,6 +92,6 @@ export default async function GalleryPage() {
           })}
         </Grid>
       )}
-    </div>
+    </Container>
   );
 }

@@ -18,10 +18,12 @@ import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Pagination as Pager } from "@/components/ui/pagination";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
+import { PageHeader } from "@/components/ui/page";
 import { Modal } from "@/components/ui/modal";
 import { ConfirmDialog } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
 const CATEGORY_TONES: Record<string, string> = {
   ANNOUNCEMENT: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
@@ -32,7 +34,7 @@ const CATEGORY_TONES: Record<string, string> = {
   EVENT: "bg-teal/12 text-teal dark:bg-teal/20 dark:text-teal-300",
 };
 
-export default function UpdatesPage() {
+function UpdatesPage() {
   const toast = useToast();
   const [rows, setRows] = useState<ClubUpdate[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -79,19 +81,16 @@ export default function UpdatesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-            Updates
-          </h1>
-          <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-            Announcements and news for members and the public
-          </p>
-        </div>
-        <Button icon="megaphone" onClick={() => setCreating(true)}>
-          New Update
-        </Button>
-      </div>
+      <PageHeader
+        icon="megaphone"
+        title="Updates"
+        subtitle="Announcements and news for members and the public"
+        actions={
+          <Button icon="megaphone" onClick={() => setCreating(true)}>
+            New Update
+          </Button>
+        }
+      />
 
       {loading && !rows.length ? (
         <PageLoader label="Loading updates…" />
@@ -136,7 +135,7 @@ export default function UpdatesPage() {
               </CardHeader>
               <CardBody>
                 <div
-                  className="rich-text line-clamp-3 text-[13.5px] text-sub dark:text-gray-400"
+                  className="rich-text line-clamp-3 text-[13.5px] text-sub dark:text-slate-400"
                   dangerouslySetInnerHTML={{ __html: u.bodyRichText }}
                 />
                 {u.mediaUrls.length > 0 && (
@@ -195,6 +194,14 @@ export default function UpdatesPage() {
   );
 }
 
+export default function UpdatesPageRoute() {
+  return (
+    <RequirePermission permission="updates.publish">
+      <UpdatesPage />
+    </RequirePermission>
+  );
+}
+
 /* ---------------- Editor ---------------- */
 
 function ToolbarButton({
@@ -219,8 +226,8 @@ function ToolbarButton({
         "flex size-9 items-center justify-center rounded-lg transition",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         active
-          ? "bg-accent text-white"
-          : "text-sub hover:bg-black/[0.05] hover:text-ink dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-gray-100"
+          ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white"
+          : "text-sub hover:bg-black/[0.05] hover:text-ink dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100"
       )}
     >
       <Icon name={icon} size={16} />
@@ -241,7 +248,7 @@ function RichEditor({ value, onChange }: { value: string; onChange: (html: strin
     editorProps: {
       attributes: {
         class:
-          "prose max-w-none min-h-[200px] px-4 py-3 text-[15px] text-ink dark:text-gray-100 focus:outline-none rich-text",
+          "prose max-w-none min-h-[200px] px-4 py-3 text-[15px] text-ink dark:text-slate-100 focus:outline-none rich-text",
       },
     },
     onUpdate: ({ editor: ed }) => onChange(ed.getHTML()),
@@ -256,7 +263,7 @@ function RichEditor({ value, onChange }: { value: string; onChange: (html: strin
   if (!editor) return null;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-white dark:border-white/10 dark:bg-[#1c1c1e]">
+    <div className="overflow-hidden rounded-apple border border-line bg-card shadow-card dark:border-white/10 dark:bg-[#0f172a]">
       <div
         role="toolbar"
         aria-label="Formatting tools"

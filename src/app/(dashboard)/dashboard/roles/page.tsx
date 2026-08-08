@@ -9,11 +9,13 @@ import { Icon, type IconName } from "@/components/icons";
 import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/input";
 import { Grid } from "@/components/ui/layout";
+import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Modal, ConfirmDialog } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
 const PERMISSION_GROUPS: { key: string; label: string; icon: string; tone: string }[] = [
   { key: "member", label: "Member management", icon: "members", tone: "text-blue" },
@@ -30,7 +32,7 @@ const PERMISSION_GROUPS: { key: string; label: string; icon: string; tone: strin
   { key: "audit", label: "Audit log", icon: "list", tone: "text-gray" },
 ];
 
-export default function RolesPage() {
+function RolesPage() {
   const { user } = useSession();
   const canManage = user?.permissions?.includes("permissions.manage") ?? false;
   const [roles, setRoles] = useState<Role[]>([]);
@@ -88,21 +90,18 @@ export default function RolesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-            Roles & Access
-          </h1>
-          <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-            Define roles and the permissions they grant
-          </p>
-        </div>
-        {canManage && (
-          <Button icon="plus" onClick={() => setCreating(true)}>
-            New Role
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        icon="role"
+        title="Roles & Access"
+        subtitle="Define roles and the permissions they grant"
+        actions={
+          canManage && (
+            <Button icon="plus" onClick={() => setCreating(true)}>
+              New Role
+            </Button>
+          )
+        }
+      />
 
       {loading ? (
         <PageLoader label="Loading roles…" />
@@ -134,7 +133,7 @@ export default function RolesPage() {
                   </span>
                   <div>
                     <CardTitle>{r.name}</CardTitle>
-                    <p className="text-[12px] text-sub dark:text-gray-400">
+                    <p className="text-[12px] text-sub dark:text-slate-400">
                       {r.description || "No description"} · {r.permissions.length} permissions
                     </p>
                   </div>
@@ -163,7 +162,7 @@ export default function RolesPage() {
                   r.permissions.map((rp) => (
                     <span
                       key={rp.permissionId}
-                      className="rounded-full bg-black/[0.05] px-2.5 py-1 text-[11.5px] font-medium text-sub dark:bg-white/10 dark:text-gray-300"
+                      className="rounded-full bg-black/[0.05] px-2.5 py-1 text-[11.5px] font-medium text-sub dark:bg-white/10 dark:text-slate-300"
                     >
                       {rp.permission.key}
                     </span>
@@ -202,6 +201,14 @@ export default function RolesPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function RolesPageRoute() {
+  return (
+    <RequirePermission permission="permissions.manage">
+      <RolesPage />
+    </RequirePermission>
   );
 }
 
@@ -285,7 +292,7 @@ function RoleModal({
         </Grid>
 
         <div>
-          <p className="mb-2 text-[13px] font-medium text-sub dark:text-gray-400">
+          <p className="mb-2 text-[13px] font-medium text-sub dark:text-slate-400">
             Permissions{" "}
             <span className="text-faint">({selected.size} selected)</span>
           </p>
@@ -294,7 +301,7 @@ function RoleModal({
               const meta = PERMISSION_GROUPS.find((g) => g.key === group);
               return (
                 <div key={group}>
-                  <p className="mb-1.5 flex items-center gap-2 text-[12.5px] font-semibold text-ink dark:text-gray-200">
+                  <p className="mb-1.5 flex items-center gap-2 text-[12.5px] font-semibold text-ink dark:text-slate-200">
                     <Icon
                       name={(meta?.icon as IconName) || "shield"}
                       size={14}
@@ -317,11 +324,11 @@ function RoleModal({
                           )}
                         >
                           <span className="min-w-0">
-                            <span className="block truncate text-[12.5px] font-medium text-ink dark:text-gray-200">
+                            <span className="block truncate text-[12.5px] font-medium text-ink dark:text-slate-200">
                               {p.key}
                             </span>
                             {p.description && (
-                              <span className="block truncate text-[11px] text-faint dark:text-gray-500">
+                              <span className="block truncate text-[11px] text-faint dark:text-slate-400">
                                 {p.description}
                               </span>
                             )}

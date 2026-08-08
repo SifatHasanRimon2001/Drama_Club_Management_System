@@ -25,7 +25,11 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 const kindStyles: Record<ToastKind, { icon: IconName; ring: string; iconColor: string }> = {
   success: { icon: "check", ring: "ring-green/25", iconColor: "bg-green text-white" },
   error: { icon: "warn", ring: "ring-red/25", iconColor: "bg-red text-white" },
-  info: { icon: "info", ring: "ring-accent/25", iconColor: "bg-accent text-white" },
+  info: {
+    icon: "info",
+    ring: "ring-gold/40",
+    iconColor: "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white",
+  },
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -68,16 +72,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               className={cn(
                 "animate-toast pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl bg-white/90 p-3.5 shadow-pop ring-1 backdrop-blur-xl",
                 s.ring,
-                "dark:bg-[#2c2c2e]/90"
+                "dark:bg-[#0f172a]/90"
               )}
             >
               <span className={cn("mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full", s.iconColor)} aria-hidden="true">
                 <Icon name={s.icon} size={13} />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-ink dark:text-gray-100">{t.title}</p>
+                <p className="text-sm font-semibold text-ink dark:text-slate-100">{t.title}</p>
                 {t.message && (
-                  <p className="mt-0.5 text-[13px] leading-snug text-sub dark:text-gray-400">{t.message}</p>
+                  <p className="mt-0.5 text-[13px] leading-snug text-sub dark:text-slate-400">{t.message}</p>
                 )}
               </div>
               <button

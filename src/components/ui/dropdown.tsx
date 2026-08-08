@@ -67,7 +67,7 @@ export function Dropdown({
           id={menuId}
           className={cn(
             "animate-sheet absolute top-full z-[60] mt-2 max-w-[calc(100vw-2rem)] origin-top overflow-hidden rounded-2xl border border-line bg-white/95 shadow-pop backdrop-blur-2xl",
-            "dark:bg-[#2c2c2e]/95 dark:border-white/10",
+            "dark:bg-[#0f172a]/95 dark:border-white/10",
             align === "end" ? "right-0" : "left-0",
             width,
             className

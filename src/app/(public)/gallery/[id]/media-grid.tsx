@@ -21,7 +21,7 @@ export function MediaGrid({ items }: { items: MediaItem[] }) {
         {items.map((item) => (
           <figure
             key={item.id}
-            className="group relative aspect-square overflow-hidden rounded-2xl border border-line bg-black/5 dark:bg-white/5"
+            className="group relative aspect-square rounded-2xl border border-line bg-black/5 dark:bg-white/5"
           >
             {item.type === "VIDEO" && item.url ? (
               <button
@@ -92,7 +92,7 @@ export function MediaGrid({ items }: { items: MediaItem[] }) {
               />
             )}
             {active.caption && (
-              <p className="text-[14px] text-sub dark:text-gray-400">{active.caption}</p>
+              <p className="text-[14px] text-sub dark:text-slate-400">{active.caption}</p>
             )}
           </div>
         )}

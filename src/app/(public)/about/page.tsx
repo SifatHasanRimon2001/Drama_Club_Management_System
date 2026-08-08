@@ -4,6 +4,7 @@ import type { Event, PublicAbout, PublicHomeData } from "@/lib/types";
 import { Icon } from "@/components/icons";
 import { Card, CardBody, CardTitle, CardSubtitle } from "@/components/ui/card";
 import { Container, Grid } from "@/components/ui/layout";
+import { PageIntro } from "@/components/ui/page";
 
 export const metadata = { title: "About" };
 
@@ -21,18 +22,18 @@ export default async function AboutPage() {
     publicFetch<Event[]>("/api/public/productions?limit=100"),
   ]);
 
-  const clubName = about?.clubName || "Drama Club";
+  const clubName = about?.clubName || "BRAC University Drama Club";
 
   return (
     <Container size="page" className="pb-24 pt-28">
-      <div className="max-w-3xl">
-        <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">About</p>
-        <h1 className="display-title mt-3 text-ink dark:text-gray-50">The stage is our home.</h1>
-        <p className="mt-6 text-[17px] leading-relaxed text-sub sm:text-[19px] dark:text-gray-400">
-          {about?.clubDescription ||
-            `${clubName} is a community of performers, creators and technicians united by a love for live theatre. We produce plays, host workshops, and create space for bold storytelling.`}
-        </p>
-      </div>
+      <PageIntro
+        eyebrow="About"
+        title="The stage is our home."
+        subtitle={
+          about?.clubDescription ||
+          `${clubName} is a community of performers, creators and technicians united by a love for live theatre. We produce plays, host workshops, and create space for bold storytelling.`
+        }
+      />
 
       <Grid preset="stats" className="mt-16">
         {[
@@ -46,16 +47,16 @@ export default async function AboutPage() {
               <span className="flex size-9 items-center justify-center rounded-xl bg-accent-soft text-accent">
                 <Icon name={s.icon} size={17} />
               </span>
-              <div className="mt-3 text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
+              <div className="mt-3 text-[26px] font-bold tracking-tight text-ink dark:text-slate-100">
                 {s.value}
               </div>
-              <p className="text-[13px] text-sub dark:text-gray-400">{s.label}</p>
+              <p className="text-[13px] text-sub dark:text-slate-400">{s.label}</p>
             </CardBody>
           </Card>
         ))}
       </Grid>
 
-      <h2 className="mt-20 text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
+      <h2 className="mt-20 text-[26px] font-bold tracking-tight text-ink dark:text-slate-100">
         What we stand for
       </h2>
       <Grid preset="split" className="mt-6">
@@ -77,17 +78,17 @@ export default async function AboutPage() {
       <Card className="mt-20 p-8 sm:p-12">
         <div className="grid items-center gap-8 sm:grid-cols-[1fr_auto]">
           <div>
-            <h2 className="text-[24px] font-bold tracking-tight text-ink dark:text-gray-100">
+            <h2 className="text-[24px] font-bold tracking-tight text-ink dark:text-slate-100">
               Want to be part of the story?
             </h2>
-            <p className="mt-2 max-w-lg text-[15px] leading-relaxed text-sub dark:text-gray-400">
+            <p className="mt-2 max-w-lg text-[15px] leading-relaxed text-sub dark:text-slate-400">
               New members join at the start of every semester through our recruitment drive.
               No experience required — just bring your enthusiasm.
             </p>
           </div>
           <Link
             href="/recruitment"
-            className="inline-flex h-12 items-center gap-2 rounded-full bg-accent px-7 text-base font-medium text-white transition hover:bg-accent-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-br from-gold-light via-gold to-[#1e40af] px-7 text-base font-bold text-white shadow-gold transition hover:brightness-110 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Join Us <Icon name="arrow-right" size={16} />
           </Link>

@@ -17,13 +17,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-accent text-white hover:bg-accent-hover active:scale-[0.98] shadow-[0_1px_2px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,113,227,0.25)]",
+    "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white font-bold hover:brightness-110 active:scale-[0.98] shadow-gold",
   secondary:
-    "bg-white text-ink border border-line hover:bg-black/[0.03] active:scale-[0.98] shadow-[0_1px_2px_rgba(0,0,0,0.04)]",
+    "bg-card text-ink border border-line hover:border-gold/60 hover:bg-[#f8fafc] active:scale-[0.98] shadow-[0_1px_2px_rgba(46,28,8,0.06)] dark:bg-[#0f172a] dark:hover:bg-[#1e293b]",
   ghost: "text-accent hover:bg-accent-soft active:scale-[0.98]",
-  subtle: "bg-black/[0.05] text-ink hover:bg-black/[0.08] active:scale-[0.98]",
+  subtle: "bg-black/[0.05] text-ink hover:bg-black/[0.08] active:scale-[0.98] dark:bg-white/10 dark:hover:bg-white/15",
   danger:
-    "bg-red text-white hover:bg-[#e0362b] active:scale-[0.98] shadow-[0_1px_2px_rgba(0,0,0,0.12),0_4px_12px_rgba(255,59,48,0.25)]",
+    "bg-red text-white hover:bg-[#a51f26] active:scale-[0.98] shadow-[0_1px_2px_rgba(0,0,0,0.12),0_4px_12px_rgba(194,39,47,0.3)]",
 };
 
 const sizeClasses: Record<Size, string> = {
@@ -44,7 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         aria-busy={loading || undefined}
         className={cn(
-          "inline-flex items-center justify-center font-medium transition-all duration-150 select-none",
+          "inline-flex items-center justify-center font-medium whitespace-nowrap transition-all duration-150 select-none",
           "disabled:opacity-50 disabled:pointer-events-none",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
           variantClasses[variant],
@@ -80,7 +80,7 @@ export function IconButton({
       className={cn(
         "inline-flex items-center justify-center rounded-full transition-all",
         "size-10 text-ink hover:bg-black/[0.06] active:scale-95",
-        "dark:text-gray-200 dark:hover:bg-white/10",
+        "dark:text-slate-200 dark:hover:bg-white/10",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         className
       )}

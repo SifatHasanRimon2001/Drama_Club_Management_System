@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { publicFetch, r2Url } from "@/lib/server";
 import type { GalleryAlbum } from "@/lib/types";
 import { timeAgo } from "@/lib/format";
-import { Icon } from "@/components/icons";
 import { EmptyState } from "@/components/ui/feedback";
+import { Container } from "@/components/ui/layout";
+import { BackLink } from "@/components/ui/page";
 
 import { MediaGrid, type MediaItem } from "./media-grid";
 
@@ -25,19 +25,13 @@ export default async function AlbumPage({ params }: { params: Promise<{ id: stri
   }));
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-24 pt-28 sm:px-6">
-      <Link
-        href="/gallery"
-        className="inline-flex items-center gap-1.5 text-[13.5px] font-medium text-sub transition hover:text-ink dark:text-gray-400 dark:hover:text-gray-100"
-      >
-        <Icon name="chevron-left" size={14} />
-        Gallery
-      </Link>
+    <Container size="page" className="pb-24 pt-24">
+      <BackLink href="/gallery">Gallery</BackLink>
 
       <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="display-title text-ink dark:text-gray-50">{album.name}</h1>
-          <p className="mt-2 text-[14px] text-sub dark:text-gray-400">
+          <h1 className="display-title text-ink dark:text-[#faf4e6]">{album.name}</h1>
+          <p className="mt-2 text-[14px] text-sub dark:text-slate-400">
             {album.category.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}
             {album.department ? ` · ${album.department.name}` : ""} · {items.length} item
             {items.length === 1 ? "" : "s"}
@@ -57,9 +51,9 @@ export default async function AlbumPage({ params }: { params: Promise<{ id: stri
         <MediaGrid items={withUrls} />
       )}
 
-      <p className="mt-8 text-center text-[12.5px] text-faint dark:text-gray-500">
+      <p className="mt-8 text-center text-[12.5px] text-faint dark:text-slate-400">
         Uploaded {items.length > 0 ? timeAgo(items[items.length - 1].createdAt) : ""}
       </p>
-    </div>
+    </Container>
   );
 }

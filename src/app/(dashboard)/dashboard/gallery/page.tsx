@@ -11,10 +11,12 @@ import { Icon, type IconName } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/input";
 import { Grid } from "@/components/ui/layout";
+import { PageHeader } from "@/components/ui/page";
 import { Modal, ConfirmDialog } from "@/components/ui/modal";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
 const CATEGORY_TONES: Record<string, string> = {
   PRODUCTIONS: "bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300",
@@ -37,7 +39,7 @@ const CATEGORY_ICONS: Record<string, IconName> = {
 const MAX_IMAGE_MB = 10;
 const MAX_VIDEO_MB = 50;
 
-export default function GalleryPage() {
+function GalleryPage() {
   const { user } = useSession();
   const perms = user?.permissions ?? [];
   const canManage = perms.includes("gallery.manage");
@@ -83,21 +85,18 @@ export default function GalleryPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-            Gallery
-          </h1>
-          <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-            {albums.length} albums of club memories
-          </p>
-        </div>
-        {canManage && (
-          <Button icon="folder" onClick={() => setCreating(true)}>
-            New Album
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        icon="gallery"
+        title="Gallery"
+        subtitle={`${albums.length} albums of club memories`}
+        actions={
+          canManage && (
+            <Button icon="folder" onClick={() => setCreating(true)}>
+              New Album
+            </Button>
+          )
+        }
+      />
 
       {loading ? (
         <PageLoader label="Loading gallery…" />
@@ -112,16 +111,16 @@ export default function GalleryPage() {
           {albums.map((a) => (
             <div
               key={a.id}
-              className="flex flex-col overflow-hidden rounded-[22px] border border-line bg-white transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-card dark:border-white/10 dark:bg-[#1c1c1e]"
+              className="flex flex-col overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-card-hover dark:border-white/10 dark:bg-[#0f172a]"
             >
               <button
                 onClick={() => setViewing(a)}
                 className="group text-left"
               >
-                <div className="relative flex h-36 items-center justify-center bg-gradient-to-br from-accent-soft via-accent-soft/40 to-purple/10 dark:from-accent/20 dark:via-accent/10 dark:to-purple/20">
+                <div className="relative flex h-36 items-center justify-center bg-gradient-to-br from-accent-soft via-accent-soft/40 to-plum/15 dark:from-accent/20 dark:via-accent/10 dark:to-plum/30">
                   <span
                     className={cn(
-                      "flex size-12 items-center justify-center rounded-2xl bg-white/80 text-ink shadow-card backdrop-blur dark:bg-white/10 dark:text-gray-100",
+                      "flex size-12 items-center justify-center rounded-2xl bg-white/80 text-ink shadow-card backdrop-blur dark:bg-white/10 dark:text-slate-100",
                       "transition-transform duration-300 group-hover:scale-110"
                     )}
                   >
@@ -137,10 +136,10 @@ export default function GalleryPage() {
                   </span>
                 </div>
                 <div className="p-4">
-                  <h3 className="text-[15.5px] font-bold tracking-tight text-ink dark:text-gray-100">
+                  <h3 className="truncate text-[15.5px] font-bold tracking-tight text-ink dark:text-slate-100">
                     {a.name}
                   </h3>
-                  <p className="mt-0.5 text-[12.5px] text-sub dark:text-gray-400">
+                  <p className="mt-0.5 text-[12.5px] text-sub dark:text-slate-400">
                     {a._count?.items ?? 0} items
                     {a.department ? ` · ${a.department.name}` : ""} ·{" "}
                     {timeAgo(a.createdAt)}
@@ -151,14 +150,14 @@ export default function GalleryPage() {
                 <div className="flex items-center justify-between gap-2 border-t border-line px-4 py-2.5 dark:border-white/10">
                   <button
                     onClick={() => setEditing(a)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-1.5 text-[12.5px] font-medium text-sub transition hover:bg-black/[0.08] hover:text-ink dark:bg-white/10 dark:text-gray-300 dark:hover:text-gray-100"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-1.5 text-[12.5px] font-medium text-sub transition hover:bg-black/[0.08] hover:text-ink dark:bg-white/10 dark:text-slate-300 dark:hover:text-slate-100"
                   >
                     <Icon name="edit" size={13} />
                     Edit
                   </button>
                   <button
                     onClick={() => setDeleting(a)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-1.5 text-[12.5px] font-medium text-sub transition hover:bg-red/10 hover:text-red dark:bg-white/10 dark:text-gray-300"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-1.5 text-[12.5px] font-medium text-sub transition hover:bg-red/10 hover:text-red dark:bg-white/10 dark:text-slate-300"
                   >
                     <Icon name="trash" size={13} />
                     Delete
@@ -206,6 +205,14 @@ export default function GalleryPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function GalleryPageRoute() {
+  return (
+    <RequirePermission anyOf={["gallery.upload", "gallery.manage"]}>
+      <GalleryPage />
+    </RequirePermission>
   );
 }
 
@@ -424,7 +431,7 @@ function AlbumModal({
         {canUpload && (
           <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-line-strong/60 p-4 dark:border-white/15">
             <Icon name="upload" size={18} className="text-faint" />
-            <p className="flex-1 text-[13px] text-sub dark:text-gray-400">
+            <p className="flex-1 text-[13px] text-sub dark:text-slate-400">
               {uploadProgress || "Upload images (max 10 MB) or videos (max 50 MB)"}
             </p>
             <input

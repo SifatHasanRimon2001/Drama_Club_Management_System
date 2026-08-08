@@ -49,12 +49,12 @@ export function Toggle({
       {(label || description) && (
         <span className="min-w-0">
           {label && (
-            <span className="block text-[15px] font-medium text-ink dark:text-gray-100">
+            <span className="block text-[15px] font-medium text-ink dark:text-slate-100">
               {label}
             </span>
           )}
           {description && (
-            <span className="block text-[13px] text-sub dark:text-gray-400">
+            <span className="block text-[13px] text-sub dark:text-slate-400">
               {description}
             </span>
           )}

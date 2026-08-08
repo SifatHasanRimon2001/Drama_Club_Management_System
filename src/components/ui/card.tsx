@@ -1,17 +1,16 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
+/**
+ * Shared card surface. Every full-size card in the app (component or inline)
+ * must use exactly this token so radius, border, surface and shadow stay
+ * identical across phone / tablet / desktop.
+ */
+export const cardSurface =
+  "rounded-apple border border-line bg-card shadow-card dark:bg-[#0f172a] dark:border-white/10";
+
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn(
-        "rounded-apple bg-card border border-line shadow-card",
-        "dark:bg-[#1c1c1e] dark:border-white/10",
-        className
-      )}
-      {...props}
-    />
-  );
+  return <div className={cn(cardSurface, className)} {...props} />;
 }
 
 export function CardBody({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
@@ -26,7 +25,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "text-[17px] font-semibold tracking-tight text-ink dark:text-gray-100",
+        "font-display min-w-0 text-[17.5px] font-bold leading-snug tracking-tight text-ink dark:text-slate-100",
         className
       )}
       {...props}
@@ -38,7 +37,7 @@ export function CardTitle({
 
 export function CardSubtitle({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn("text-sm text-sub dark:text-gray-400", className)} {...props} />
+    <p className={cn("text-sm text-sub dark:text-slate-400", className)} {...props} />
   );
 }
 
@@ -85,11 +84,11 @@ export function SectionHeading({
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h2 className="text-[22px] font-bold tracking-tight text-ink dark:text-gray-100">
+        <h2 className="font-display text-[23px] font-bold tracking-tight text-ink dark:text-slate-100">
           {title}
         </h2>
         {subtitle && (
-          <p className="mt-1 text-sm text-sub dark:text-gray-400">{subtitle}</p>
+          <p className="mt-1 text-sm text-sub dark:text-slate-400">{subtitle}</p>
         )}
       </div>
       {action}

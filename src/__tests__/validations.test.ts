@@ -266,7 +266,7 @@ describe("Validation Schemas", () => {
 
   describe("settingsSchema", () => {
     it("accepts valid settings", () => {
-      expect(settingsSchema.safeParse({ clubName: "Drama Club" }).success).toBe(true);
+      expect(settingsSchema.safeParse({ clubName: "BRAC University Drama Club" }).success).toBe(true);
     });
 
     it("rejects invalid keys", () => {

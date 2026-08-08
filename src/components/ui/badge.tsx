@@ -20,7 +20,7 @@ const tones: Record<Tone, string> = {
   orange: "bg-orange/12 text-[#c93400] dark:text-orange-400",
   yellow: "bg-yellow/20 text-[#8a6d00] dark:text-yellow-300",
   purple: "bg-purple/10 text-purple dark:text-purple-300",
-  gray: "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-gray-400",
+  gray: "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-slate-400",
   teal: "bg-teal/10 text-teal dark:text-teal-300",
   pink: "bg-pink/10 text-pink dark:text-pink-400",
   indigo: "bg-indigo/10 text-indigo dark:text-indigo-300",

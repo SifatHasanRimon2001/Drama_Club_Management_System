@@ -16,6 +16,7 @@ import { Icon, type IconName } from "@/components/icons";
 import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Input, SearchInput, Select, Textarea } from "@/components/ui/input";
 import { Grid, Toolbar } from "@/components/ui/layout";
+import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, StatusPill } from "@/components/ui/badge";
 import { Segmented } from "@/components/ui/segmented";
@@ -25,12 +26,13 @@ import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Toggle } from "@/components/ui/toggle";
 import { useToast } from "@/components/ui/toast";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
 type Tab = "windows" | "applications";
 
 const FIELD_TYPES: FormFieldSpec["type"][] = ["text", "textarea", "select", "checkbox", "number"];
 
-export default function RegistrationPage() {
+function RegistrationPage() {
   const { user } = useSession();
   const perms = user?.permissions ?? [];
   const canManage = perms.includes("registration.manage");
@@ -39,28 +41,13 @@ export default function RegistrationPage() {
 
   const [tab, setTab] = useState<Tab>(canManage ? "windows" : "applications");
 
-  if (!canManage && !canReview) {
-    return (
-      <EmptyState
-        icon="lock"
-        title="No access"
-        message="You don't have permission to manage registration."
-      />
-    );
-  }
-
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-            Registration
-          </h1>
-          <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-            Manage recruitment windows and applications
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon="megaphone"
+        title="Registration"
+        subtitle="Manage recruitment windows and applications"
+      />
 
       <Segmented<Tab>
         value={tab}
@@ -77,6 +64,14 @@ export default function RegistrationPage() {
         <ApplicationsTab canCreate={canCreate} />
       )}
     </div>
+  );
+}
+
+export default function RegistrationPageRoute() {
+  return (
+    <RequirePermission anyOf={["registration.manage", "registration.review"]}>
+      <RegistrationPage />
+    </RequirePermission>
   );
 }
 
@@ -144,7 +139,7 @@ function WindowsTab() {
                   <CardTitle>{w.title}</CardTitle>
                   <StatusPill value={w.status} />
                 </div>
-                <p className="mt-1 text-[12.5px] text-sub dark:text-gray-400">
+                <p className="mt-1 text-[12.5px] text-sub dark:text-slate-400">
                   {formatDateTime(w.startDate)} → {formatDateTime(w.endDate)} ·{" "}
                   {w._count?.applicants ?? 0} applications
                 </p>
@@ -156,7 +151,7 @@ function WindowsTab() {
               </div>
             </CardHeader>
             <CardBody>
-              <p className="line-clamp-2 text-[13.5px] text-sub dark:text-gray-400">
+              <p className="line-clamp-2 text-[13.5px] text-sub dark:text-slate-400">
                 {w.description}
               </p>
               {w.formSchema && Array.isArray(w.formSchema.fields) && (
@@ -371,7 +366,7 @@ function WindowModal({
         {/* Form builder */}
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-[13px] font-medium text-sub dark:text-gray-400">
+            <p className="text-[13px] font-medium text-sub dark:text-slate-400">
               Application form fields
             </p>
             <Button type="button" size="sm" variant="secondary" icon="plus" onClick={addField}>
@@ -602,14 +597,14 @@ function ApplicationsTab({ canCreate }: { canCreate: boolean }) {
                 onClick={() => setViewing(a)}
                 className="flex w-full items-center gap-4 px-5 py-3.5 text-left transition hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
               >
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent dark:bg-accent/20 dark:text-blue-300">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent dark:bg-accent/20">
                   <Icon name="user" size={18} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14.5px] font-semibold text-ink dark:text-gray-100">
+                  <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
                     {a.name}
                   </p>
-                  <p className="truncate text-[12.5px] text-sub dark:text-gray-400">
+                  <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
                     {a.email} · {a.registrationWindow?.title}
                   </p>
                 </div>
@@ -658,13 +653,13 @@ function ApplicationsTab({ canCreate }: { canCreate: boolean }) {
         >
           {tempPassword ? (
             <div className="space-y-4">
-              <p className="rounded-2xl bg-green/10 p-4 text-[14px] text-ink dark:text-gray-100">
+              <p className="rounded-2xl bg-green/10 p-4 text-[14px] text-ink dark:text-slate-100">
                 Member converted! A temporary password was generated:
               </p>
-              <div className="rounded-xl border border-dashed border-line-strong p-3 text-center font-mono text-[15px] font-bold text-ink dark:border-white/20 dark:text-gray-100">
+              <div className="rounded-xl border border-dashed border-line-strong p-3 text-center font-mono text-[15px] font-bold text-ink dark:border-white/20 dark:text-slate-100">
                 {tempPassword}
               </div>
-              <p className="text-[13px] text-sub dark:text-gray-400">
+              <p className="text-[13px] text-sub dark:text-slate-400">
                 Share this securely with {converting.name}. They can change it after
                 signing in.
               </p>
@@ -758,7 +753,7 @@ function ApplicantModal({
               <Icon name={f.icon} size={15} className="shrink-0 text-faint" />
               <div className="min-w-0">
                 <p className="text-[11px] font-medium uppercase tracking-wide text-faint">{f.label}</p>
-                <p className="truncate text-[13.5px] font-medium text-ink dark:text-gray-100">{f.value}</p>
+                <p className="truncate text-[13.5px] font-medium text-ink dark:text-slate-100">{f.value}</p>
               </div>
             </div>
           ))}
@@ -776,7 +771,7 @@ function ApplicantModal({
                 </Badge>
               ))
             ) : (
-              <p className="text-[13px] text-sub dark:text-gray-400">—</p>
+              <p className="text-[13px] text-sub dark:text-slate-400">—</p>
             )}
           </div>
         </div>
@@ -801,7 +796,7 @@ function ApplicantModal({
             <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-faint">
               Acting experience
             </p>
-            <p className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-ink dark:text-gray-200">
+            <p className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-ink dark:text-slate-200">
               {applicant.actingExperience}
             </p>
           </div>
@@ -814,7 +809,7 @@ function ApplicantModal({
                 <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-faint">
                   {key.replace(/_/g, " ")}
                 </p>
-                <p className="text-[13.5px] leading-relaxed text-ink dark:text-gray-200">
+                <p className="text-[13.5px] leading-relaxed text-ink dark:text-slate-200">
                   {Array.isArray(value) ? value.join(", ") : String(value ?? "—")}
                 </p>
               </div>
@@ -842,7 +837,7 @@ function ApplicantModal({
             </Button>
           )}
           {applicant.convertedMember && (
-            <p className="text-[13px] text-sub dark:text-gray-400">
+            <p className="text-[13px] text-sub dark:text-slate-400">
               Converted to member {applicant.convertedMember.memberCode}.
             </p>
           )}

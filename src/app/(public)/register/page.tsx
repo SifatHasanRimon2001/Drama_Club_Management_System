@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/input";
 import { Grid } from "@/components/ui/layout";
 import { Icon } from "@/components/icons";
+import { ClubLogo } from "@/components/club-logo";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
@@ -40,20 +41,20 @@ export default function RegisterPage() {
   if (success) {
     return (
       <div className="flex min-h-[70dvh] flex-col items-center justify-center px-4 py-12">
-        <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-white/80 p-8 text-center shadow-pop backdrop-blur-2xl dark:bg-[#1c1c1e]/90 dark:border-white/10">
+        <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-white/80 p-6 text-center shadow-pop backdrop-blur-2xl sm:p-8 dark:bg-[#0f172a]/90 dark:border-white/10">
           <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-green/12 text-[#248a3d] dark:text-green-400">
             <Icon name="check" size={26} />
           </span>
-          <h1 className="mt-5 text-[22px] font-bold tracking-tight text-ink dark:text-gray-100">
+          <h1 className="mt-5 text-[22px] font-bold tracking-tight text-ink dark:text-slate-100">
             Account created
           </h1>
-          <p className="mt-2 text-[14px] leading-relaxed text-sub dark:text-gray-400">
+          <p className="mt-2 text-[14px] leading-relaxed text-sub dark:text-slate-400">
             You can now sign in. A club administrator will link a member profile to your
             account.
           </p>
           <Link
             href="/login"
-            className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-accent text-[15px] font-medium text-white transition hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-[15px] font-bold text-white shadow-gold transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Go to Sign In
           </Link>
@@ -64,26 +65,41 @@ export default function RegisterPage() {
 
   return (
     <div
-      className="flex min-h-[80dvh] flex-col items-center justify-center px-4 py-12"
+      className="relative flex min-h-[80dvh] flex-col items-center justify-center overflow-hidden px-4 py-12"
       style={{
         background:
-          "radial-gradient(900px 450px at 80% -10%, rgba(175,82,222,0.12), transparent 60%), radial-gradient(700px 400px at 10% 110%, rgba(0,113,227,0.1), transparent 55%)",
+          "radial-gradient(900px 460px at 50% -12%, rgba(37,99,235,0.1), transparent 62%), radial-gradient(700px 420px at 90% 110%, rgba(15,23,42,0.06), transparent 55%)",
       }}
     >
-      <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-white/80 p-8 shadow-pop backdrop-blur-2xl dark:bg-[#1c1c1e]/90 dark:border-white/10">
-        <h1 className="text-[24px] font-bold tracking-tight text-ink dark:text-gray-100">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(15,23,42,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.04) 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+        }}
+      />
+      <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-card/90 p-6 shadow-pop backdrop-blur-2xl sm:p-8 dark:bg-[#0f172a]/90 dark:border-white/10">
+        <div aria-hidden="true" className="mb-5 flex items-center gap-2.5">
+          <ClubLogo size={38} />
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.24em] text-accent">
+            Member Portal
+          </span>
+        </div>
+        <h1 className="font-display text-[26px] font-bold tracking-tight text-ink dark:text-slate-100">
           Create your account
         </h1>
-        <p className="mt-1.5 text-[14px] text-sub dark:text-gray-400">
+        <p className="mt-1.5 text-[14px] text-sub dark:text-slate-400">
           Members-only access requires a linked profile.
         </p>
 
         <form onSubmit={submit} className="mt-7 space-y-4">
           <Field label="Full name" error={errors.name}>
-            <Input placeholder="Jane Doe" value={form.name} onChange={(e) => set("name", e.target.value)} />
+            <Input placeholder="Rafiqul Islam" value={form.name} onChange={(e) => set("name", e.target.value)} />
           </Field>
           <Field label="Email" error={errors.email}>
-            <Input type="email" placeholder="you@university.edu" value={form.email} onChange={(e) => set("email", e.target.value)} />
+            <Input type="email" placeholder="you@bracu.ac.bd" value={form.email} onChange={(e) => set("email", e.target.value)} />
           </Field>
           <Grid preset="fields">
             <Field label="Password" error={errors.password}>
@@ -109,7 +125,7 @@ export default function RegisterPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-[13.5px] text-sub dark:text-gray-400">
+        <p className="mt-6 text-center text-[13.5px] text-sub dark:text-slate-400">
           Already a member?{" "}
           <Link href="/login" className="font-medium text-accent hover:underline">
             Sign in

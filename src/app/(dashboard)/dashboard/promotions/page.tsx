@@ -11,6 +11,7 @@ import { Icon } from "@/components/icons";
 import { Button, ActionIcon } from "@/components/ui/button";
 import { Field, Select, Textarea } from "@/components/ui/input";
 import { Grid } from "@/components/ui/layout";
+import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusPill } from "@/components/ui/badge";
@@ -20,6 +21,7 @@ import { Pagination as Pager } from "@/components/ui/pagination";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
 type Filter = "all" | "DRAFT" | "SUBMITTED" | "PENDING_APPROVAL" | "APPROVED" | "REJECTED";
 
@@ -27,7 +29,7 @@ interface PromotionRow extends PromotionRequest {
   member: { id: string; user: { id: string; name: string; email: string } };
 }
 
-export default function PromotionsPage() {
+function PromotionsPage() {
   const { user } = useSession();
   const toast = useToast();
   const perms = user?.permissions ?? [];
@@ -99,23 +101,22 @@ export default function PromotionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-            Promotions
-          </h1>
-          <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-            {actionable > 0
-              ? `${actionable} request${actionable === 1 ? "" : "s"} awaiting review`
-              : "Track promotion requests"}
-          </p>
-        </div>
-        {canSubmit && (
-          <Button icon="trend" onClick={() => setCreating(true)}>
-            New Promotion Request
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        icon="trend"
+        title="Promotions"
+        subtitle={
+          actionable > 0
+            ? `${actionable} request${actionable === 1 ? "" : "s"} awaiting review`
+            : "Track promotion requests"
+        }
+        actions={
+          canSubmit && (
+            <Button icon="trend" onClick={() => setCreating(true)}>
+              New Promotion Request
+            </Button>
+          )
+        }
+      />
 
       <Segmented<Filter>
         scrollable
@@ -158,10 +159,10 @@ export default function PromotionsPage() {
               >
                 <Avatar name={p.member?.user?.name} size={40} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14.5px] font-semibold text-ink dark:text-gray-100">
+                  <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
                     {p.member?.user?.name ?? "Member"}
                   </p>
-                  <p className="truncate text-[12.5px] text-sub dark:text-gray-400">
+                  <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
                     {p.member?.user?.email} · submitted {timeAgo(p.createdAt)}
                   </p>
                   {p.reason && (
@@ -232,6 +233,14 @@ export default function PromotionsPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function PromotionsPageRoute() {
+  return (
+    <RequirePermission anyOf={["promotion.submit", "promotion.approve"]}>
+      <PromotionsPage />
+    </RequirePermission>
   );
 }
 
@@ -405,16 +414,16 @@ function PromotionModal({
         <Grid preset="split">
           <div className="rounded-2xl border border-line px-4 py-3.5 dark:border-white/10">
             <p className="text-[11px] font-medium uppercase tracking-wide text-faint">Member</p>
-            <p className="mt-0.5 text-[14.5px] font-semibold text-ink dark:text-gray-100">
+            <p className="mt-0.5 text-[14.5px] font-semibold text-ink dark:text-slate-100">
               {promotion.member?.user?.name}
             </p>
-            <p className="text-[12.5px] text-sub dark:text-gray-400">
+            <p className="text-[12.5px] text-sub dark:text-slate-400">
               {promotion.member?.user?.email}
             </p>
           </div>
           <div className="rounded-2xl border border-line px-4 py-3.5 dark:border-white/10">
             <p className="text-[11px] font-medium uppercase tracking-wide text-faint">Requested move</p>
-            <p className="mt-0.5 text-[14.5px] font-semibold text-ink dark:text-gray-100">
+            <p className="mt-0.5 text-[14.5px] font-semibold text-ink dark:text-slate-100">
               {promotion.currentRole?.name ?? "Member"} →{" "}
               <span className="text-accent">{promotion.proposedRole?.name}</span>
             </p>
@@ -424,7 +433,7 @@ function PromotionModal({
         {promotion.reason && (
           <div className="rounded-2xl border border-line p-4 dark:border-white/10">
             <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-faint">Reason</p>
-            <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink dark:text-gray-200">
+            <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink dark:text-slate-200">
               {promotion.reason}
             </p>
           </div>
@@ -435,7 +444,7 @@ function PromotionModal({
             <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-faint">
               Achievements
             </p>
-            <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink dark:text-gray-200">
+            <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink dark:text-slate-200">
               {promotion.achievements}
             </p>
           </div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
+import { can } from "@/lib/permissions";
 import { memberUpdateSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
@@ -10,11 +11,36 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const auth = await requireAuth("member.view");
+    // Authenticated only: a member may read their own profile, and anyone with
+    // `member.view` may read any profile.
+    const auth = await requireAuth();
     if (auth.error) return auth.error;
 
     const { id } = await params;
     const member = await prisma.member.findUnique({
+      where: { id },
+      select: { userId: true, status: true },
+    });
+
+    if (!member) {
+      return NextResponse.json({ error: "Member not found" }, { status: 404 });
+    }
+
+    const isOwner = member.userId === auth.userId;
+    if (isOwner) {
+      // Stale-JWT guard (mirrors `can()`): suspended/inactive members lose API
+      // access immediately even while their session token is still valid.
+      if (member.status === "SUSPENDED" || member.status === "INACTIVE") {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    } else {
+      const allowed = await can(auth.userId, "member.view");
+      if (!allowed) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    }
+
+    const full = await prisma.member.findUnique({
       where: { id },
       include: {
         user: { select: { id: true, name: true, email: true, image: true } },
@@ -31,11 +57,7 @@ export async function GET(
       },
     });
 
-    if (!member) {
-      return NextResponse.json({ error: "Member not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(member);
+    return NextResponse.json(full);
   } catch (error) {
     console.error("[Member GET]", error);
     return NextResponse.json(

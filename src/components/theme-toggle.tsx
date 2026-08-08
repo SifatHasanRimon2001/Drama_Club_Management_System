@@ -33,8 +33,8 @@ export function ThemeToggle({ className, asSegmented }: ThemeToggleProps) {
             className={cn(
               "rounded-full px-3 py-1 text-[12.5px] font-medium capitalize transition-all",
               theme === t
-                ? "bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,0.12)] dark:bg-[#3a3a3c] dark:text-white"
-                : "text-sub hover:text-ink dark:text-gray-400 dark:hover:text-gray-200"
+                ? "bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,0.12)] dark:bg-[#1e293b] dark:text-white"
+                : "text-sub hover:text-ink dark:text-slate-400 dark:hover:text-slate-200"
             )}
           >
             {t}
@@ -56,7 +56,7 @@ export function ThemeToggle({ className, asSegmented }: ThemeToggleProps) {
       onClick={() => setTheme(next())}
       className={cn(
         "flex size-10 items-center justify-center rounded-full text-sub transition hover:bg-black/[0.05] hover:text-ink active:scale-95",
-        "dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-gray-100",
+        "dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         className
       )}

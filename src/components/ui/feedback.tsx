@@ -59,9 +59,9 @@ export function EmptyState({
       <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-accent-soft text-accent" aria-hidden="true">
         <Icon name={icon} size={26} />
       </span>
-      <h3 className="text-[16px] font-semibold text-ink dark:text-gray-100">{title}</h3>
+      <h3 className="text-[16px] font-semibold text-ink dark:text-slate-100">{title}</h3>
       {message && (
-        <p className="mt-1 max-w-sm text-sm text-sub dark:text-gray-400">{message}</p>
+        <p className="mt-1 max-w-sm text-sm text-sub dark:text-slate-400">{message}</p>
       )}
       {action && <div className="mt-5">{action}</div>}
     </div>

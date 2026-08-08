@@ -26,6 +26,7 @@ import { StatusPill } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
 import { Grid } from "@/components/ui/layout";
+import { PageHeader } from "@/components/ui/page";
 import { useRealtimeRefresh } from "@/lib/client/socket";
 import { r2Url } from "@/lib/server";
 
@@ -33,7 +34,7 @@ const MEMBER_TONES: Record<string, string> = {
   ACTIVE: "bg-green/12 text-green dark:bg-green/20 dark:text-green-300",
   PENDING: "bg-orange/12 text-orange dark:bg-orange/20 dark:text-orange-300",
   ALUMNI: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
-  INACTIVE: "bg-gray/12 text-sub dark:bg-white/10 dark:text-gray-400",
+  INACTIVE: "bg-gray/12 text-sub dark:bg-white/10 dark:text-slate-400",
   SUSPENDED: "bg-red/12 text-red dark:bg-red/20 dark:text-red-300",
 };
 
@@ -119,14 +120,11 @@ function AdminView({ data }: { data: AdminDashboardData }) {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-          Overview
-        </h1>
-        <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-          Here&apos;s what&apos;s happening in the club today.
-        </p>
-      </div>
+      <PageHeader
+        icon="home"
+        title="Overview"
+        subtitle="Here's what's happening in the club today."
+      />
 
       {/* Stat cards */}
       <Grid preset="stats">
@@ -197,7 +195,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <span className="w-8 text-right text-[13px] font-semibold tabular-nums text-ink dark:text-gray-200">
+                    <span className="w-8 text-right text-[13px] font-semibold tabular-nums text-ink dark:text-slate-200">
                       {count}
                     </span>
                   </div>
@@ -220,7 +218,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
           </CardHeader>
           <CardBody className="space-y-3">
             {data.registrations.length === 0 ? (
-              <p className="py-6 text-center text-[13.5px] text-sub dark:text-gray-400">
+              <p className="py-6 text-center text-[13.5px] text-sub dark:text-slate-400">
                 No registration windows yet.
               </p>
             ) : (
@@ -230,15 +228,15 @@ function AdminView({ data }: { data: AdminDashboardData }) {
                   className="flex items-center gap-4 rounded-2xl border border-line bg-white/60 px-4 py-3 dark:border-white/10 dark:bg-white/5"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-semibold text-ink dark:text-gray-100">
+                    <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
                       {r.title}
                     </p>
-                    <p className="text-[12px] text-sub dark:text-gray-400">
+                    <p className="text-[12px] text-sub dark:text-slate-400">
                       {r.applicantCount} applications · {r.conversionCount} converted
                     </p>
                   </div>
                   <div className="w-28">
-                    <div className="mb-1 flex items-center justify-between text-[11.5px] font-medium text-sub dark:text-gray-400">
+                    <div className="mb-1 flex items-center justify-between text-[11.5px] font-medium text-sub dark:text-slate-400">
                       <span>Converted</span>
                       <span className="tabular-nums">{r.conversionRate}%</span>
                     </div>
@@ -271,7 +269,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
           </CardHeader>
           <CardBody className="space-y-2">
             {data.pendingPromotions.list.length === 0 ? (
-              <p className="py-6 text-center text-[13.5px] text-sub dark:text-gray-400">
+              <p className="py-6 text-center text-[13.5px] text-sub dark:text-slate-400">
                 No promotions awaiting review.
               </p>
             ) : (
@@ -283,12 +281,12 @@ function AdminView({ data }: { data: AdminDashboardData }) {
                 >
                   <Avatar name={p.member?.user?.name} size={36} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-semibold text-ink dark:text-gray-100">
+                    <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
                       {p.member?.user?.name}
                     </p>
-                    <p className="truncate text-[12px] text-sub dark:text-gray-400">
+                    <p className="truncate text-[12px] text-sub dark:text-slate-400">
                       {p.currentRole?.name ?? "Member"} →{" "}
-                      <span className="font-medium text-ink dark:text-gray-200">
+                      <span className="font-medium text-ink dark:text-slate-200">
                         {p.proposedRole?.name}
                       </span>
                     </p>
@@ -313,7 +311,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
           </CardHeader>
           <CardBody className="space-y-2">
             {data.upcomingEvents.length === 0 ? (
-              <p className="py-6 text-center text-[13.5px] text-sub dark:text-gray-400">
+              <p className="py-6 text-center text-[13.5px] text-sub dark:text-slate-400">
                 No upcoming events scheduled.
               </p>
             ) : (
@@ -332,10 +330,10 @@ function AdminView({ data }: { data: AdminDashboardData }) {
                     <Icon name={(EVENT_TYPE_ICONS[ev.type] as IconName) || "calendar"} size={16} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-semibold text-ink dark:text-gray-100">
+                    <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
                       {ev.title}
                     </p>
-                    <p className="text-[12px] text-sub dark:text-gray-400">
+                    <p className="text-[12px] text-sub dark:text-slate-400">
                       {formatDateTime(ev.startAt)}
                       {ev.department ? ` · ${ev.department.name}` : ""}
                     </p>
@@ -362,7 +360,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
         <CardBody>
           <Grid preset="thumbs">
             {data.recentGalleryItems.length === 0 ? (
-              <p className="col-span-full py-6 text-center text-[13.5px] text-sub dark:text-gray-400">
+              <p className="col-span-full py-6 text-center text-[13.5px] text-sub dark:text-slate-400">
                 Nothing uploaded yet.
               </p>
             ) : (
@@ -388,7 +386,7 @@ function AdminView({ data }: { data: AdminDashboardData }) {
                         </div>
                       )}
                     </div>
-                    <p className="truncate px-3 py-2 text-[12px] font-medium text-sub dark:text-gray-400">
+                    <p className="truncate px-3 py-2 text-[12px] font-medium text-sub dark:text-slate-400">
                       {item.album?.name ?? item.fileName}
                     </p>
                   </Link>
@@ -415,16 +413,15 @@ function MemberView({
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-          Hi, {member?.user?.name?.split(" ")[0] ?? "there"}
-        </h1>
-        <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-          {isMember
+      <PageHeader
+        icon="user"
+        title={`Hi, ${member?.user?.name?.split(" ")[0] ?? "there"}`}
+        subtitle={
+          isMember
             ? `Member since ${member?.member ? formatDate(member.member.joiningDate) : ""} · ${member?.member?.memberCode}`
-            : "Your account isn't linked to a member profile yet."}
-        </p>
-      </div>
+            : "Your account isn't linked to a member profile yet."
+        }
+      />
 
       {isMember ? (
         <Grid preset="stats">
@@ -463,10 +460,10 @@ function MemberView({
             <span className="flex size-12 items-center justify-center rounded-full bg-accent-soft text-accent dark:bg-accent/20">
               <Icon name="user" size={22} />
             </span>
-            <p className="text-[15px] font-semibold text-ink dark:text-gray-100">
+            <p className="text-[15px] font-semibold text-ink dark:text-slate-100">
               No member profile linked
             </p>
-            <p className="max-w-sm text-[13.5px] text-sub dark:text-gray-400">
+            <p className="max-w-sm text-[13.5px] text-sub dark:text-slate-400">
               Ask an administrator to link a member profile to your account to unlock
               member features.
             </p>
@@ -498,10 +495,10 @@ function MemberView({
                   <Icon name={(EVENT_TYPE_ICONS[ev.type] as IconName) || "calendar"} size={16} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14px] font-semibold text-ink dark:text-gray-100">
+                  <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
                     {ev.title}
                   </p>
-                  <p className="text-[12px] text-sub dark:text-gray-400">
+                  <p className="text-[12px] text-sub dark:text-slate-400">
                     {formatDateTime(ev.startAt)}
                     {ev.location ? ` · ${ev.location}` : ""}
                   </p>
@@ -567,7 +564,7 @@ function DepartmentWidget({ data }: { data: DepartmentDashboardData }) {
           </CardHeader>
           <CardBody className="space-y-2">
             {data.tasks.length === 0 ? (
-              <p className="py-6 text-center text-[13.5px] text-sub dark:text-gray-400">
+              <p className="py-6 text-center text-[13.5px] text-sub dark:text-slate-400">
                 No tasks in this department yet.
               </p>
             ) : (
@@ -583,11 +580,11 @@ function DepartmentWidget({ data }: { data: DepartmentDashboardData }) {
                       t.status === "DONE" ? "text-green" : "text-faint"
                     }
                   />
-                  <p className="min-w-0 flex-1 truncate text-[13.5px] font-medium text-ink dark:text-gray-100">
+                  <p className="min-w-0 flex-1 truncate text-[13.5px] font-medium text-ink dark:text-slate-100">
                     {t.title}
                   </p>
                   {t.assignee && (
-                    <span className="flex items-center gap-1.5 text-[12px] text-sub dark:text-gray-400">
+                    <span className="flex items-center gap-1.5 text-[12px] text-sub dark:text-slate-400">
                       <Avatar name={t.assignee.user.name} size={18} />
                       {t.assignee.user.name.split(" ")[0]}
                     </span>
@@ -605,7 +602,7 @@ function DepartmentWidget({ data }: { data: DepartmentDashboardData }) {
           </CardHeader>
           <CardBody className="space-y-2">
             {data.events.length === 0 ? (
-              <p className="py-6 text-center text-[13.5px] text-sub dark:text-gray-400">
+              <p className="py-6 text-center text-[13.5px] text-sub dark:text-slate-400">
                 No upcoming events for this department.
               </p>
             ) : (
@@ -618,10 +615,10 @@ function DepartmentWidget({ data }: { data: DepartmentDashboardData }) {
                     <Icon name={(EVENT_TYPE_ICONS[ev.type] as IconName) || "calendar"} size={15} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13.5px] font-semibold text-ink dark:text-gray-100">
+                    <p className="truncate text-[13.5px] font-semibold text-ink dark:text-slate-100">
                       {ev.title}
                     </p>
-                    <p className="text-[12px] text-sub dark:text-gray-400">
+                    <p className="text-[12px] text-sub dark:text-slate-400">
                       {formatDateTime(ev.startAt)}
                     </p>
                   </div>

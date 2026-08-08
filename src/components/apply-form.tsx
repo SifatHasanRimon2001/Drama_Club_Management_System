@@ -118,14 +118,14 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
 
   if (done) {
     return (
-      <div className="flex flex-col items-center rounded-apple border border-line bg-card px-6 py-14 text-center shadow-card dark:bg-[#1c1c1e] dark:border-white/10">
+      <div className="flex flex-col items-center rounded-apple border border-line bg-card px-6 py-14 text-center shadow-card dark:bg-[#0f172a] dark:border-white/10">
         <span className="flex size-14 items-center justify-center rounded-full bg-green/12 text-[#248a3d] dark:text-green-400">
           <Icon name="check" size={26} />
         </span>
-        <h3 className="mt-5 text-[19px] font-bold tracking-tight text-ink dark:text-gray-100">
+        <h3 className="mt-5 text-[19px] font-bold tracking-tight text-ink dark:text-slate-100">
           Application submitted!
         </h3>
-        <p className="mt-2 max-w-sm text-[14px] leading-relaxed text-sub dark:text-gray-400">
+        <p className="mt-2 max-w-sm text-[14px] leading-relaxed text-sub dark:text-slate-400">
           Thanks for applying. Our team will review your application and get back to you by
           email. Break a leg!
         </p>
@@ -137,12 +137,12 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
     <form
       onSubmit={submit}
       noValidate
-      className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-[#1c1c1e] dark:border-white/10"
+      className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-[#0f172a] dark:border-white/10"
     >
       <Grid preset="split">
         <Field label="Full name" error={errors.name}>
           <Input
-            placeholder="Jane Doe"
+            placeholder="Rafiqul Islam"
             value={String(form.name ?? "")}
             onChange={(e) => set("name", e.target.value)}
           />
@@ -150,21 +150,21 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
         <Field label="Email" error={errors.email}>
           <Input
             type="email"
-            placeholder="jane@university.edu"
+            placeholder="you@bracu.ac.bd"
             value={String(form.email ?? "")}
             onChange={(e) => set("email", e.target.value)}
           />
         </Field>
         <Field label="Phone" error={errors.phone}>
           <Input
-            placeholder="+1 555 000 1234"
+            placeholder="+880 1XXX-XXXXXX"
             value={String(form.phone ?? "")}
             onChange={(e) => set("phone", e.target.value)}
           />
         </Field>
         <Field label="Student ID" error={errors.studentId}>
           <Input
-            placeholder="STU-2024-00123"
+            placeholder="DU-2024-0001"
             value={String(form.studentId ?? "")}
             onChange={(e) => set("studentId", e.target.value)}
           />
@@ -172,7 +172,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
       </Grid>
 
       <div className="mt-5">
-        <p className="text-[13px] font-medium text-sub dark:text-gray-400">
+        <p className="text-[13px] font-medium text-sub dark:text-slate-400">
           Department preferences <span className="text-red">*</span>
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -186,8 +186,8 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
                 aria-pressed={active}
                 className={`rounded-full border px-3.5 py-1.5 text-[13.5px] font-medium transition ${
                   active
-                    ? "border-accent bg-accent text-white"
-                    : "border-line bg-white text-sub hover:border-accent/50 dark:bg-white/10 dark:text-gray-300"
+                    ? "border-gold bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white shadow-gold"
+                    : "border-line bg-white text-sub hover:border-gold/60 dark:bg-white/10 dark:text-slate-300"
                 }`}
               >
                 {d.name}
@@ -203,7 +203,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
       </div>
 
       <div className="mt-5">
-        <p className="text-[13px] font-medium text-sub dark:text-gray-400">Skills</p>
+        <p className="text-[13px] font-medium text-sub dark:text-slate-400">Skills</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {skills.map((s) => (
             <span
@@ -243,7 +243,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
                 key={s}
                 type="button"
                 onClick={() => setSkills((k) => [...k, s])}
-                className="rounded-full bg-black/[0.04] px-2.5 py-1 text-[12px] text-sub transition hover:bg-black/[0.08] dark:bg-white/10 dark:text-gray-300"
+                className="rounded-full bg-black/[0.04] px-2.5 py-1 text-[12px] text-sub transition hover:bg-black/[0.08] dark:bg-white/10 dark:text-slate-300"
               >
                 + {s}
               </button>
@@ -344,7 +344,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
         <Button type="submit" loading={submitting} size="lg" full>
           Submit Application
         </Button>
-        <p className="text-[12.5px] text-faint dark:text-gray-500">
+        <p className="text-[12.5px] text-faint dark:text-slate-400">
           You&apos;ll receive a confirmation email once reviewed. Max 1 application per window.
         </p>
       </div>

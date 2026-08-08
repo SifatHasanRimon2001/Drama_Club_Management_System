@@ -221,11 +221,19 @@ describe("Complete Backend Coverage", () => {
         expect(res.status).toBe(403);
       });
 
-      it("GET /api/members/:id returns 403 without member.view", async () => {
+      it("GET /api/members/:id returns 403 without member.view (non-owner)", async () => {
+        const { user } = await setupUserWithPerms([]);
+        const otherMember = await createTestMember();
+        mockAuth(user.user.id, []);
+        const res = await MEMBER_GET(mockRequest(`/api/members/${otherMember.id}`), { params: Promise.resolve({ id: otherMember.id }) });
+        expect(res.status).toBe(403);
+      });
+
+      it("GET /api/members/:id returns 200 for the member's own profile without member.view", async () => {
         const { user, member } = await setupUserWithPerms([]);
         mockAuth(user.user.id, []);
         const res = await MEMBER_GET(mockRequest(`/api/members/${member.id}`), { params: Promise.resolve({ id: member.id }) });
-        expect(res.status).toBe(403);
+        expect(res.status).toBe(200);
       });
 
       it("PATCH /api/members/:id returns 403 without member.edit", async () => {

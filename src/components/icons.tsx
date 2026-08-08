@@ -72,7 +72,8 @@ export type IconName =
   | "align-center"
   | "align-right"
   | "arrow-left"
-  | "arrow-down";
+  | "arrow-down"
+  | "ticket";
 
 const paths: Record<IconName, React.ReactNode> = {
   bell: (
@@ -432,7 +433,13 @@ const paths: Record<IconName, React.ReactNode> = {
     </>
   ),
   "arrow-left": <path d="M19 12H5M12 19l-7-7 7-7" />,
-  "arrow-down": <path d="M12 5v14M19 12l-7 7-7-7" />,
+  "arrow-down": <path d="M12 5v14M19 12l-7-7 7-7" />,
+  ticket: (
+    <>
+      <path d="M2 9a3 3 0 0 0 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+      <path d="M13 5v2M13 11v2M13 17v2" />
+    </>
+  ),
 };
 
 interface IconProps extends SVGProps<SVGSVGElement> {

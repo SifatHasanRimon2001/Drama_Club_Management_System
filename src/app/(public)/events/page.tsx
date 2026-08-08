@@ -6,6 +6,8 @@ import { Icon } from "@/components/icons";
 import { StatusPill } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
 import { Container, Toolbar } from "@/components/ui/layout";
+import { PageIntro } from "@/components/ui/page";
+import { TicketStub } from "@/components/ticket-stub";
 import { cn } from "@/lib/cn";
 
 export const metadata = { title: "Events" };
@@ -31,17 +33,12 @@ export default async function EventsPage({
   const events = await publicFetch<Event[]>(`/api/public/events?${qs}`);
 
   return (
-    <Container size="page" className="pb-24 pt-28">
-      <div className="max-w-3xl">
-        <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">
-          What&apos;s happening
-        </p>
-        <h1 className="display-title mt-3 text-ink dark:text-gray-50">Events</h1>
-        <p className="mt-5 max-w-2xl text-[17px] leading-relaxed text-sub dark:text-gray-400">
-          Workshops, rehearsals, auditions, performances and festivals — everything on
-          the club calendar.
-        </p>
-      </div>
+<Container size="page" className="pb-24 pt-28">
+      <PageIntro
+        eyebrow="What's happening"
+        title="Events"
+        subtitle="Workshops, rehearsals, auditions, performances and festivals — everything on the club calendar."
+      />
 
       <Toolbar className="mt-10">
         <Link
@@ -51,8 +48,8 @@ export default async function EventsPage({
             "inline-flex items-center rounded-full px-4 py-2 text-[13.5px] font-medium transition",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
             upcoming
-              ? "bg-accent text-white"
-              : "border border-line bg-card text-sub hover:text-ink dark:bg-[#1c1c1e] dark:text-gray-400 dark:hover:text-gray-200"
+              ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white shadow-gold"
+              : "border border-line bg-card text-sub hover:text-ink dark:bg-[#0f172a] dark:text-slate-400 dark:hover:text-slate-200"
           )}
         >
           Upcoming
@@ -64,8 +61,8 @@ export default async function EventsPage({
             "inline-flex items-center rounded-full px-4 py-2 text-[13.5px] font-medium transition",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
             !upcoming
-              ? "bg-accent text-white"
-              : "border border-line bg-card text-sub hover:text-ink dark:bg-[#1c1c1e] dark:text-gray-400 dark:hover:text-gray-200"
+              ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white shadow-gold"
+              : "border border-line bg-card text-sub hover:text-ink dark:bg-[#0f172a] dark:text-slate-400 dark:hover:text-slate-200"
           )}
         >
           All
@@ -81,7 +78,7 @@ export default async function EventsPage({
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
               type === t
                 ? "bg-black/[0.08] text-ink dark:bg-white/20 dark:text-white"
-                : "text-sub hover:text-ink dark:text-gray-400 dark:hover:text-gray-200"
+                : "text-sub hover:text-ink dark:text-slate-400 dark:hover:text-slate-200"
             )}
           >
             {t.charAt(0) + t.slice(1).toLowerCase()}
@@ -108,23 +105,18 @@ export default async function EventsPage({
             return (
               <article
                 key={e.id}
-                className="group flex flex-wrap items-center gap-4 rounded-apple border border-line bg-card p-4 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover sm:px-6 dark:bg-[#1c1c1e] dark:border-white/10"
+                className="group overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-card-hover dark:bg-[#0f172a] dark:border-white/10"
               >
-                <Link href={`/events/${e.id}`} className="flex w-full flex-wrap items-center gap-4">
-                <div className="flex w-16 shrink-0 flex-col items-center rounded-2xl bg-accent-soft py-2.5 text-accent">
-                  <span className="text-[22px] font-bold leading-none">{date.getDate()}</span>
-                  <span className="mt-1 text-[11px] font-semibold uppercase tracking-wide">
-                    {date.toLocaleString(undefined, { month: "short" })}
-                  </span>
-                </div>
+                <Link href={`/events/${e.id}`} className="flex w-full flex-wrap items-center gap-4 px-4 py-4 sm:px-6">
+                <TicketStub date={date} />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-[16.5px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-gray-100">
+                    <h2 className="text-[16.5px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-slate-100">
                       {e.title}
                     </h2>
                     <StatusPill value={e.type} />
                   </div>
-                  <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-sub dark:text-gray-400">
+                  <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-sub dark:text-slate-400">
                     <span className="inline-flex items-center gap-1">
                       <Icon name="clock" size={13} />
                       {formatDateTime(e.startAt)}

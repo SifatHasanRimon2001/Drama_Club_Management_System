@@ -74,7 +74,7 @@ export function applicantStatusEmail(
         </p>
         ${isAccepted ? "<p>Welcome to the club! You will receive further instructions shortly.</p>" : "<p>We wish you all the best in your future endeavors.</p>"}
         <br />
-        <p>Best regards,<br/>Drama Club Management</p>
+        <p>Best regards,<br/>BRAC University Drama Club</p>
       </div>
     `,
   };

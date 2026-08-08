@@ -12,8 +12,10 @@ import { Segmented } from "@/components/ui/segmented";
 import { Modal, ConfirmDialog } from "@/components/ui/modal";
 import { Pagination as Pager } from "@/components/ui/pagination";
 import { PageLoader, EmptyState } from "@/components/ui/feedback";
+import { PageHeader } from "@/components/ui/page";
 import { useToast } from "@/components/ui/toast";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
 interface ContactMessage {
   id: string;
@@ -26,7 +28,7 @@ interface ContactMessage {
 
 type Filter = "all" | "open" | "handled";
 
-export default function ContactMessagesPage() {
+function ContactMessagesPage() {
   const toast = useToast();
   const [rows, setRows] = useState<ContactMessage[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -93,16 +95,11 @@ export default function ContactMessagesPage() {
   };
 
   return (    <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-            Contact Messages
-          </h1>
-          <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-            Messages sent from the public contact page
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon="mail"
+        title="Contact Messages"
+        subtitle="Messages sent from the public contact page"
+      />
 
       <Segmented<Filter>
         scrollable
@@ -142,7 +139,7 @@ export default function ContactMessagesPage() {
                 <Avatar name={m.name} size={40} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="truncate text-[14.5px] font-semibold text-ink dark:text-gray-100">
+                    <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
                       {m.name}
                     </p>
                     {m.handledAt ? (
@@ -155,10 +152,10 @@ export default function ContactMessagesPage() {
                       </span>
                     )}
                   </div>
-                  <p className="truncate text-[12.5px] text-sub dark:text-gray-400">
+                  <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
                     {m.email} · {timeAgo(m.createdAt)}
                   </p>
-                  <p className="mt-0.5 line-clamp-1 text-[13px] text-ink/80 dark:text-gray-300">
+                  <p className="mt-0.5 line-clamp-1 text-[13px] text-ink/80 dark:text-slate-300">
                     {m.message}
                   </p>
                 </div>
@@ -215,7 +212,7 @@ export default function ContactMessagesPage() {
             </>
           }
         >
-          <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink dark:text-gray-200">
+          <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink dark:text-slate-200">
             {viewing.message}
           </p>
         </Modal>
@@ -230,5 +227,13 @@ export default function ContactMessagesPage() {
         loading={busy}
       />
     </div>
+  );
+}
+
+export default function ContactMessagesPageRoute() {
+  return (
+    <RequirePermission permission="settings.manage">
+      <ContactMessagesPage />
+    </RequirePermission>
   );
 }

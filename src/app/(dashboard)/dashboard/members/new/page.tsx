@@ -4,17 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiGet, apiPost } from "@/lib/client/api";
-import { useSession } from "@/lib/client/session";
 import { Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/input";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { EmptyState, PageLoader } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
 import { MEMBER_STATUSES, membershipStatusLabel } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { ActionIcon } from "@/components/ui/button";
 import { Grid } from "@/components/ui/layout";
+import { BackLink, PageHeader } from "@/components/ui/page";
+import { RequirePermission } from "@/components/require-permission";
 
 interface LinkedUser {
   id: string;
@@ -22,11 +22,9 @@ interface LinkedUser {
   email: string;
 }
 
-export default function AddMemberPage() {
+function AddMemberPage() {
   const router = useRouter();
   const toast = useToast();
-  const { user, loading: sessionLoading } = useSession();
-  const canCreate = user?.permissions?.includes("member.create") ?? false;
   const [form, setForm] = useState({
     userId: "",
     memberCode: "",
@@ -133,34 +131,12 @@ export default function AddMemberPage() {
     }
   };
 
-  if (sessionLoading) return <PageLoader label="Checking permissions…" />;
-
-  if (!canCreate) {
-    return (
-      <EmptyState
-        icon="lock"
-        title="No access"
-        message="You don't have permission to create members."
-      />
-    );
-  }
-
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <Link
-          href="/dashboard/members"
-          className="mb-2 flex items-center gap-1 text-[13px] font-medium text-accent hover:underline"
-        >
-          <Icon name="chevron-left" size={14} /> Back to members
-        </Link>
-        <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
-          Add Member
-        </h1>
-        <p className="mt-1 text-[14px] text-sub dark:text-gray-400">
-          Link a member profile to an existing user account.
-        </p>
+        <BackLink href="/dashboard/members" className="mb-2">Back to members</BackLink>
       </div>
+      <PageHeader icon="members" title="Add Member" subtitle="Link a member profile to an existing user account." />
 
       <Card>
         <CardHeader>
@@ -168,7 +144,7 @@ export default function AddMemberPage() {
         </CardHeader>
         <CardBody>
           <form onSubmit={save} className="space-y-4">
-            <div className="rounded-2xl bg-accent-soft/50 p-4 text-[13px] leading-relaxed text-sub dark:bg-accent/10 dark:text-gray-400">
+            <div className="rounded-2xl bg-accent-soft/50 p-4 text-[13px] leading-relaxed text-sub dark:bg-accent/10 dark:text-slate-400">
               <span className="flex items-start gap-2">
                 <Icon name="info" size={15} className="mt-0.5 shrink-0 text-accent" />
                 <span>
@@ -187,12 +163,12 @@ export default function AddMemberPage() {
                 hint={picked ? `${picked.name} · ${picked.email}` : "Search by name or email"}
               >
                 {picked ? (
-                  <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white px-3.5 py-2.5 dark:border-white/15 dark:bg-[#1c1c1e]">
+                  <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white px-3.5 py-2.5 dark:border-white/15 dark:bg-[#0f172a]">
                     <div className="min-w-0">
-                      <p className="truncate text-[14.5px] font-semibold text-ink dark:text-gray-100">
+                      <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
                         {picked.name}
                       </p>
-                      <p className="truncate text-[12.5px] text-sub dark:text-gray-400">
+                      <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
                         {picked.email}
                       </p>
                     </div>
@@ -234,7 +210,7 @@ export default function AddMemberPage() {
                         id="user-search-results"
                         role="listbox"
                         aria-label="Matching accounts"
-                        className="absolute inset-x-0 top-full z-20 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-line bg-white p-1.5 shadow-card dark:border-white/15 dark:bg-[#1c1c1e]"
+                        className="absolute inset-x-0 top-full z-20 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-line bg-white p-1.5 shadow-card dark:border-white/15 dark:bg-[#0f172a]"
                       >
                         {searching && (
                           <p className="px-3 py-2.5 text-[13px] text-faint">
@@ -276,10 +252,10 @@ export default function AddMemberPage() {
                                 <Icon name="user" size={14} />
                               </span>
                               <span className="min-w-0">
-                                <span className="block truncate text-[13.5px] font-medium text-ink dark:text-gray-100">
+                                <span className="block truncate text-[13.5px] font-medium text-ink dark:text-slate-100">
                                   {u.name}
                                 </span>
-                                <span className="block truncate text-[12px] text-sub dark:text-gray-400">
+                                <span className="block truncate text-[12px] text-sub dark:text-slate-400">
                                   {u.email}
                                 </span>
                               </span>
@@ -345,5 +321,13 @@ export default function AddMemberPage() {
         </CardBody>
       </Card>
     </div>
+  );
+}
+
+export default function AddMemberPageRoute() {
+  return (
+    <RequirePermission permission="member.create">
+      <AddMemberPage />
+    </RequirePermission>
   );
 }

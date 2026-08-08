@@ -21,7 +21,9 @@ import { Dropdown } from "@/components/ui/dropdown";
 import { ActionIcon } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { Grid } from "@/components/ui/layout";
+import { BackLink } from "@/components/ui/page";
 import { useRealtimeRefresh } from "@/lib/client/socket";
+import { RequirePermission } from "@/components/require-permission";
 
 type Tab = "overview" | "tasks" | "members";
 
@@ -30,7 +32,7 @@ interface FullDepartment extends Omit<Department, "members"> {
   members: { member: Member }[];
 }
 
-export default function DepartmentDetailPage() {
+function DepartmentDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const { user } = useSession();
@@ -157,14 +159,11 @@ export default function DepartmentDetailPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link
-            href="/dashboard/departments"
-            className="mb-2 flex items-center gap-1 text-[13px] font-medium text-accent hover:underline"
-          >
-            <Icon name="chevron-left" size={14} /> All departments
-          </Link>
+          <BackLink href="/dashboard/departments" className="mb-2">
+            All departments
+          </BackLink>
           <div className="flex items-center gap-3">
-            <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-gray-100">
+            <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-slate-100">
               {dept.name}
             </h1>
             {dept.committee?.isCurrent && (
@@ -173,7 +172,7 @@ export default function DepartmentDetailPage() {
               </span>
             )}
           </div>
-          <p className="mt-1 text-[13.5px] text-sub dark:text-gray-400">
+          <p className="mt-1 text-[13.5px] text-sub dark:text-slate-400">
             {dept.committee?.year ? `${dept.committee.year} committee` : "Committee"} ·{" "}
             {members.length} members · {tasks.length} tasks
           </p>
@@ -197,7 +196,7 @@ export default function DepartmentDetailPage() {
               <CardTitle>About</CardTitle>
             </CardHeader>
             <CardBody>
-              <p className="text-[14px] leading-relaxed text-ink dark:text-gray-300">
+              <p className="text-[14px] leading-relaxed text-ink dark:text-slate-300">
                 {dept.description || "No description provided for this department yet."}
               </p>
             </CardBody>
@@ -212,39 +211,39 @@ export default function DepartmentDetailPage() {
                   <div className="flex items-center gap-3">
                     <Avatar name={dept.coordinator.user.name} src={dept.coordinator.user.image} size={44} />
                     <div className="min-w-0">
-                      <p className="truncate text-[14.5px] font-semibold text-ink dark:text-gray-100">
+                      <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
                         {dept.coordinator.user.name}
                       </p>
-                      <p className="truncate text-[12.5px] text-sub dark:text-gray-400">
+                      <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
                         {dept.coordinator.user.email}
                       </p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-[13.5px] text-sub dark:text-gray-400">
+                  <p className="text-[13.5px] text-sub dark:text-slate-400">
                     No coordinator assigned yet.
                   </p>
                 )}
               </CardBody>
             </Card>
             <Grid preset="stats3">
-              <div className="rounded-2xl border border-line bg-white p-4 text-center dark:border-white/10 dark:bg-[#1c1c1e]">
-                <p className="text-[22px] font-bold tabular-nums text-ink dark:text-gray-100">
+              <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-[#0f172a]">
+                <p className="text-[22px] font-bold tabular-nums text-ink dark:text-slate-100">
                   {members.length}
                 </p>
-                <p className="text-[11.5px] font-medium text-faint dark:text-gray-500">Members</p>
+                <p className="text-[11.5px] font-medium text-faint dark:text-slate-400">Members</p>
               </div>
-              <div className="rounded-2xl border border-line bg-white p-4 text-center dark:border-white/10 dark:bg-[#1c1c1e]">
-                <p className="text-[22px] font-bold tabular-nums text-ink dark:text-gray-100">
+              <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-[#0f172a]">
+                <p className="text-[22px] font-bold tabular-nums text-ink dark:text-slate-100">
                   {dept._count?.events ?? 0}
                 </p>
-                <p className="text-[11.5px] font-medium text-faint dark:text-gray-500">Events</p>
+                <p className="text-[11.5px] font-medium text-faint dark:text-slate-400">Events</p>
               </div>
-              <div className="rounded-2xl border border-line bg-white p-4 text-center dark:border-white/10 dark:bg-[#1c1c1e]">
-                <p className="text-[22px] font-bold tabular-nums text-ink dark:text-gray-100">
+              <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-[#0f172a]">
+                <p className="text-[22px] font-bold tabular-nums text-ink dark:text-slate-100">
                   {taskCounts.DONE}/{tasks.length}
                 </p>
-                <p className="text-[11.5px] font-medium text-faint dark:text-gray-500">Tasks done</p>
+                <p className="text-[11.5px] font-medium text-faint dark:text-slate-400">Tasks done</p>
               </div>
             </Grid>
           </div>
@@ -295,18 +294,18 @@ export default function DepartmentDetailPage() {
                   <div className="min-w-0 flex-1">
                     <p
                       className={cn(
-                        "text-[14px] font-semibold text-ink dark:text-gray-100",
+                        "text-[14px] font-semibold text-ink dark:text-slate-100",
                         t.status === "DONE" && "text-faint line-through"
                       )}
                     >
                       {t.title}
                     </p>
                     {t.description && (
-                      <p className="mt-0.5 line-clamp-1 text-[12.5px] text-sub dark:text-gray-400">
+                      <p className="mt-0.5 line-clamp-1 text-[12.5px] text-sub dark:text-slate-400">
                         {t.description}
                       </p>
                     )}
-                    <p className="mt-0.5 text-[11.5px] text-faint dark:text-gray-500">
+                    <p className="mt-0.5 text-[11.5px] text-faint dark:text-slate-400">
                       {t.dueDate ? `Due ${formatDateTime(t.dueDate)}` : "No due date"}
                       {t.assignee ? ` · ${t.assignee.user.name}` : ""}
                     </p>
@@ -322,7 +321,7 @@ export default function DepartmentDetailPage() {
                               "flex size-8 items-center justify-center rounded-full transition",
                               open
                                 ? "bg-black/[0.07] dark:bg-white/15"
-                                : "text-faint hover:bg-black/[0.05] hover:text-ink dark:hover:bg-white/10 dark:hover:text-gray-200"
+                                : "text-faint hover:bg-black/[0.05] hover:text-ink dark:hover:bg-white/10 dark:hover:text-slate-200"
                             )}
                             aria-label="Task actions"
                           >
@@ -343,7 +342,7 @@ export default function DepartmentDetailPage() {
                                   "flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] font-medium transition hover:bg-black/[0.05] dark:hover:bg-white/10",
                                   t.status === s
                                     ? "text-accent"
-                                    : "text-ink dark:text-gray-200"
+                                    : "text-ink dark:text-slate-200"
                                 )}
                               >
                                 <span className="size-1.5 rounded-full bg-current" />
@@ -402,7 +401,7 @@ export default function DepartmentDetailPage() {
                 >
                   <Avatar name={m.user.name} src={m.user.image} size={38} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-semibold text-ink dark:text-gray-100">
+                    <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
                       {m.user.name}
                       {dept.coordinatorId === m.id && (
                         <span className="ml-2 rounded-full bg-purple/12 px-2 py-0.5 text-[10.5px] font-semibold text-purple dark:bg-purple/20 dark:text-purple-300">
@@ -410,7 +409,7 @@ export default function DepartmentDetailPage() {
                         </span>
                       )}
                     </p>
-                    <p className="truncate text-[12.5px] text-sub dark:text-gray-400">
+                    <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
                       {m.memberCode} · {m.user.email}
                     </p>
                   </div>
@@ -466,6 +465,14 @@ export default function DepartmentDetailPage() {
         onClose={() => setDeleteTaskId(null)}
       />
     </div>
+  );
+}
+
+export default function DepartmentDetailPageRoute() {
+  return (
+    <RequirePermission permission="department.view">
+      <DepartmentDetailPage />
+    </RequirePermission>
   );
 }
 
@@ -630,7 +637,7 @@ function AddMemberModal({
     <Modal open onClose={onClose} title="Add Member to Department">
       <form onSubmit={save} className="space-y-4">
         {members.length === 0 ? (
-          <p className="rounded-2xl bg-black/[0.03] p-4 text-[13.5px] text-sub dark:bg-white/5 dark:text-gray-400">
+          <p className="rounded-2xl bg-black/[0.03] p-4 text-[13.5px] text-sub dark:bg-white/5 dark:text-slate-400">
             All members are already in this department.
           </p>
         ) : (

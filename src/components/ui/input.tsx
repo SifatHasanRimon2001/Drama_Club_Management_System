@@ -16,7 +16,7 @@ import { cn } from "@/lib/cn";
 const baseField =
   "w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-[15px] text-ink placeholder:text-faint " +
   "transition-all duration-150 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/15 " +
-  "disabled:opacity-50 dark:bg-[#1c1c1e] dark:text-gray-100 dark:border-white/15";
+  "disabled:opacity-50 dark:bg-[#0f172a] dark:text-slate-100 dark:border-white/15";
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   ({ className, ...props }, ref) => (
@@ -98,7 +98,7 @@ export function Field({
   return (
     <div className={cn("space-y-1.5", className)}>
       {label && (
-        <label htmlFor={controlId} className="block text-[13px] font-medium text-sub dark:text-gray-400">
+        <label htmlFor={controlId} className="block text-[13px] font-medium text-sub dark:text-slate-400">
           {label}
           {optional && <span className="ml-1 text-[12px] font-normal text-faint">(optional)</span>}
         </label>

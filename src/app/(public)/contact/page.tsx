@@ -5,7 +5,8 @@ import { apiGet, apiPost } from "@/lib/client/api";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/input";
-import { Grid } from "@/components/ui/layout";
+import { Grid, Container } from "@/components/ui/layout";
+import { PageIntro } from "@/components/ui/page";
 import { Icon } from "@/components/icons";
 import type { PublicAbout } from "@/lib/types";
 
@@ -44,28 +45,25 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-24 pt-28 sm:px-6">
-      <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr]">
+    <Container size="narrow" className="pb-24 pt-28">
+      <div className="grid gap-12 md:grid-cols-[1fr_1.2fr] md:gap-10">
         <div>
-          <p className="text-[13px] font-semibold uppercase tracking-widest text-accent">
-            Get in touch
-          </p>
-          <h1 className="display-title mt-3 text-ink dark:text-gray-50">Contact us</h1>
-          <p className="mt-5 text-[16px] leading-relaxed text-sub dark:text-gray-400">
-            Questions about joining, productions, venue hire, or collaborations? Drop us a
-            line — we&apos;d love to hear from you.
-          </p>
+          <PageIntro
+            eyebrow="Get in touch"
+            title="Contact us"
+            subtitle="Questions about joining, productions, venue hire, or collaborations? Drop us a line — we'd love to hear from you."
+          />
           <div className="mt-8 space-y-4">
             {[
               {
                 icon: "mail" as const,
                 title: "Email",
-                text: about?.contactEmail || "dramaclub@university.edu",
+                text: about?.contactEmail || "dramaclub@bracu.ac.bd",
               },
               {
                 icon: "pin" as const,
                 title: "Where to find us",
-                text: "Main Hall, University Theatre Building",
+                text: "BRAC University Campus, Mohakhali, Dhaka 1212",
               },
               {
                 icon: "phone" as const,
@@ -78,8 +76,8 @@ export default function ContactPage() {
                   <Icon name={c.icon} size={18} />
                 </span>
                 <div>
-                  <p className="text-[14.5px] font-semibold text-ink dark:text-gray-100">{c.title}</p>
-                  <p className="text-[13.5px] text-sub dark:text-gray-400">{c.text}</p>
+                  <p className="text-[14.5px] font-semibold text-ink dark:text-slate-100">{c.title}</p>
+                  <p className="text-[13.5px] text-sub dark:text-slate-400">{c.text}</p>
                 </div>
               </div>
             ))}
@@ -87,29 +85,29 @@ export default function ContactPage() {
         </div>
 
         {done ? (
-          <div className="flex h-full flex-col items-center justify-center rounded-[24px] border border-line bg-card p-10 text-center shadow-card dark:bg-[#1c1c1e] dark:border-white/10">
+          <div className="flex h-full flex-col items-center justify-center rounded-apple border border-line bg-card p-8 text-center shadow-card sm:p-10 dark:bg-[#0f172a] dark:border-white/10">
             <span className="flex size-14 items-center justify-center rounded-full bg-green/12 text-[#248a3d] dark:text-green-400">
               <Icon name="check" size={26} />
             </span>
-            <h2 className="mt-5 text-[19px] font-bold tracking-tight text-ink dark:text-gray-100">
+            <h2 className="mt-5 text-[19px] font-bold tracking-tight text-ink dark:text-slate-100">
               Message received
             </h2>
-            <p className="mt-2 max-w-sm text-[14px] leading-relaxed text-sub dark:text-gray-400">
+            <p className="mt-2 max-w-sm text-[14px] leading-relaxed text-sub dark:text-slate-400">
               Thanks for reaching out! We&apos;ll get back to you as soon as we can.
             </p>
           </div>
         ) : (
-          <div className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-[#1c1c1e] dark:border-white/10">
-            <h2 className="text-[17px] font-semibold tracking-tight text-ink dark:text-gray-100">
+          <div className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-[#0f172a] dark:border-white/10">
+            <h2 className="text-[17px] font-semibold tracking-tight text-ink dark:text-slate-100">
               Send us a message
             </h2>
             <form onSubmit={submit} className="mt-5 space-y-4">
               <Grid preset="fields">
                 <Field label="Your name" error={errors.name}>
-                  <Input placeholder="Jane Doe" value={form.name} onChange={(e) => set("name", e.target.value)} />
+                  <Input placeholder="Rafiqul Islam" value={form.name} onChange={(e) => set("name", e.target.value)} />
                 </Field>
                 <Field label="Email" error={errors.email}>
-                  <Input type="email" placeholder="jane@university.edu" value={form.email} onChange={(e) => set("email", e.target.value)} />
+                  <Input type="email" placeholder="you@bracu.ac.bd" value={form.email} onChange={(e) => set("email", e.target.value)} />
                 </Field>
               </Grid>
               <Field label="Message" error={errors.message}>
@@ -127,6 +125,6 @@ export default function ContactPage() {
           </div>
         )}
       </div>
-    </div>
+    </Container>
   );
 }

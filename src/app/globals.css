@@ -1,60 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   DCMS — Apple-style design system
-   SF Pro-inspired fonts, Apple's neutral palette, frosted surfaces.
+   DCMS — Modern industrial design system
+   Manrope (house sans) everywhere, cool neutral surfaces, crisp slate text and
+   a single confident steel-blue accent. Structure over decoration.
 --------------------------------------------------------------------------- */
 
 @theme {
   /* Type */
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-    "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, system-ui,
+  --font-sans: "Manrope", "Segoe UI", system-ui, -apple-system, "Helvetica Neue",
     sans-serif;
   --font-mono: "SF Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas,
     "Liberation Mono", monospace;
+  --font-display: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
 
-  /* Core neutrals (Apple) */
-  --color-canvas: #f5f5f7;
+  /* Cool neutral surfaces */
+  --color-canvas: #f6f7f9;
   --color-card: #ffffff;
-  --color-ink: #1d1d1f;
-  --color-sub: #6e6e73;
-  --color-faint: #86868b;
-  --color-line: rgba(0, 0, 0, 0.09);
-  --color-line-strong: rgba(0, 0, 0, 0.16);
+  --color-ink: #0f172a;
+  --color-sub: #475569;
+  --color-faint: #94a3b8;
+  --color-line: rgba(15, 23, 42, 0.1);
+  --color-line-strong: rgba(15, 23, 42, 0.22);
 
-  /* Apple system-colors */
-  --color-accent: #0071e3;
-  --color-accent-hover: #0077ed;
-  --color-accent-soft: rgba(0, 113, 227, 0.1);
-  --color-accent-soft-strong: rgba(0, 113, 227, 0.16);
-  --color-red: #ff3b30;
-  --color-orange: #ff9500;
-  --color-yellow: #ffcc00;
-  --color-green: #34c759;
-  --color-mint: #00c7be;
-  --color-teal: #30b0c7;
-  --color-cyan: #32ade6;
-  --color-blue: #007aff;
-  --color-indigo: #5856d6;
-  --color-purple: #af52de;
-  --color-pink: #ff2d55;
-  --color-brown: #a2845e;
-  --color-gray: #8e8e93;
+  /* Steel-blue accent */
+  --color-accent: #1d4ed8;
+  --color-accent-hover: #1e40af;
+  --color-accent-soft: rgba(29, 78, 216, 0.08);
+  --color-accent-soft-strong: rgba(29, 78, 216, 0.14);
+
+  /* Brand gradient stops (kept as `gold` names for compatibility) */
+  --color-gold: #2563eb;
+  --color-gold-light: #93c5fd;
+  --color-velvet: #0f172a;
+  --color-velvet-dark: #0b1220;
+  --color-plum: #1e293b;
+  --color-stage: #0a0f1a;
+
+  /* Semantic colors (status pills, charts) */
+  --color-red: #dc2626;
+  --color-orange: #ea580c;
+  --color-yellow: #eab308;
+  --color-green: #16a34a;
+  --color-mint: #14b8a6;
+  --color-teal: #0d9488;
+  --color-cyan: #0891b2;
+  --color-blue: #2563eb;
+  --color-indigo: #4f46e5;
+  --color-purple: #7c3aed;
+  --color-pink: #db2777;
+  --color-brown: #9c7a4d;
+  --color-gray: #6b7280;
 
   /* Surfaces */
   --color-panel: #ffffff;
-  --color-panel-dark: #1c1c1e;
-  --color-surface: #f5f5f7;
-  --color-surface-dark: #161617;
+  --color-panel-dark: #0f172a;
+  --color-surface: #f6f7f9;
+  --color-surface-dark: #0b1220;
 
-  /* Shadows */
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
-  --shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.05), 0 16px 40px rgba(0, 0, 0, 0.1);
-  --shadow-pop: 0 4px 12px rgba(0, 0, 0, 0.08), 0 24px 60px rgba(0, 0, 0, 0.16);
-  --shadow-sheet: 0 8px 24px rgba(0, 0, 0, 0.08), 0 32px 80px rgba(0, 0, 0, 0.24);
+  /* Neutral, sharp shadows */
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px rgba(15, 23, 42, 0.07);
+  --shadow-card-hover: 0 2px 4px rgba(15, 23, 42, 0.06), 0 16px 40px rgba(15, 23, 42, 0.12);
+  --shadow-pop: 0 4px 12px rgba(15, 23, 42, 0.08), 0 24px 60px rgba(15, 23, 42, 0.18);
+  --shadow-sheet: 0 8px 24px rgba(2, 6, 23, 0.2), 0 32px 80px rgba(2, 6, 23, 0.4);
+  --shadow-gold: 0 1px 2px rgba(15, 23, 42, 0.16), 0 6px 22px rgba(29, 78, 216, 0.28);
 
   /* Radii */
-  --radius-apple: 18px;
+  --radius-apple: 14px;
 
   /* Motion */
   --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
@@ -64,6 +77,27 @@
 
 :root {
   color-scheme: light;
+}
+
+/* Dark mode: cool near-black surfaces with the accent brightened so it
+   reads against them. Every semantic token flips here so pages that rely on
+   `bg-canvas` / `text-ink` / `text-sub` stay correct without per-component
+   dark: variants. */
+.dark {
+  --color-canvas: #0b1220;
+  --color-card: #0f172a;
+  --color-panel: #0f172a;
+  --color-ink: #f1f5f9;
+  --color-sub: #cbd5e1;
+  --color-faint: #94a3b8;
+  --color-line: rgba(226, 232, 240, 0.1);
+  --color-line-strong: rgba(226, 232, 240, 0.22);
+  --color-accent: #60a5fa;
+  --color-accent-hover: #93c5fd;
+  --color-accent-soft: rgba(96, 165, 250, 0.12);
+  --color-accent-soft-strong: rgba(96, 165, 250, 0.2);
+  --color-gold: #3b82f6;
+  --color-gold-light: #93c5fd;
 }
 
 html {
@@ -76,12 +110,12 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
   overflow-wrap: break-word;
 }
 
 ::selection {
-  background: rgba(0, 113, 227, 0.18);
+  background: rgba(37, 99, 235, 0.22);
 }
 
 /* ---------------------------------------------------------------------------
@@ -122,28 +156,99 @@ select:focus-visible {
 
 /* Frosted glass surface */
 .glass {
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.78);
   backdrop-filter: saturate(180%) blur(24px);
   -webkit-backdrop-filter: saturate(180%) blur(24px);
 }
 .dark .glass {
-  background: rgba(28, 28, 30, 0.72);
+  background: rgba(10, 15, 26, 0.78);
 }
 
 .glass-dark {
-  background: rgba(22, 22, 23, 0.78);
+  background: rgba(10, 15, 26, 0.8);
   backdrop-filter: saturate(180%) blur(24px);
   -webkit-backdrop-filter: saturate(180%) blur(24px);
 }
 
-/* Apple-style large display headings */
+/* ---------------------------------------------------------------------------
+   Typography
+--------------------------------------------------------------------------- */
+
+/* Display headline moments */
 .display-title {
-  font-size: clamp(2.25rem, 6vw, 4rem);
-  line-height: 1.05;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.5rem, 7vw, 4.75rem);
+  line-height: 1.06;
   letter-spacing: -0.03em;
-  font-weight: 700;
   overflow-wrap: break-word;
   word-break: break-word;
+}
+
+/* Brand gradient text */
+.gold-text {
+  background: linear-gradient(
+    180deg,
+    var(--color-gold-light) 0%,
+    var(--color-gold) 48%,
+    #1e40af 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Letter-spaced small-caps eyebrow with rules either side */
+.theatre-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.theatre-eyebrow::before,
+.theatre-eyebrow::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-accent));
+}
+.theatre-eyebrow::after {
+  background: linear-gradient(90deg, var(--color-accent), transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Decorative bands (quiet industrial details)
+--------------------------------------------------------------------------- */
+
+/* Cool radial wash for hero sections */
+.spotlight {
+  background:
+    radial-gradient(70% 55% at 50% 0%, rgba(37, 99, 235, 0.1), transparent 62%),
+    radial-gradient(45% 45% at 18% 8%, rgba(15, 23, 42, 0.08), transparent 68%),
+    radial-gradient(45% 45% at 82% 12%, rgba(79, 70, 229, 0.08), transparent 68%);
+}
+.dark .spotlight {
+  background:
+    radial-gradient(70% 55% at 50% 0%, rgba(59, 130, 246, 0.14), transparent 62%),
+    radial-gradient(45% 45% at 18% 8%, rgba(15, 23, 42, 0.2), transparent 68%),
+    radial-gradient(45% 45% at 82% 12%, rgba(99, 102, 241, 0.12), transparent 68%);
+}
+
+/* Deep edge vignette */
+.vignette {
+  background: radial-gradient(
+    120% 100% at 50% 18%,
+    transparent 55%,
+    rgba(2, 6, 23, 0.5) 100%
+  );
+}
+
+/* Dark feature band */
+.velvet-band {
+  background: linear-gradient(160deg, #0f172a 0%, #1e293b 45%, #0b1220 100%);
 }
 
 /* Hide scrollbars for horizontal scrollers */
@@ -158,30 +263,21 @@ select:focus-visible {
 /* Thin elegant scrollbar */
 .thin-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  scrollbar-color: rgba(100, 116, 139, 0.5) transparent;
 }
 .thin-scroll::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 .thin-scroll::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.16);
+  background: rgba(100, 116, 139, 0.35);
   border-radius: 999px;
 }
 .thin-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.24);
+  background: rgba(100, 116, 139, 0.5);
 }
 .thin-scroll::-webkit-scrollbar-track {
   background: transparent;
-}
-.dark .thin-scroll {
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
-}
-.dark .thin-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.16);
-}
-.dark .thin-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.24);
 }
 
 /* Rich text content (club updates) */
@@ -192,7 +288,8 @@ select:focus-visible {
 .rich-text h1,
 .rich-text h2,
 .rich-text h3 {
-  font-weight: 650;
+  font-family: var(--font-display);
+  font-weight: 700;
   letter-spacing: -0.02em;
   margin: 1.4em 0 0.5em;
   line-height: 1.25;
@@ -229,15 +326,16 @@ select:focus-visible {
   margin: 1em 0;
 }
 .rich-text blockquote {
-  border-left: 3px solid rgba(0, 0, 0, 0.15);
+  border-left: 3px solid rgba(37, 99, 235, 0.4);
   padding-left: 1em;
   color: var(--color-sub);
   margin: 1em 0;
+  font-style: italic;
 }
 .rich-text code {
   font-family: var(--font-mono);
   font-size: 0.9em;
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(100, 116, 139, 0.12);
   padding: 0.15em 0.4em;
   border-radius: 6px;
 }
@@ -256,7 +354,8 @@ select:focus-visible {
 .tiptap h1,
 .tiptap h2,
 .tiptap h3 {
-  font-weight: 650;
+  font-family: var(--font-display);
+  font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.3;
   margin: 0.6em 0 0.3em;
@@ -282,6 +381,10 @@ select:focus-visible {
   color: var(--color-accent);
   text-decoration: underline;
 }
+
+/* ---------------------------------------------------------------------------
+   Entrances
+--------------------------------------------------------------------------- */
 
 /* Subtle entrance animation for modals */
 @keyframes sheet-up {
@@ -349,4 +452,51 @@ select:focus-visible {
 }
 .animate-scale-in {
   animation: scale-in 0.18s var(--ease-apple);
+}
+
+/* Content reveal */
+@keyframes curtain-sweep {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0.4;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+.animate-curtain {
+  animation: curtain-sweep 0.9s var(--ease-apple) both;
+}
+
+/* Rising entrance */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-rise {
+  animation: rise-in 0.6s var(--ease-apple) both;
+}
+
+/* ---------------------------------------------------------------------------
+   Date chip — neutral surface with a soft accent wash, no perforation
+--------------------------------------------------------------------------- */
+.ticket-stub {
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid var(--color-line);
+  background: linear-gradient(
+    160deg,
+    rgba(29, 78, 216, 0.09),
+    rgba(29, 78, 216, 0.03)
+  );
+}
+.dark .ticket-stub {
+  border-color: rgba(226, 232, 240, 0.12);
 }
