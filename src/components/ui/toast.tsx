@@ -23,12 +23,12 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 const kindStyles: Record<ToastKind, { icon: IconName; ring: string; iconColor: string }> = {
-  success: { icon: "check", ring: "ring-green/25", iconColor: "bg-green text-white" },
-  error: { icon: "warn", ring: "ring-red/25", iconColor: "bg-red text-white" },
+  success: { icon: "check", ring: "ring-emerald-200 dark:ring-emerald-500/30", iconColor: "bg-emerald-500 text-white" },
+  error: { icon: "warn", ring: "ring-red-200 dark:ring-red-500/30", iconColor: "bg-red-500 text-white" },
   info: {
     icon: "info",
-    ring: "ring-gold/40",
-    iconColor: "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white",
+    ring: "ring-blue-200 dark:ring-blue-500/30",
+    iconColor: "bg-blue-600 text-white",
   },
 };
 
@@ -70,26 +70,26 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               key={t.id}
               role={t.kind === "error" ? "alert" : "status"}
               className={cn(
-                "animate-toast pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl bg-white/90 p-3.5 shadow-pop ring-1 backdrop-blur-xl",
+                "animate-toast pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl bg-white p-3.5 shadow-pop ring-1 backdrop-blur-xl",
                 s.ring,
-                "dark:bg-[#0f172a]/90"
+                "dark:bg-[#1e293b]/95"
               )}
             >
-              <span className={cn("mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full", s.iconColor)} aria-hidden="true">
-                <Icon name={s.icon} size={13} />
+              <span className={cn("mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg", s.iconColor)} aria-hidden="true">
+                <Icon name={s.icon} size={14} />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-ink dark:text-slate-100">{t.title}</p>
+                <p className="text-[13.5px] font-semibold text-ink dark:text-slate-100">{t.title}</p>
                 {t.message && (
-                  <p className="mt-0.5 text-[13px] leading-snug text-sub dark:text-slate-400">{t.message}</p>
+                  <p className="mt-0.5 text-[12.5px] leading-snug text-sub dark:text-slate-400">{t.message}</p>
                 )}
               </div>
               <button
                 onClick={() => dismiss(t.id)}
-                className="rounded-full p-1.5 text-faint hover:bg-black/5 dark:hover:bg-white/10"
+                className="rounded-lg p-1 text-faint hover:bg-gray-100 dark:hover:bg-white/10"
                 aria-label={`Dismiss notification: ${t.title}`}
               >
-                <Icon name="close" size={14} />
+                <Icon name="close" size={13} />
               </button>
             </div>
           );

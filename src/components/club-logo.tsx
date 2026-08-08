@@ -2,8 +2,8 @@ import { useId } from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * ClubLogo — the club's emblem: comedy/tragedy masks on a steel-blue
- * medallion. Crisp SVG at any size.
+ * ClubLogo — comedy/tragedy masks on a clean blue medallion.
+ * Premium SVG at any size.
  */
 export function ClubLogo({
   size = 36,
@@ -23,26 +23,26 @@ export function ClubLogo({
       <svg viewBox="0 0 56 56" className="size-full" fill="none">
         <defs>
           <linearGradient id={steel} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#93c5fd" />
+            <stop offset="0" stopColor="#60a5fa" />
             <stop offset="0.5" stopColor="#2563eb" />
-            <stop offset="1" stopColor="#1e40af" />
+            <stop offset="1" stopColor="#1d4ed8" />
           </linearGradient>
         </defs>
 
         {/* Medallion */}
-        <circle cx="28" cy="28" r="25" fill={`url(#${steel})`} />
+        <circle cx="28" cy="28" r="26" fill={`url(#${steel})`} />
         <circle
           cx="28"
           cy="28"
-          r="22.5"
-          stroke="rgba(15, 23, 42, 0.28)"
-          strokeWidth="1.2"
+          r="24"
+          stroke="rgba(255, 255, 255, 0.2)"
+          strokeWidth="0.8"
           fill="none"
         />
 
-        {/* Masks — tragedy (upstage left), comedy (downstage right) */}
-        <circle cx="23" cy="26" r="5.5" fill="#0f172a" />
-        <circle cx="33" cy="31" r="5.5" fill="#0f172a" />
+        {/* Masks — tragedy (left), comedy (right) */}
+        <circle cx="23" cy="26" r="5.5" fill="#0f172a" fillOpacity="0.9" />
+        <circle cx="33" cy="31" r="5.5" fill="#0f172a" fillOpacity="0.9" />
         <circle cx="20.5" cy="24" r="0.8" fill="#e2e8f0" />
         <circle cx="25.5" cy="24" r="0.8" fill="#e2e8f0" />
         <path

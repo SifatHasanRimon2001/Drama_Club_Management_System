@@ -74,7 +74,6 @@ export function Modal({
       cancelAnimationFrame(raf);
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = "";
-      // Restore focus to the element that opened the dialog
       requestAnimationFrame(() => lastFocusedRef.current?.focus());
     };
   }, [open, onKeyDown]);
@@ -96,21 +95,21 @@ export function Modal({
       aria-labelledby={titleId}
     >
       <div
-        className="animate-fade absolute inset-0 bg-black/35 backdrop-blur-[6px]"
+        className="animate-fade absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
       <div
         ref={panelRef}
         className={cn(
-          "animate-sheet relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl bg-white shadow-sheet sm:rounded-3xl",
-          "dark:bg-[#0f172a]",
+          "animate-sheet relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-sheet sm:rounded-2xl",
+          "dark:bg-[#1e293b]",
           sizes[size]
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4 sm:px-6 dark:border-white/10">
+        <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-5 py-4 sm:px-6 dark:border-white/8">
           <div className="min-w-0">
-            <h2 id={titleId} className="text-[17px] font-semibold tracking-tight text-ink dark:text-slate-100">
+            <h2 id={titleId} className="text-[16px] font-semibold tracking-tight text-ink dark:text-slate-100">
               {title}
             </h2>
             {subtitle && (
@@ -119,15 +118,15 @@ export function Modal({
           </div>
           <button
             onClick={onClose}
-            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-black/[0.05] text-sub transition hover:bg-black/10 active:scale-95 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/20"
+            className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-sub transition hover:bg-gray-200 active:scale-95 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/20"
             aria-label="Close dialog"
           >
-            <Icon name="close" size={15} />
+            <Icon name="close" size={14} />
           </button>
         </div>
         <div className="thin-scroll flex-1 overflow-y-auto px-5 py-5 sm:px-6">{children}</div>
         {footer && (
-          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-line bg-white/70 px-5 py-3.5 backdrop-blur sm:px-6 dark:border-white/10 dark:bg-[#0f172a]/80">
+          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-gray-100 bg-gray-50/80 px-5 py-3.5 backdrop-blur sm:px-6 dark:border-white/8 dark:bg-[#0f172a]/80">
             {footer}
           </div>
         )}
@@ -166,7 +165,7 @@ export function ConfirmDialog({
           <button
             onClick={onClose}
             disabled={loading}
-            className="inline-flex h-11 items-center justify-center rounded-full bg-black/[0.05] px-5 text-sm font-medium text-ink transition hover:bg-black/10 disabled:opacity-50 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/20"
+            className="inline-flex h-10 items-center justify-center rounded-lg bg-gray-100 px-4 text-[13px] font-medium text-ink transition hover:bg-gray-200 disabled:opacity-50 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/20"
           >
             Cancel
           </button>
@@ -174,10 +173,10 @@ export function ConfirmDialog({
             onClick={onConfirm}
             disabled={loading}
             className={cn(
-              "inline-flex h-11 items-center justify-center gap-2 rounded-full px-5 text-sm font-medium text-white transition active:scale-[0.98] disabled:opacity-50",
+              "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-[13px] font-medium text-white transition active:scale-[0.98] disabled:opacity-50",
               tone === "danger"
-                ? "bg-red hover:bg-[#e0362b]"
-                : "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white hover:brightness-110"
+                ? "bg-red-600 hover:bg-red-700"
+                : "bg-blue-600 font-semibold text-white hover:bg-blue-700"
             )}
           >
             {loading && (
@@ -188,7 +187,7 @@ export function ConfirmDialog({
         </>
       }
     >
-      <p className="text-[15px] leading-relaxed text-sub dark:text-slate-400">{message}</p>
+      <p className="text-[14px] leading-relaxed text-sub dark:text-slate-400">{message}</p>
     </Modal>
   );
 }

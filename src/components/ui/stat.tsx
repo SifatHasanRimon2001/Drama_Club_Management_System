@@ -20,31 +20,31 @@ export function StatCard({
   className?: string;
 }) {
   const tones: Record<string, string> = {
-    blue: "bg-accent-soft text-accent",
-    green: "bg-green/12 text-[#248a3d] dark:text-green-400",
-    orange: "bg-orange/12 text-[#c93400] dark:text-orange-400",
-    purple: "bg-purple/12 text-purple dark:text-purple-300",
-    red: "bg-red/10 text-red dark:text-red-400",
-    teal: "bg-teal/10 text-teal dark:text-teal-300",
-    gray: "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-slate-400",
+    blue: "bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
+    green: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400",
+    orange: "bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400",
+    purple: "bg-purple-50 text-purple-600 dark:bg-purple-500/15 dark:text-purple-400",
+    red: "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400",
+    teal: "bg-teal-50 text-teal-600 dark:bg-teal-500/15 dark:text-teal-400",
+    gray: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-slate-400",
   };
 
   return (
     <div
       className={cn(
-        "rounded-apple border border-line bg-card p-5 shadow-card transition-shadow hover:shadow-card-hover",
-        "dark:bg-[#0f172a] dark:border-white/10",
+        "rounded-xl border border-gray-200/80 bg-white p-5 shadow-card transition-shadow hover:shadow-card-hover",
+        "dark:bg-[#1e293b] dark:border-white/8",
         className
       )}
     >
       <div className="flex items-start justify-between">
         <span className={cn("flex size-10 items-center justify-center rounded-xl", tones[tone])}>
-          <Icon name={icon} size={19} />
+          <Icon name={icon} size={18} />
         </span>
         {action}
       </div>
       <div className="mt-4">
-        <div className="font-display text-[29px] font-bold leading-none tracking-tight text-ink dark:text-slate-100">
+        <div className="font-display text-[28px] font-bold leading-none tracking-tight text-ink dark:text-slate-100">
           {value}
         </div>
         <div className="mt-1.5 text-[13px] font-medium text-sub dark:text-slate-400">{label}</div>
@@ -64,13 +64,13 @@ export function ProgressBar({
   tone?: "blue" | "green" | "orange" | "purple";
 }) {
   const tones: Record<string, string> = {
-    blue: "bg-accent",
-    green: "bg-green",
-    orange: "bg-orange",
-    purple: "bg-purple",
+    blue: "bg-blue-500",
+    green: "bg-emerald-500",
+    orange: "bg-orange-500",
+    purple: "bg-purple-500",
   };
   return (
-    <div className={cn("h-1.5 w-full overflow-hidden rounded-full bg-black/[0.07] dark:bg-white/10", className)}>
+    <div className={cn("h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/10", className)}>
       <div
         className={cn("h-full rounded-full transition-all duration-500", tones[tone])}
         style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
@@ -83,7 +83,7 @@ export function Chip({ children, className }: { children: ReactNode; className?:
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full bg-black/[0.05] px-2.5 py-1 text-[12.5px] font-medium text-sub",
+        "inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-[12.5px] font-medium text-sub",
         "dark:bg-white/10 dark:text-slate-300",
         className
       )}

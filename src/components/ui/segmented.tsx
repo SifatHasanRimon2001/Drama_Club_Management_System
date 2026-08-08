@@ -22,7 +22,6 @@ export function Segmented<T extends string>({
   onChange: (value: T) => void;
   className?: string;
   size?: "sm" | "md";
-  /** Allow the control to scroll horizontally on narrow viewports instead of overflowing. */
   scrollable?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -38,7 +37,7 @@ export function Segmented<T extends string>({
       role="tablist"
       aria-label="Filter"
       className={cn(
-        "inline-flex items-center rounded-full bg-black/[0.06] p-1 dark:bg-white/10",
+        "inline-flex items-center rounded-xl bg-gray-100 p-1 dark:bg-white/10",
         scrollable && "no-scrollbar max-w-full overflow-x-auto",
         className
       )}
@@ -61,11 +60,11 @@ export function Segmented<T extends string>({
             }}
             onClick={() => onChange(opt.value)}
             className={cn(
-              "inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full font-medium transition-all duration-200",
+              "inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg font-medium transition-all duration-150",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-              size === "sm" ? "px-3 py-1 text-[13px]" : "px-4 py-1.5 text-sm",
+              size === "sm" ? "px-3 py-1 text-[13px]" : "px-3.5 py-1.5 text-[13.5px]",
               active
-                ? "bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,0.12)] dark:bg-[#1e293b] dark:text-white"
+                ? "bg-white text-ink shadow-sm dark:bg-[#1e293b] dark:text-white"
                 : "text-sub hover:text-ink dark:text-slate-400 dark:hover:text-slate-200"
             )}
           >

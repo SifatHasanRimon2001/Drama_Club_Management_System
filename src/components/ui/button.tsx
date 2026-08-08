@@ -17,20 +17,19 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white font-bold hover:brightness-110 active:scale-[0.98] shadow-gold",
+    "bg-blue-600 text-white font-semibold hover:bg-blue-700 active:bg-blue-800 active:scale-[0.98] shadow-sm hover:shadow-md",
   secondary:
-    "bg-card text-ink border border-line hover:border-gold/60 hover:bg-[#f8fafc] active:scale-[0.98] shadow-[0_1px_2px_rgba(46,28,8,0.06)] dark:bg-[#0f172a] dark:hover:bg-[#1e293b]",
+    "bg-white text-ink border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:scale-[0.98] shadow-sm dark:bg-[#1e293b] dark:border-white/10 dark:hover:bg-[#273449]",
   ghost: "text-accent hover:bg-accent-soft active:scale-[0.98]",
-  subtle: "bg-black/[0.05] text-ink hover:bg-black/[0.08] active:scale-[0.98] dark:bg-white/10 dark:hover:bg-white/15",
-  danger:
-    "bg-red text-white hover:bg-[#a51f26] active:scale-[0.98] shadow-[0_1px_2px_rgba(0,0,0,0.12),0_4px_12px_rgba(194,39,47,0.3)]",
+  subtle: "bg-gray-100 text-ink hover:bg-gray-200 active:scale-[0.98] dark:bg-white/10 dark:hover:bg-white/15",
+  danger: "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] shadow-sm hover:shadow-md",
 };
 
 const sizeClasses: Record<Size, string> = {
-  xs: "h-8 px-3 text-[13px] rounded-full gap-1",
-  sm: "h-9 px-4 text-sm rounded-full gap-1.5",
-  md: "h-11 px-5 text-sm rounded-full gap-2",
-  lg: "h-12 px-7 text-base rounded-full gap-2",
+  xs: "h-8 px-3.5 text-[13px] rounded-lg gap-1",
+  sm: "h-9 px-4 text-[13px] rounded-lg gap-1.5",
+  md: "h-10 px-5 text-sm rounded-lg gap-2",
+  lg: "h-11 px-6 text-sm rounded-lg gap-2",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -60,7 +59,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             aria-hidden="true"
           />
         )}
-        {icon && <Icon name={icon} size={size === "sm" || size === "xs" ? 15 : 17} />}
+        {icon && <Icon name={icon} size={size === "sm" || size === "xs" ? 14 : 16} />}
         {children}
       </button>
     );
@@ -78,8 +77,8 @@ export function IconButton({
       aria-label={label}
       title={label}
       className={cn(
-        "inline-flex items-center justify-center rounded-full transition-all",
-        "size-10 text-ink hover:bg-black/[0.06] active:scale-95",
+        "inline-flex items-center justify-center rounded-lg transition-all",
+        "size-10 text-ink hover:bg-gray-100 active:scale-95",
         "dark:text-slate-200 dark:hover:bg-white/10",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         className

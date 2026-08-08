@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { AppShell } from "@/components/app-shell";
-import { SessionProvider } from "@/lib/client/session";
 
 export default async function DashboardLayout({
   children,
@@ -13,9 +12,5 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  return (
-    <SessionProvider>
-      <AppShell>{children}</AppShell>
-    </SessionProvider>
-  );
+  return <AppShell>{children}</AppShell>;
 }

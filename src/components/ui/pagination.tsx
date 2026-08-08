@@ -29,11 +29,11 @@ export function Pagination({
   }
 
   return (
-    <div className={cn("flex items-center justify-center gap-1.5", className)}>
+    <div className={cn("flex items-center justify-center gap-1", className)}>
       <button
         disabled={page <= 1}
         onClick={() => onChange(page - 1)}
-        className="flex size-8 items-center justify-center rounded-full text-sub transition hover:bg-black/[0.05] disabled:opacity-40 dark:hover:bg-white/10"
+        className="flex size-8 items-center justify-center rounded-lg text-sub transition hover:bg-gray-100 disabled:opacity-40 dark:hover:bg-white/10"
         aria-label="Previous page"
       >
         <Icon name="chevron-left" size={16} />
@@ -47,10 +47,10 @@ export function Pagination({
             onClick={() => onChange(p)}
             aria-current={p === page ? "page" : undefined}
             className={cn(
-              "flex h-8 min-w-8 items-center justify-center rounded-full px-2 text-[13px] font-medium transition",
+              "flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-[13px] font-medium transition",
               p === page
-                ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white shadow-gold"
-                : "text-sub hover:bg-black/[0.05] dark:hover:bg-white/10"
+                ? "bg-blue-600 font-semibold text-white shadow-sm"
+                : "text-sub hover:bg-gray-100 dark:hover:bg-white/10"
             )}
           >
             {p}
@@ -60,7 +60,7 @@ export function Pagination({
       <button
         disabled={page >= totalPages}
         onClick={() => onChange(page + 1)}
-        className="flex size-8 items-center justify-center rounded-full text-sub transition hover:bg-black/[0.05] disabled:opacity-40 dark:hover:bg-white/10"
+        className="flex size-8 items-center justify-center rounded-lg text-sub transition hover:bg-gray-100 disabled:opacity-40 dark:hover:bg-white/10"
         aria-label="Next page"
       >
         <Icon name="chevron-right" size={16} />

@@ -49,7 +49,6 @@ export function Dropdown({
     };
   }, [open]);
 
-  // Inject accessible state onto whichever element the trigger renders.
   const triggerNode = trigger(open, toggle);
   const labelledTrigger = isValidElement(triggerNode)
     ? cloneElement(triggerNode as ReactElement<Record<string, unknown>>, {
@@ -66,8 +65,8 @@ export function Dropdown({
         <div
           id={menuId}
           className={cn(
-            "animate-sheet absolute top-full z-[60] mt-2 max-w-[calc(100vw-2rem)] origin-top overflow-hidden rounded-2xl border border-line bg-white/95 shadow-pop backdrop-blur-2xl",
-            "dark:bg-[#0f172a]/95 dark:border-white/10",
+            "animate-sheet absolute top-full z-[60] mt-2 max-w-[calc(100vw-2rem)] origin-top overflow-hidden rounded-xl border border-gray-200 bg-white shadow-pop backdrop-blur-xl",
+            "dark:bg-[#1e293b]/95 dark:border-white/10",
             align === "end" ? "right-0" : "left-0",
             width,
             className

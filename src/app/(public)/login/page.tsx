@@ -16,24 +16,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  // The destination the user was heading to before login (safe relative path).
-  // Read from the URL *after* mount — `window` is undefined during SSR, so
-  // lazy initializers would desync the client from the server-rendered HTML on
-  // /login?expired=1 (hydration mismatch). The loader stays up until then.
   const [callbackUrl, setCallbackUrl] = useState<string | null>(null);
-  // True when this visit was caused by an expired/invalidated session.
   const [sessionExpired, setSessionExpired] = useState(false);
-  // Set once the mount-time session check has completed (avoids showing the
-  // form to an already-authenticated user before we can redirect them).
   const [sessionChecked, setSessionChecked] = useState(false);
   const [noticeDismissed, setNoticeDismissed] = useState(false);
 
-  // On mount: read the URL params, then check the session. If the user is
-  // already authenticated (fresh page load, stale login tab, or a browser-back
-  // return to /login), send them straight to the dashboard. Exception: right
-  // after a failed sign-out request the session cookie may still exist — the
-  // app-shell flags that with sessionStorage so we show the login form instead
-  // of bouncing the user back to the dashboard.
   useEffect(() => {
     let cancelled = false;
 
@@ -61,10 +48,6 @@ export default function LoginPage() {
           if (cancelled) return;
           setSessionChecked(true);
           if (data.user && !signedOutButCookieLeft) {
-            // Hard navigation: a client-side `router.replace` can serve a stale
-            // prefetched /dashboard payload (cached while logged out), bouncing
-            // the user back to login. A full load re-sends the fresh session
-            // cookie to the server and lets the dashboard hydrate cleanly.
             window.location.assign(safeCallback || "/dashboard");
           }
         })
@@ -73,8 +56,6 @@ export default function LoginPage() {
         });
     }, 0);
 
-    // Safety net: never leave the user staring at a loader if the session
-    // endpoint hangs.
     const safety = setTimeout(() => {
       if (!cancelled) setSessionChecked(true);
     }, 4000);
@@ -101,11 +82,6 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      // Send the user to the page they originally tried to open, or the
-      // dashboard for plain sign-ins. Hard navigation (not router.push) so the
-      // request carries the fresh session cookie and never reuses a stale
-      // prefetched redirect. A failed login never reaches this line, so no
-      // partial session state can be created here.
       window.location.assign(callbackUrl || "/dashboard");
     } catch {
       setError("Something went wrong. Please try again.");
@@ -117,7 +93,7 @@ export default function LoginPage() {
     return (
       <div className="flex min-h-[80dvh] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <ClubLogo size={44} />
+          <ClubLogo size={40} />
           <p className="text-[13.5px] font-medium text-sub">Checking your session…</p>
         </div>
       </div>
@@ -126,61 +102,52 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-[80dvh] items-center justify-center overflow-hidden px-4 py-12">
-      {/* Quiet industrial backdrop */}
+      {/* Subtle background */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(900px 460px at 50% -12%, rgba(37,99,235,0.1), transparent 62%), radial-gradient(700px 420px at 90% 110%, rgba(15,23,42,0.06), transparent 55%)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(15,23,42,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.04) 1px, transparent 1px)",
-          backgroundSize: "44px 44px",
+            "radial-gradient(800px 400px at 50% -10%, rgba(37,99,235,0.05), transparent 60%)",
         }}
       />
 
-      <div className="relative w-full max-w-[420px]">
-        <div className="rounded-[20px] border border-line bg-white/90 p-7 shadow-pop backdrop-blur-xl sm:p-8 dark:bg-[#0f172a]/90 dark:border-white/10">
+      <div className="relative w-full max-w-[400px]">
+        <div className="rounded-2xl border border-gray-200/80 bg-white p-7 shadow-card sm:p-8 dark:bg-[#1e293b] dark:border-white/8">
           <div className="mb-6 flex items-center gap-3">
-            <ClubLogo size={40} />
+            <ClubLogo size={36} />
             <div className="min-w-0">
-              <p className="font-display text-[17px] font-bold tracking-tight text-ink dark:text-slate-100">
+              <p className="font-display text-[16px] font-bold tracking-tight text-ink dark:text-slate-100">
                 BRAC University Drama Club
               </p>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-600 dark:text-blue-400">
                 Member Portal
               </p>
             </div>
           </div>
 
-          <h1 className="text-[22px] font-bold tracking-tight text-ink dark:text-slate-100">
+          <h1 className="text-[20px] font-bold tracking-tight text-ink dark:text-slate-100">
             Sign in to your account
           </h1>
-          <p className="mt-1 text-[14px] text-sub dark:text-slate-400">
+          <p className="mt-1 text-[13.5px] text-sub dark:text-slate-400">
             Welcome back — access the management console.
           </p>
 
           {sessionExpired && !noticeDismissed && (
             <div
               role="status"
-              className="mt-4 flex items-start gap-2.5 rounded-xl border border-blue/20 bg-blue/10 px-3.5 py-3 text-[13px] text-blue-800 dark:text-blue-300"
+              className="mt-4 flex items-start gap-2.5 rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-3 text-[13px] text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300"
             >
-              <Icon name="warn" size={16} className="mt-0.5 shrink-0" />
+              <Icon name="warn" size={15} className="mt-0.5 shrink-0" />
               <span className="flex-1">
                 Your session expired. Please sign in again to continue.
               </span>
               <button
                 onClick={() => setNoticeDismissed(true)}
                 aria-label="Dismiss"
-                className="shrink-0 rounded-full p-1 text-blue-700 transition hover:bg-blue/15 dark:text-blue-200"
+                className="shrink-0 rounded-lg p-1 text-blue-600 transition hover:bg-blue-100 dark:text-blue-300 dark:hover:bg-blue-500/20"
               >
-                <Icon name="close" size={14} />
+                <Icon name="close" size={13} />
               </button>
             </div>
           )}
@@ -208,9 +175,9 @@ export default function LoginPage() {
             {error && (
               <p
                 role="alert"
-                className="flex items-center gap-2 rounded-xl bg-red/10 px-3.5 py-2.5 text-[13px] font-medium text-red"
+                className="flex items-center gap-2 rounded-xl bg-red-50 px-3.5 py-2.5 text-[13px] font-medium text-red-600 dark:bg-red-500/10 dark:text-red-400"
               >
-                <Icon name="warn" size={14} className="shrink-0" />
+                <Icon name="warn" size={13} className="shrink-0" />
                 {error}
               </p>
             )}
@@ -220,18 +187,18 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="mt-5 text-center text-[13.5px] text-sub dark:text-slate-400">
+          <p className="mt-5 text-center text-[13px] text-sub dark:text-slate-400">
             Don&apos;t have an account?{" "}
             <Link
               href="/register"
-              className="font-medium text-accent hover:underline"
+              className="font-medium text-blue-600 hover:underline dark:text-blue-400"
             >
               Create one
             </Link>
           </p>
         </div>
 
-        <div className="mt-4 rounded-2xl border border-line bg-white/70 p-4 backdrop-blur dark:bg-white/5 dark:border-white/10">
+        <div className="mt-4 rounded-xl border border-gray-200/80 bg-white/80 p-4 backdrop-blur dark:bg-white/5 dark:border-white/8">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-faint">
             Demo accounts
           </p>
@@ -241,13 +208,13 @@ export default function LoginPage() {
                 setEmail("admin@dcms.local");
                 setPassword("admin123");
               }}
-              className="rounded-xl border border-line bg-card px-3 py-2.5 text-left transition hover:border-accent/40 hover:bg-accent-soft/40 dark:border-white/10 dark:hover:bg-accent/10"
+              className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-left transition hover:border-blue-300 hover:bg-blue-50/50 dark:border-white/8 dark:hover:bg-blue-500/10"
             >
-              <span className="text-[12.5px] font-semibold text-ink dark:text-slate-200">
+              <span className="text-[12px] font-semibold text-ink dark:text-slate-200">
                 Admin
               </span>
               <br />
-              <span className="text-[11.5px] text-sub dark:text-slate-400">
+              <span className="text-[11px] text-sub dark:text-slate-400">
                 admin@dcms.local / admin123
               </span>
             </button>
@@ -256,13 +223,13 @@ export default function LoginPage() {
                 setEmail("demo@dcms.local");
                 setPassword("demo123");
               }}
-              className="rounded-xl border border-line bg-card px-3 py-2.5 text-left transition hover:border-accent/40 hover:bg-accent-soft/40 dark:border-white/10 dark:hover:bg-accent/10"
+              className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-left transition hover:border-blue-300 hover:bg-blue-50/50 dark:border-white/8 dark:hover:bg-blue-500/10"
             >
-              <span className="text-[12.5px] font-semibold text-ink dark:text-slate-200">
+              <span className="text-[12px] font-semibold text-ink dark:text-slate-200">
                 Member
               </span>
               <br />
-              <span className="text-[11.5px] text-sub dark:text-slate-400">
+              <span className="text-[11px] text-sub dark:text-slate-400">
                 demo@dcms.local / demo123
               </span>
             </button>

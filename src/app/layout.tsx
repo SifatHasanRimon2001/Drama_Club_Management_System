@@ -3,6 +3,7 @@ import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { ThemeProvider } from "@/lib/theme";
 import { RealtimeProvider } from "@/lib/client/socket";
+import { SessionProvider } from "@/lib/client/session";
 
 export const metadata: Metadata = {
   title: {
@@ -35,9 +36,11 @@ export default function RootLayout({
       </head>
       <body className="min-h-full bg-canvas text-ink dark:bg-[#0b1220] dark:text-slate-100">
         <ThemeProvider>
-          <ToastProvider>
-            <RealtimeProvider>{children}</RealtimeProvider>
-          </ToastProvider>
+          <SessionProvider>
+            <ToastProvider>
+              <RealtimeProvider>{children}</RealtimeProvider>
+            </ToastProvider>
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

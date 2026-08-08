@@ -14,9 +14,9 @@ import {
 import { cn } from "@/lib/cn";
 
 const baseField =
-  "w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-[15px] text-ink placeholder:text-faint " +
-  "transition-all duration-150 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/15 " +
-  "disabled:opacity-50 dark:bg-[#0f172a] dark:text-slate-100 dark:border-white/15";
+  "w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-[14px] text-ink placeholder:text-faint " +
+  "transition-all duration-150 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 " +
+  "disabled:opacity-50 dark:bg-[#1e293b] dark:text-slate-100 dark:border-white/10 dark:focus:border-blue-400 dark:focus:ring-blue-400/10";
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   ({ className, ...props }, ref) => (
@@ -44,7 +44,7 @@ export const Select = forwardRef<
     className={cn(baseField, "appearance-none pr-9 bg-no-repeat bg-[right_0.75rem_center]", className)}
     style={{
       backgroundImage:
-        "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2386886b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")",
+        "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")",
     }}
     {...props}
   >
@@ -133,7 +133,7 @@ export function SearchInput({
       <input
         type="search"
         aria-label={ariaLabel}
-        className={cn(baseField, "pl-10 rounded-full", className)}
+        className={cn(baseField, "pl-10 rounded-xl", className)}
         {...props}
       />
     </div>

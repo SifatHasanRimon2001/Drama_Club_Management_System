@@ -23,15 +23,14 @@ export default async function HomePage() {
     "Where passion meets the stage — join a community of storytellers, performers and creators.";
 
   return (
-    <div className="dark:bg-black">
+    <div className="dark:bg-[#0a0f1a]">
       {/* ---------- Hero ---------- */}
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 spotlight" aria-hidden="true" />
         <div className="pointer-events-none absolute inset-0 vignette" aria-hidden="true" />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent" />
 
-        <Container size="page" className="relative flex min-h-[72dvh] flex-col items-center justify-center pt-28 pb-16 text-center">
-          <span className="theatre-eyebrow mb-7 text-accent">
+        <Container size="page" className="relative flex min-h-[70dvh] flex-col items-center justify-center pt-28 pb-16 text-center">
+          <span className="theatre-eyebrow mb-6 text-accent">
             {about?.activeMemberCount != null
               ? `${about.activeMemberCount} members · ${about.departmentCount ?? 0} departments`
               : "Est. Backstage at BRAC"}
@@ -39,22 +38,22 @@ export default async function HomePage() {
           <h1 className="display-title animate-rise max-w-4xl text-ink dark:text-[#faf4e6]">
             {clubName}
           </h1>
-          <p className="animate-rise mt-6 max-w-2xl text-[17px] leading-relaxed text-sub sm:text-[19px] dark:text-slate-400">
+          <p className="animate-rise mt-5 max-w-2xl text-[16px] leading-relaxed text-sub sm:text-[18px] dark:text-slate-400">
             {description}
           </p>
-          <div className="animate-rise mt-10 flex flex-wrap items-center justify-center gap-3">
+          <div className="animate-rise mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/recruitment"
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-br from-gold-light via-gold to-[#1e40af] px-7 text-base font-bold text-white shadow-gold transition hover:brightness-110 active:scale-[0.98]"
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-600 px-6 text-[15px] font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98] shadow-sm hover:shadow-md"
             >
               Join the Club
-              <Icon name="arrow-right" size={16} />
+              <Icon name="arrow-right" size={15} />
             </Link>
             <Link
               href="/productions"
-              className="inline-flex h-12 items-center gap-2 rounded-full border border-line bg-card/80 px-7 text-base font-semibold text-ink backdrop-blur transition hover:border-accent/50 hover:bg-card active:scale-[0.98] dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/20"
+              className="inline-flex h-11 items-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-6 text-[15px] font-semibold text-ink backdrop-blur transition hover:bg-white active:scale-[0.98] dark:bg-white/5 dark:text-slate-100 dark:border-white/10 dark:hover:bg-white/10"
             >
-              <Icon name="star" size={16} />
+              <Icon name="star" size={15} />
               Our Productions
             </Link>
           </div>
@@ -73,19 +72,19 @@ export default async function HomePage() {
             {home.committee.memberRoles.slice(0, 8).map((mr) => (
               <div
                 key={mr.id}
-                className="flex items-center gap-3.5 rounded-apple border border-line bg-card p-4 shadow-card transition-shadow hover:shadow-card-hover dark:bg-[#0f172a] dark:border-white/10"
+                className="flex items-center gap-3.5 rounded-xl border border-gray-200/80 bg-white p-4 shadow-card transition-shadow hover:shadow-card-hover dark:bg-[#1e293b] dark:border-white/8"
               >
-                <Avatar name={mr.member.user.name} src={mr.member.user.image} size={44} />
+                <Avatar name={mr.member.user.name} src={mr.member.user.image} size={40} />
                 <div className="min-w-0">
-                  <p className="truncate text-[15px] font-semibold text-ink dark:text-slate-100">
+                  <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
                     {mr.member.user.name}
                   </p>
-                  <p className="truncate text-[13px] text-accent">{mr.role.name}</p>
+                  <p className="truncate text-[12.5px] text-blue-600 dark:text-blue-400">{mr.role.name}</p>
                 </div>
               </div>
             ))}
             {home.committee.memberRoles.length === 0 && (
-              <p className="col-span-full text-center text-sm text-sub">
+              <p className="col-span-full text-center text-[13.5px] text-sub">
                 Committee roles will be announced soon.
               </p>
             )}
@@ -106,16 +105,16 @@ export default async function HomePage() {
               <Link
                 key={u.id}
                 href={`/updates/${u.id}`}
-                className="group flex flex-col rounded-apple border border-line bg-card p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-[#0f172a] dark:border-white/10"
+                className="group flex flex-col rounded-xl border border-gray-200/80 bg-white p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-[#1e293b] dark:border-white/8"
               >
                 <div className="flex items-center justify-between">
                   <StatusPill value={u.category} />
                   <span className="text-[12px] text-faint">{formatDate(u.publishedAt)}</span>
                 </div>
-                <h3 className="mt-3 line-clamp-2 text-[16.5px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-slate-100">
+                <h3 className="mt-3 line-clamp-2 text-[15px] font-semibold tracking-tight text-ink group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-blue-400">
                   {u.title}
                 </h3>
-                <p className="mt-2 line-clamp-3 text-[13.5px] leading-relaxed text-sub dark:text-slate-400">
+                <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-sub dark:text-slate-400">
                   {stripHtml(u.bodyRichText)}
                 </p>
               </Link>
@@ -137,25 +136,25 @@ export default async function HomePage() {
               <Link
                 key={e.id}
                 href={`/events/${e.id}`}
-                className="flex flex-wrap items-center gap-4 rounded-apple border border-line bg-card p-4 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover sm:px-5 dark:bg-[#0f172a] dark:border-white/10"
+                className="flex flex-wrap items-center gap-4 rounded-xl border border-gray-200/80 bg-white p-4 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover sm:px-5 dark:bg-[#1e293b] dark:border-white/8"
               >
                 <TicketStub
                   date={new Date(e.startAt)}
                   size="sm"
-                  className="min-w-[64px]"
+                  className="min-w-[56px]"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[15.5px] font-semibold text-ink dark:text-slate-100">
+                  <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
                     {e.title}
                   </p>
-                  <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[13px] text-sub dark:text-slate-400">
+                  <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[12.5px] text-sub dark:text-slate-400">
                     <span className="inline-flex items-center gap-1">
-                      <Icon name="clock" size={13} />
+                      <Icon name="clock" size={12} />
                       {formatDateTime(e.startAt)}
                     </span>
                     {e.location && (
                       <span className="inline-flex items-center gap-1">
-                        <Icon name="pin" size={13} />
+                        <Icon name="pin" size={12} />
                         {e.location}
                       </span>
                     )}
@@ -182,32 +181,32 @@ export default async function HomePage() {
               <Link
                 key={d.id}
                 href="/departments"
-                className="group rounded-apple border border-line bg-card p-6 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-[#0f172a] dark:border-white/10"
+                className="group rounded-xl border border-gray-200/80 bg-white p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-[#1e293b] dark:border-white/8"
               >
-                <span className="flex size-11 items-center justify-center rounded-xl bg-purple/10 text-purple">
-                  <Icon name="folder" size={20} />
+                <span className="flex size-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-500/15 dark:text-purple-400">
+                  <Icon name="folder" size={18} />
                 </span>
-                <h3 className="mt-4 truncate text-[17px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-slate-100">
+                <h3 className="mt-3.5 truncate text-[15px] font-semibold tracking-tight text-ink group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-blue-400">
                   {d.name}
                 </h3>
                 {d.description && (
-                  <p className="mt-1.5 line-clamp-2 text-[13.5px] leading-relaxed text-sub dark:text-slate-400">
+                  <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-sub dark:text-slate-400">
                     {d.description}
                   </p>
                 )}
-                <div className="mt-4 flex items-center gap-3 border-t border-line pt-4 text-[12.5px] text-faint dark:border-white/10 dark:text-slate-400">
+                <div className="mt-3.5 flex items-center gap-3 border-t border-gray-100 pt-3.5 text-[12px] text-faint dark:border-white/8 dark:text-slate-400">
                   <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                    <Icon name="members" size={13} />
+                    <Icon name="members" size={12} />
                     {d._count.members} members
                   </span>
                   <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                    <Icon name="calendar" size={13} />
+                    <Icon name="calendar" size={12} />
                     {d._count.events} events
                   </span>
                 </div>
                 {d.coordinator && (
-                  <p className="mt-3 flex min-w-0 items-center gap-1.5 text-[12.5px] text-sub dark:text-slate-400">
-                    <Icon name="user" size={12} className="shrink-0 text-faint" />
+                  <p className="mt-2.5 flex min-w-0 items-center gap-1.5 text-[12px] text-sub dark:text-slate-400">
+                    <Icon name="user" size={11} className="shrink-0 text-faint" />
                     <span className="truncate">
                       Coordinated by {d.coordinator.user.name}
                     </span>
@@ -221,32 +220,25 @@ export default async function HomePage() {
 
       {/* ---------- CTA ---------- */}
       <Container size="page" className="pb-24">
-        <div className="dark-band relative overflow-hidden rounded-[24px] px-6 py-14 text-center shadow-pop sm:px-12">
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(600px 300px at 80% 0%, rgba(96,165,250,0.16), transparent 60%)",
-            }}
-          />
-          <h2 className="gold-text font-display relative text-[28px] font-bold tracking-tight sm:text-[34px]">
+        <div className="dark-band relative overflow-hidden rounded-2xl px-6 py-14 text-center shadow-pop sm:px-12">
+          <h2 className="gold-text font-display relative text-[26px] font-bold tracking-tight sm:text-[32px]">
             Ready to take the stage?
           </h2>
-          <p className="relative mx-auto mt-2 max-w-xl text-[15px] leading-relaxed text-slate-300/90 dark:text-slate-300/90">
+          <p className="relative mx-auto mt-2 max-w-xl text-[14px] leading-relaxed text-slate-300/80 dark:text-slate-300/80">
             Registration windows open every semester. Sign up, audition, and become part of the
             story.
           </p>
-          <div className="relative mt-7 flex flex-wrap items-center justify-center gap-3">
+          <div className="relative mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/recruitment"
-              className="inline-flex h-11 items-center gap-2 rounded-full bg-gradient-to-br from-gold-light via-gold to-[#1e40af] px-6 text-[15px] font-bold text-white shadow-gold transition hover:brightness-110 active:scale-[0.98]"
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-blue-600 px-5 text-[14px] font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98] shadow-sm"
             >
               Apply Now
-              <Icon name="arrow-right" size={15} />
+              <Icon name="arrow-right" size={14} />
             </Link>
             <Link
               href="/contact"
-              className="inline-flex h-11 items-center rounded-full border border-gold-light/40 px-6 text-[15px] font-bold text-gold-light transition hover:bg-white/10 active:scale-[0.98]"
+              className="inline-flex h-10 items-center rounded-xl border border-white/20 px-5 text-[14px] font-semibold text-white transition hover:bg-white/10 active:scale-[0.98]"
             >
               Get in Touch
             </Link>
@@ -270,19 +262,19 @@ function SectionHeader({
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div>
         <p className="theatre-eyebrow text-accent">{eyebrow}</p>
-        <h2 className="font-display mt-3 text-[26px] font-bold tracking-tight text-ink sm:text-[32px] dark:text-slate-100">
+        <h2 className="font-display mt-2.5 text-[24px] font-bold tracking-tight text-ink sm:text-[28px] dark:text-slate-100">
           {title}
         </h2>
       </div>
       <Link
         href={link.href}
         className={cn(
-          "inline-flex shrink-0 items-center gap-1 rounded-full border border-line bg-white/70 px-4 py-2 text-[14px] font-medium text-accent backdrop-blur transition hover:bg-white dark:bg-white/10 dark:hover:bg-white/20",
+          "inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-[13px] font-medium text-ink backdrop-blur transition hover:bg-gray-50 dark:bg-white/5 dark:text-slate-100 dark:border-white/10 dark:hover:bg-white/10",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         )}
       >
         {link.label}
-        <Icon name="chevron-right" size={14} />
+        <Icon name="chevron-right" size={13} />
       </Link>
     </div>
   );

@@ -79,6 +79,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
   }, [setUserSafe]);
 
+  // Safety net: never leave loading=true indefinitely if /api/session hangs.
+  useEffect(() => {
+    const safety = setTimeout(() => {
+      if (mounted.current) setLoading(false);
+    }, 5000);
+    return () => clearTimeout(safety);
+  }, []);
+
   // Initial load + cross-tab synchronization.
   useEffect(() => {
     mounted.current = true;

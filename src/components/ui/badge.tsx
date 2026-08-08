@@ -14,16 +14,16 @@ export type Tone =
   | "indigo";
 
 const tones: Record<Tone, string> = {
-  blue: "bg-blue/10 text-blue dark:text-blue-300",
-  green: "bg-green/12 text-[#248a3d] dark:text-green-400",
-  red: "bg-red/10 text-red dark:text-red-400",
-  orange: "bg-orange/12 text-[#c93400] dark:text-orange-400",
-  yellow: "bg-yellow/20 text-[#8a6d00] dark:text-yellow-300",
-  purple: "bg-purple/10 text-purple dark:text-purple-300",
-  gray: "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-slate-400",
-  teal: "bg-teal/10 text-teal dark:text-teal-300",
-  pink: "bg-pink/10 text-pink dark:text-pink-400",
-  indigo: "bg-indigo/10 text-indigo dark:text-indigo-300",
+  blue: "bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
+  green: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
+  red: "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300",
+  orange: "bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300",
+  yellow: "bg-yellow-50 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-300",
+  purple: "bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300",
+  gray: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-slate-400",
+  teal: "bg-teal-50 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300",
+  pink: "bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300",
+  indigo: "bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300",
 };
 
 export function Badge({
@@ -36,7 +36,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-medium leading-none whitespace-nowrap",
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[12px] font-medium leading-none whitespace-nowrap",
         tones[tone],
         className
       )}

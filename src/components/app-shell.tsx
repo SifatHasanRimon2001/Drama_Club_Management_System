@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { useSession } from "@/lib/client/session";
+import { performSignOut } from "@/lib/client/auth-helpers";
 import { apiGet, apiPost } from "@/lib/client/api";
 import type { NotificationItem } from "@/lib/types";
 import { timeAgo } from "@/lib/format";
@@ -75,23 +75,23 @@ const TAB_NAV: NavItem[] = [
 ];
 
 const NOTIF_TONES: Record<string, string> = {
-  PROMOTION: "bg-purple/10 text-purple",
-  REGISTRATION: "bg-orange/10 text-orange",
-  ANNOUNCEMENT: "bg-blue/10 text-blue",
-  EVENT: "bg-teal/10 text-teal",
-  GALLERY: "bg-pink/10 text-pink",
-  GENERAL: "bg-gray-500/10 text-sub",
+  PROMOTION: "bg-purple-50 text-purple-600 dark:bg-purple-500/15 dark:text-purple-400",
+  REGISTRATION: "bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400",
+  ANNOUNCEMENT: "bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
+  EVENT: "bg-teal-50 text-teal-600 dark:bg-teal-500/15 dark:text-teal-400",
+  GALLERY: "bg-pink-50 text-pink-600 dark:bg-pink-500/15 dark:text-pink-400",
+  GENERAL: "bg-gray-100 text-sub dark:bg-white/10 dark:text-slate-400",
 };
 
 function StageLights() {
   return (
     <div className="flex items-center gap-2.5 px-5 pt-5">
-      <ClubLogo size={30} />
+      <ClubLogo size={28} />
       <div className="min-w-0 leading-tight">
-        <p className="truncate font-display text-[13.5px] font-bold tracking-tight text-ink dark:text-slate-100">
+        <p className="truncate font-display text-[13px] font-bold tracking-tight text-ink dark:text-slate-100">
           Member Console
         </p>
-        <p className="text-[9.5px] font-bold uppercase tracking-[0.22em] text-accent">
+        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
           Drama Club
         </p>
       </div>
@@ -102,7 +102,7 @@ function StageLights() {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, clear: clearSession } = useSession();
+  const { user, loading, clear: clearSession } = useSession();
   const toast = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -129,8 +129,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timer);
   }, [loadNotifications]);
 
-  // Live: keep the bell badge fresh and pop a toast for brand-new
-  // notifications (pushed to this user's socket room only).
   useRealtimeRefresh(["Notification"], loadNotifications, 300);
   useRealtimeNotification((payload) => {
     void loadNotifications();
@@ -165,47 +163,34 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
   };
 
-  /**
-   * Logout is a full authentication reset, not just a redirect:
-   *  1. Clear the client-side session state immediately so no component can
-   *     observe a stale "logged in" user while the request is in flight.
-   *  2. Invalidate the NextAuth session cookie server-side. Using
-   *     `redirect: false` lets us catch failures (e.g. the session was already
-   *     expired) without aborting the flow.
-   *  3. Hard-navigate to /login. A full page load discards all in-memory auth
-   *     state (React context, socket room membership) and guarantees the
-   *     browser back/forward cache can't resurrect the dashboard shell.
-   */
-  const handleSignOut = useCallback(async () => {
-    clearSession();
+  const handleSignOut = useCallback(() => {
     toast.info("Signed out", "See you on stage!");
-    try {
-      await signOut({ redirect: false, callbackUrl: "/login" });
-    } catch {
-      // The sign-out request failed (network/server issue) or the session was
-      // already expired — the httpOnly cookie cannot be cleared client-side.
-      // Flag this page load so the login page doesn't bounce the user straight
-      // back into the dashboard as if logout never happened.
-      try {
-        window.sessionStorage.setItem("dcms:signed-out", "1");
-      } catch {
-        /* storage unavailable — ignore */
-      }
-    }
-    window.location.assign("/login");
+    void performSignOut(clearSession);
   }, [clearSession, toast]);
+
+  // Brief loading guard
+  if (loading) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-gray-50 dark:bg-[#0f172a]">
+        <div className="flex flex-col items-center gap-3">
+          <ClubLogo size={32} />
+          <p className="text-[13px] font-medium text-sub">Loading…</p>
+        </div>
+      </div>
+    );
+  }
 
   const sidebar = (
     <div className="flex h-full flex-col">
       <StageLights />
       <div className="flex items-center gap-2.5 px-5 py-4">
         <Link href="/" className="flex items-center gap-2.5">
-          <ClubLogo size={30} />
+          <ClubLogo size={28} />
           <div className="flex min-w-0 flex-col justify-center leading-tight">
-            <p className="font-display text-left text-[14px] font-bold leading-snug tracking-tight text-ink dark:text-slate-100">
+            <p className="whitespace-nowrap font-display text-left text-[12.5px] font-bold leading-snug tracking-tight text-ink dark:text-slate-100">
               BRAC University Drama Club
             </p>
-            <p className="text-left text-[10.5px] font-semibold uppercase tracking-[0.18em] text-gold">
+            <p className="text-left text-[9px] font-semibold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-400">
               Management Console
             </p>
           </div>
@@ -223,22 +208,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href={item.href}
               onClick={() => setSidebarOpen(false)}
               className={cn(
-                "relative flex items-center gap-3 rounded-xl px-3 py-2 text-[13.5px] font-medium transition-all",
+                "relative flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-150",
                 active
-                  ? "bg-gradient-to-r from-accent-soft-strong via-accent-soft to-transparent font-semibold text-accent shadow-[inset_0_0_0_1px_rgba(212,175,55,0.28)]"
-                  : "text-sub hover:bg-black/[0.05] hover:text-ink dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100"
+                  ? "bg-blue-50 font-semibold text-blue-600 dark:bg-blue-500/15 dark:text-blue-400"
+                  : "text-sub hover:bg-gray-100 hover:text-ink dark:text-slate-400 dark:hover:bg-white/8 dark:hover:text-slate-100"
               )}
             >
-              {active && (
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-gradient-to-b from-gold-light to-[#1e40af]"
-                />
-              )}
-              <Icon name={item.icon} size={17} className={active ? "text-gold" : ""} />
+              <Icon name={item.icon} size={16} className={active ? "text-blue-600 dark:text-blue-400" : ""} />
               {item.label}
               {item.href === "/dashboard/notifications" && unread > 0 && (
-                <span className="ml-auto rounded-full bg-red px-1.5 py-0.5 text-[10.5px] font-bold text-white">
+                <span className="ml-auto rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
                   {unread}
                 </span>
               )}
@@ -246,12 +225,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           );
         })}
       </nav>
-      <div className="border-t border-line px-4 py-4 dark:border-white/10">
+      <div className="border-t border-gray-200 px-4 py-4 dark:border-white/8">
         <Link
           href="/"
-          className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-sub transition hover:bg-black/[0.05] hover:text-ink dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100"
+          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-sub transition hover:bg-gray-100 hover:text-ink dark:text-slate-400 dark:hover:bg-white/8 dark:hover:text-slate-100"
         >
-          <Icon name="external" size={16} />
+          <Icon name="external" size={15} />
           View public site
         </Link>
       </div>
@@ -259,20 +238,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="flex min-h-dvh bg-canvas dark:bg-black">
+    <div className="flex min-h-dvh bg-gray-50 dark:bg-[#0f172a]">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-full focus:bg-gradient-to-br focus:from-gold-light focus:via-gold focus:to-[#1e40af] focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-lg focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
       >
         Skip to main content
       </a>
 
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r border-line bg-white/85 backdrop-blur-2xl lg:block dark:border-white/10 dark:bg-[#0b1220]/85">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-plum/[0.06] via-transparent to-transparent dark:from-[#1e3a8a]/25 dark:via-transparent"
-        />
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r border-gray-200/80 bg-white lg:block dark:border-white/8 dark:bg-[#1e293b]">
         <div className="relative h-full">{sidebar}</div>
       </aside>
 
@@ -281,7 +256,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
           <aside
-            className="animate-sheet absolute inset-y-0 left-0 w-[82vw] max-w-72 border-r border-white/10 bg-white/95 shadow-pop backdrop-blur-2xl dark:bg-[#0b1220]/95"
+            className="animate-sheet absolute inset-y-0 left-0 w-[82vw] max-w-72 border-r border-gray-200 bg-white shadow-sheet dark:bg-[#1e293b] dark:border-white/10"
             role="dialog"
             aria-modal="true"
             aria-label="Navigation"
@@ -293,23 +268,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <div className="flex min-w-0 flex-1 flex-col lg:pl-60">
         {/* Top bar */}
-        <header className="glass sticky top-0 z-30 border-b border-line">
+        <header className="glass sticky top-0 z-30 border-b border-gray-200/80 dark:border-white/8">
           <div className="flex h-14 items-center gap-3 px-4 sm:px-6">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="flex size-10 items-center justify-center rounded-full text-ink transition hover:bg-black/[0.05] lg:hidden dark:text-slate-100 dark:hover:bg-white/10"
+              className="flex size-9 items-center justify-center rounded-lg text-ink transition hover:bg-gray-100 lg:hidden dark:text-slate-100 dark:hover:bg-white/10"
               aria-label="Open menu"
             >
-              <Icon name="menu" size={19} />
+              <Icon name="menu" size={18} />
             </button>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[13.5px] font-medium text-sub dark:text-slate-400">
+              <p className="truncate text-[13px] font-medium text-sub dark:text-slate-400">
                 {pathname === "/dashboard" ? "Overview" : pageTitle(pathname)}
               </p>
             </div>
 
             <Dropdown
-              width="w-[380px]"
+              width="w-[360px]"
               trigger={(open, toggle) => (
                 <button
                   onClick={() => {
@@ -317,17 +292,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     toggle();
                   }}
                   className={cn(
-                    "relative flex size-10 items-center justify-center rounded-full transition",
+                    "relative flex size-9 items-center justify-center rounded-lg transition",
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                     open
-                      ? "bg-black/[0.07] dark:bg-white/15"
-                      : "text-sub hover:bg-black/[0.05] dark:text-slate-400 dark:hover:bg-white/10"
+                      ? "bg-gray-100 dark:bg-white/15"
+                      : "text-sub hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-white/10"
                   )}
                   aria-label="Notifications"
                 >
-                  <Icon name="bell" size={19} />
+                  <Icon name="bell" size={18} />
                   {unread > 0 && (
-                    <span className="absolute right-1.5 top-1.5 flex size-4 items-center justify-center rounded-full bg-red text-[9.5px] font-bold text-white">
+                    <span className="absolute right-1.5 top-1.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
                       {unread > 9 ? "9+" : unread}
                     </span>
                   )}
@@ -337,18 +312,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {(close) => (
                 <div>
                   <div className="flex items-center justify-between px-4 py-3">
-                    <p className="text-[14px] font-semibold text-ink dark:text-slate-100">
+                    <p className="text-[13.5px] font-semibold text-ink dark:text-slate-100">
                       Notifications
                     </p>
                     <Link
                       href="/dashboard/notifications"
                       onClick={close}
-                      className="text-[12.5px] font-medium text-accent hover:underline"
+                      className="text-[12px] font-medium text-blue-600 hover:underline dark:text-blue-400"
                     >
                       View all
                     </Link>
                   </div>
-                  <div className="max-h-[380px] overflow-y-auto border-t border-line dark:border-white/10">
+                  <div className="max-h-[360px] overflow-y-auto border-t border-gray-100 dark:border-white/8">
                     {notifLoading ? (
                       <p className="px-4 py-6 text-center text-[13px] text-faint">Loading…</p>
                     ) : notifications.length === 0 ? (
@@ -367,8 +342,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             }
                           }}
                           className={cn(
-                            "flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-black/[0.03] dark:hover:bg-white/5",
-                            !n.readAt && "bg-accent-soft/40 dark:bg-white/5"
+                            "flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-gray-50 dark:hover:bg-white/5",
+                            !n.readAt && "bg-blue-50/50 dark:bg-blue-500/5"
                           )}
                         >
                           <span
@@ -377,13 +352,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                               NOTIF_TONES[n.type] || NOTIF_TONES.GENERAL
                             )}
                           >
-                            <Icon name={ICONS[n.type] || "bell"} size={15} />
+                            <Icon name={ICONS[n.type] || "bell"} size={14} />
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[13.5px] font-semibold text-ink dark:text-slate-100">
+                            <span className="block truncate text-[13px] font-semibold text-ink dark:text-slate-100">
                               {n.title}
                             </span>
-                            <span className="mt-0.5 line-clamp-2 block text-[12.5px] leading-snug text-sub dark:text-slate-400">
+                            <span className="mt-0.5 line-clamp-2 block text-[12px] leading-snug text-sub dark:text-slate-400">
                               {n.message}
                             </span>
                             <span className="mt-1 block text-[11px] text-faint">
@@ -391,7 +366,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             </span>
                           </span>
                           {!n.readAt && (
-                            <span className="mt-2 size-2 shrink-0 rounded-full bg-accent" />
+                            <span className="mt-2 size-2 shrink-0 rounded-full bg-blue-500" />
                           )}
                         </button>
                       ))
@@ -410,22 +385,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   onClick={toggle}
                   className={cn(
                     "flex items-center gap-2 rounded-full p-1 pr-2 transition",
-                    open ? "bg-black/[0.06] dark:bg-white/10" : "hover:bg-black/[0.04] dark:hover:bg-white/5"
+                    open ? "bg-gray-100 dark:bg-white/10" : "hover:bg-gray-100 dark:hover:bg-white/8"
                   )}
                   aria-label="Account menu"
                 >
-                  <Avatar name={user?.name} src={user?.image} size={30} />
-                  <span className="hidden max-w-[110px] truncate text-[13px] font-medium text-ink sm:block dark:text-slate-200">
+                  <Avatar name={user?.name} src={user?.image} size={28} />
+                  <span className="hidden max-w-[100px] truncate text-[13px] font-medium text-ink sm:block dark:text-slate-200">
                     {user?.name?.split(" ")[0]}
                   </span>
-                  <Icon name="chevron-down" size={13} className="hidden text-faint sm:block" />
+                  <Icon name="chevron-down" size={12} className="hidden text-faint sm:block" />
                 </button>
               )}
             >
               {(close) => (
                 <div className="p-1.5">
-                  <div className="border-b border-line px-3 py-2.5 dark:border-white/10">
-                    <p className="truncate text-[13.5px] font-semibold text-ink dark:text-slate-100">
+                  <div className="border-b border-gray-100 px-3 py-2.5 dark:border-white/8">
+                    <p className="truncate text-[13px] font-semibold text-ink dark:text-slate-100">
                       {user?.name}
                     </p>
                     <p className="truncate text-[12px] text-sub dark:text-slate-400">{user?.email}</p>
@@ -435,35 +410,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       <Link
                         href={`/dashboard/members/${user.memberId}`}
                         onClick={close}
-                        className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:text-slate-200 dark:hover:bg-white/10"
+                        className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-ink transition hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-white/10"
                       >
-                        <Icon name="user" size={16} />
+                        <Icon name="user" size={15} />
                         My Profile
                       </Link>
                     )}
                     <Link
                       href="/dashboard/notifications"
                       onClick={close}
-                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:text-slate-200 dark:hover:bg-white/10"
+                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-ink transition hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-white/10"
                     >
-                      <Icon name="bell" size={16} />
+                      <Icon name="bell" size={15} />
                       Notifications
                     </Link>
                     <Link
                       href="/"
                       onClick={close}
-                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:text-slate-200 dark:hover:bg-white/10"
+                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-ink transition hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-white/10"
                     >
-                      <Icon name="external" size={16} />
+                      <Icon name="external" size={15} />
                       Public site
                     </Link>
                     <button
                       onClick={() => {
                         void handleSignOut();
                       }}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-red transition hover:bg-red/10"
+                      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
                     >
-                      <Icon name="logout" size={16} />
+                      <Icon name="logout" size={15} />
                       Sign Out
                     </button>
                   </div>
@@ -484,7 +459,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* iOS-style bottom tab bar (mobile) */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/85 backdrop-blur-2xl lg:hidden dark:border-white/10 dark:bg-[#0b1220]/90"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200/80 bg-white/85 backdrop-blur-2xl lg:hidden dark:border-white/8 dark:bg-[#1e293b]/90"
         aria-label="Primary"
       >
         <div className="flex items-stretch justify-around pb-[env(safe-area-inset-bottom)]">
@@ -500,15 +475,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
                   "relative flex flex-1 flex-col items-center gap-0.5 pt-2 pb-1 text-[10px] font-semibold transition",
-                  active ? "text-accent" : "text-faint hover:text-sub dark:text-slate-400"
+                  active ? "text-blue-600 dark:text-blue-400" : "text-faint hover:text-sub dark:text-slate-400"
                 )}
               >
                 {item.href === "/dashboard/notifications" && unread > 0 && (
-                  <span className="absolute right-[calc(50%-18px)] top-1.5 flex size-4 items-center justify-center rounded-full bg-red text-[9px] font-bold text-white">
+                  <span className="absolute right-[calc(50%-18px)] top-1.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
                     {unread > 9 ? "9+" : unread}
                   </span>
                 )}
-                <Icon name={item.icon} size={21} strokeWidth={active ? 2.4 : 2} />
+                <Icon name={item.icon} size={20} strokeWidth={active ? 2.2 : 1.8} />
                 {item.label}
               </Link>
             );
@@ -518,7 +493,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             className="flex flex-1 flex-col items-center gap-0.5 pt-2 pb-1 text-[10px] font-medium text-faint transition hover:text-sub dark:text-slate-400"
             aria-label="More"
           >
-            <Icon name="menu" size={21} />
+            <Icon name="menu" size={20} />
             More
           </button>
         </div>

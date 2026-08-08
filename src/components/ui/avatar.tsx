@@ -2,14 +2,14 @@ import { cn } from "@/lib/cn";
 import { initials } from "@/lib/format";
 
 const palette = [
-  "bg-blue/15 text-blue",
-  "bg-purple/15 text-purple",
-  "bg-teal/15 text-teal",
-  "bg-orange/15 text-[#c93400]",
-  "bg-pink/15 text-pink",
-  "bg-indigo/15 text-indigo",
-  "bg-green/15 text-[#248a3d]",
-  "bg-red/15 text-red",
+  "bg-blue-100 text-blue-700",
+  "bg-purple-100 text-purple-700",
+  "bg-teal-100 text-teal-700",
+  "bg-orange-100 text-orange-700",
+  "bg-pink-100 text-pink-700",
+  "bg-indigo-100 text-indigo-700",
+  "bg-emerald-100 text-emerald-700",
+  "bg-red-100 text-red-700",
 ];
 
 function hashIndex(seed: string): number {
@@ -40,7 +40,7 @@ export function Avatar({
         alt={name || ""}
         width={size}
         height={size}
-        className={cn("rounded-full object-cover bg-black/5", className)}
+        className={cn("rounded-full object-cover bg-gray-100 dark:bg-white/10", className)}
         style={{ width: size, height: size }}
       />
     );
