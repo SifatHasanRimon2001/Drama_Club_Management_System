@@ -36,7 +36,7 @@ export default async function HomePage() {
               ? `${about.activeMemberCount} members · ${about.departmentCount ?? 0} departments`
               : "Est. Backstage at BRAC"}
           </span>
-          <h1 className="display-title animate-curtain max-w-4xl text-ink dark:text-[#faf4e6]">
+          <h1 className="display-title animate-rise max-w-4xl text-ink dark:text-[#faf4e6]">
             {clubName}
           </h1>
           <p className="animate-rise mt-6 max-w-2xl text-[17px] leading-relaxed text-sub sm:text-[19px] dark:text-slate-400">
@@ -173,7 +173,7 @@ export default async function HomePage() {
       {home?.departments && home.departments.length > 0 ? (
         <Container size="page" className="py-8 pb-20">
           <SectionHeader
-            eyebrow="Behind Every Curtain"
+            eyebrow="Explore the Crew"
             title="Our Departments"
             link={{ href: "/departments", label: "All departments" }}
           />
@@ -221,7 +221,7 @@ export default async function HomePage() {
 
       {/* ---------- CTA ---------- */}
       <Container size="page" className="pb-24">
-        <div className="velvet-band relative overflow-hidden rounded-[24px] px-6 py-14 text-center shadow-pop sm:px-12">
+        <div className="dark-band relative overflow-hidden rounded-[24px] px-6 py-14 text-center shadow-pop sm:px-12">
           <div
             className="pointer-events-none absolute inset-0"
             style={{

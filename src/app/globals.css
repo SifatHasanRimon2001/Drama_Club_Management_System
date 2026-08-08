@@ -33,8 +33,6 @@
   /* Brand gradient stops (kept as `gold` names for compatibility) */
   --color-gold: #2563eb;
   --color-gold-light: #93c5fd;
-  --color-velvet: #0f172a;
-  --color-velvet-dark: #0b1220;
   --color-plum: #1e293b;
   --color-stage: #0a0f1a;
 
@@ -247,7 +245,7 @@ select:focus-visible {
 }
 
 /* Dark feature band */
-.velvet-band {
+.dark-band {
   background: linear-gradient(160deg, #0f172a 0%, #1e293b 45%, #0b1220 100%);
 }
 
@@ -452,21 +450,6 @@ select:focus-visible {
 }
 .animate-scale-in {
   animation: scale-in 0.18s var(--ease-apple);
-}
-
-/* Content reveal */
-@keyframes curtain-sweep {
-  from {
-    clip-path: inset(0 100% 0 0);
-    opacity: 0.4;
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-    opacity: 1;
-  }
-}
-.animate-curtain {
-  animation: curtain-sweep 0.9s var(--ease-apple) both;
 }
 
 /* Rising entrance */
