@@ -56,7 +56,7 @@ export function EmptyState({
         className
       )}
     >
-      <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400" aria-hidden="true">
+      <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-accent-soft text-accent-ink  " aria-hidden="true">
         <Icon name={icon} size={24} />
       </span>
       <h3 className="text-[15px] font-semibold text-ink dark:text-slate-100">{title}</h3>

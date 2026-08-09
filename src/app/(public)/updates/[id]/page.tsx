@@ -66,7 +66,7 @@ export default async function UpdateDetailPage({
         </p>
       )}
 
-      <div className="mt-14 rounded-apple border border-line bg-card p-6 text-center shadow-card sm:p-8 dark:border-white/10 dark:bg-[#0f172a]">
+      <div className="mt-14 rounded-apple border border-line bg-card p-6 text-center shadow-card sm:p-8 dark:border-white/10 dark:bg-card">
         <p className="text-[15px] font-semibold text-ink dark:text-slate-100">
           Don&apos;t miss the next update
         </p>
@@ -83,7 +83,7 @@ export default async function UpdateDetailPage({
           </Link>
           <Link
             href="/recruitment"
-            className="inline-flex h-11 items-center rounded-full border border-line bg-card px-6 text-sm font-medium text-ink transition hover:bg-black/[0.03] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:bg-[#0f172a] dark:text-slate-100 dark:hover:bg-white/10"
+            className="inline-flex h-11 items-center rounded-full border border-line bg-card px-6 text-sm font-medium text-ink transition hover:bg-black/[0.03] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:bg-card dark:text-slate-100 dark:hover:bg-white/10"
           >
             Join the Club
           </Link>

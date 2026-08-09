@@ -118,7 +118,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
 
   if (done) {
     return (
-      <div className="flex flex-col items-center rounded-apple border border-line bg-card px-6 py-14 text-center shadow-card dark:bg-[#0f172a] dark:border-white/10">
+      <div className="flex flex-col items-center rounded-apple border border-line bg-card px-6 py-14 text-center shadow-card dark:bg-card dark:border-white/10">
         <span className="flex size-14 items-center justify-center rounded-full bg-green/12 text-[#248a3d] dark:text-green-400">
           <Icon name="check" size={26} />
         </span>
@@ -137,7 +137,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
     <form
       onSubmit={submit}
       noValidate
-      className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-[#0f172a] dark:border-white/10"
+      className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-card dark:border-white/10"
     >
       <Grid preset="split">
         <Field label="Full name" error={errors.name}>
@@ -186,7 +186,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
                 aria-pressed={active}
                 className={`rounded-full border px-3.5 py-1.5 text-[13.5px] font-medium transition ${
                   active
-                    ? "border-gold bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white shadow-gold"
+                    ? "border-gold bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white dark:bg-accent dark:bg-none dark:text-on-accent shadow-gold"
                     : "border-line bg-white text-sub hover:border-gold/60 dark:bg-white/10 dark:text-slate-300"
                 }`}
               >
@@ -208,7 +208,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
           {skills.map((s) => (
             <span
               key={s}
-              className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-3 py-1 text-[13px] font-medium text-accent"
+              className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-3 py-1 text-[13px] font-medium text-accent-ink"
             >
               {s}
               <button type="button" onClick={() => setSkills((k) => k.filter((x) => x !== s))} aria-label={`Remove ${s}`}>

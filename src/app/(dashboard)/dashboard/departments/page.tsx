@@ -105,11 +105,11 @@ function DepartmentsPage() {
           {depts.map((d) => (
             <div
               key={d.id}
-              className="flex flex-col rounded-apple border border-line bg-card p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-card-hover dark:border-white/10 dark:bg-[#0f172a]"
+              className="flex flex-col rounded-apple border border-line bg-card p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-card-hover dark:border-white/10 dark:bg-card"
             >
               <Link href={`/dashboard/departments/${d.id}`} className="group block">
                 <div className="flex items-start justify-between">
-                  <span className="flex size-11 items-center justify-center rounded-2xl bg-accent-soft text-accent dark:bg-accent/20">
+                  <span className="flex size-11 items-center justify-center rounded-2xl bg-accent-soft text-accent-ink dark:bg-accent/20">
                     <Icon name="folder" size={20} />
                   </span>
                   {d.committee.isCurrent && (

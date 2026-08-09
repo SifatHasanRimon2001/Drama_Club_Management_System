@@ -38,7 +38,7 @@ export default async function EventDetailPage({
     <Container size="article" className="pb-24 pt-24">
       <BackLink href="/events">All events</BackLink>
 
-      <div className="relative mt-6 overflow-hidden rounded-apple border border-line bg-card shadow-card dark:bg-[#0f172a] dark:border-white/10">
+      <div className="relative mt-6 overflow-hidden rounded-apple border border-line bg-card shadow-card dark:bg-card dark:border-white/10">
         <div className="p-6 sm:p-10">
           <p className="theatre-eyebrow text-accent">
             <Icon name="ticket" size={12} />
@@ -89,7 +89,7 @@ export default async function EventDetailPage({
 
         {/* Tickets / RSVP CTA */}
         <div className="mt-8 flex flex-wrap items-center gap-4 rounded-2xl border border-line bg-accent-soft/40 px-5 py-4 dark:bg-accent/10">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white shadow-gold">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white dark:bg-accent dark:bg-none dark:text-on-accent shadow-gold">
             <Icon name="ticket" size={18} />
           </span>
           <div className="min-w-0 flex-1">

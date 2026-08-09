@@ -2,14 +2,14 @@ import { cn } from "@/lib/cn";
 import { initials } from "@/lib/format";
 
 const palette = [
-  "bg-blue-100 text-blue-700",
-  "bg-purple-100 text-purple-700",
-  "bg-teal-100 text-teal-700",
-  "bg-orange-100 text-orange-700",
-  "bg-pink-100 text-pink-700",
-  "bg-indigo-100 text-indigo-700",
-  "bg-emerald-100 text-emerald-700",
-  "bg-red-100 text-red-700",
+  "bg-accent-soft-strong text-accent-ink dark:bg-accent/20 dark:text-accent",
+  "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300",
+  "bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300",
+  "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300",
+  "bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300",
+  "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300",
+  "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
+  "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
 ];
 
 function hashIndex(seed: string): number {

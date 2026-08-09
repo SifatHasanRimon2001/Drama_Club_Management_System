@@ -41,7 +41,7 @@ export default function RegisterPage() {
   if (success) {
     return (
       <div className="flex min-h-[70dvh] flex-col items-center justify-center px-4 py-12">
-        <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-white/80 p-6 text-center shadow-pop backdrop-blur-2xl sm:p-8 dark:bg-[#0f172a]/90 dark:border-white/10">
+        <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-white/80 p-6 text-center shadow-pop backdrop-blur-2xl sm:p-8 dark:bg-card/90 dark:border-white/10">
           <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-green/12 text-[#248a3d] dark:text-green-400">
             <Icon name="check" size={26} />
           </span>
@@ -54,7 +54,7 @@ export default function RegisterPage() {
           </p>
           <Link
             href="/login"
-            className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-[15px] font-bold text-white shadow-gold transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-[15px] font-bold text-white dark:bg-accent dark:bg-none dark:text-on-accent shadow-gold transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Go to Sign In
           </Link>
@@ -80,7 +80,7 @@ export default function RegisterPage() {
           backgroundSize: "44px 44px",
         }}
       />
-      <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-card/90 p-6 shadow-pop backdrop-blur-2xl sm:p-8 dark:bg-[#0f172a]/90 dark:border-white/10">
+      <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-card/90 p-6 shadow-pop backdrop-blur-2xl sm:p-8 dark:bg-card/90 dark:border-white/10">
         <div aria-hidden="true" className="mb-5 flex items-center gap-2.5">
           <ClubLogo size={38} />
           <span className="text-[10.5px] font-bold uppercase tracking-[0.24em] text-accent">

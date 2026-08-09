@@ -35,7 +35,7 @@ export default async function ProductionsPage() {
             <Link
               key={p.id}
               href={`/events/${p.id}`}
-              className="group overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-1 hover:border-accent/40 hover:shadow-card-hover dark:bg-[#0f172a] dark:border-white/10"
+              className="group overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-1 hover:border-accent/40 hover:shadow-card-hover dark:bg-card dark:border-white/10"
             >
               {/* Poster: quiet slate band with the production mark */}
               <div className="relative flex h-44 items-center justify-center overflow-hidden bg-gradient-to-br from-slate-200 to-slate-100 dark:from-slate-800 dark:to-slate-900">
@@ -66,7 +66,7 @@ export default async function ProductionsPage() {
                       {p.location}
                     </span>
                   )}
-                  <span className="ml-auto inline-flex items-center rounded-full border border-accent/30 bg-accent-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-accent">
+                  <span className="ml-auto inline-flex items-center rounded-full border border-accent/30 bg-accent-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-accent-ink">
                     {prettyLabel(p.status)}
                   </span>
                 </div>
@@ -79,7 +79,7 @@ export default async function ProductionsPage() {
       <div className="mt-16 flex justify-center">
         <Link
           href="/events"
-          className="inline-flex h-11 items-center gap-2 rounded-full border border-line bg-card px-5 text-[14.5px] font-medium text-ink shadow-card transition hover:bg-black/[0.03] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:bg-[#0f172a] dark:text-slate-100 dark:hover:bg-white/10"
+          className="inline-flex h-11 items-center gap-2 rounded-full border border-line bg-card px-5 text-[14.5px] font-medium text-ink shadow-card transition hover:bg-black/[0.03] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:bg-card dark:text-slate-100 dark:hover:bg-white/10"
         >
           See all events <Icon name="chevron-right" size={14} />
         </Link>

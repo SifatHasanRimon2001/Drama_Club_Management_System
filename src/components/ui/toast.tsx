@@ -23,12 +23,12 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 const kindStyles: Record<ToastKind, { icon: IconName; ring: string; iconColor: string }> = {
-  success: { icon: "check", ring: "ring-emerald-200 dark:ring-emerald-500/30", iconColor: "bg-emerald-500 text-white" },
-  error: { icon: "warn", ring: "ring-red-200 dark:ring-red-500/30", iconColor: "bg-red-500 text-white" },
+  success: { icon: "check", ring: "ring-emerald-200 dark:ring-emerald-500/40", iconColor: "bg-emerald-500 text-white" },
+  error: { icon: "warn", ring: "ring-red-200 dark:ring-red-500/40", iconColor: "bg-red-500 text-white" },
   info: {
     icon: "info",
-    ring: "ring-blue-200 dark:ring-blue-500/30",
-    iconColor: "bg-blue-600 text-white",
+    ring: "ring-accent/20 dark:ring-accent/40",
+    iconColor: "bg-accent text-white dark:text-on-accent",
   },
 };
 
@@ -72,7 +72,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               className={cn(
                 "animate-toast pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl bg-white p-3.5 shadow-pop ring-1 backdrop-blur-xl",
                 s.ring,
-                "dark:bg-[#1e293b]/95"
+                "dark:bg-card/95"
               )}
             >
               <span className={cn("mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg", s.iconColor)} aria-hidden="true">

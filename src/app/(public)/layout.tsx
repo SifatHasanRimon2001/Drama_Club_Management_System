@@ -20,7 +20,7 @@ export default async function PublicLayout({
     <div className="flex min-h-dvh flex-col bg-canvas dark:bg-surface-dark">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-full focus:bg-gradient-to-br focus:from-gold-light focus:via-gold focus:to-[#1e40af] focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-full focus:bg-gradient-to-br focus:from-gold-light focus:via-gold focus:to-[#1e40af] focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white focus:bg-accent focus:bg-none focus:text-on-accent"
       >
         Skip to main content
       </a>
@@ -40,7 +40,7 @@ export default async function PublicLayout({
 function MaintenanceScreen({ clubName }: { clubName: string }) {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-canvas px-4 text-center dark:bg-surface-dark">
-      <span className="flex size-14 items-center justify-center rounded-2xl bg-accent-soft text-accent dark:bg-accent/20">
+      <span className="flex size-14 items-center justify-center rounded-2xl bg-accent-soft text-accent-ink dark:bg-accent/20">
         <Icon name="warn" size={26} />
       </span>
       <h1 className="display-title mt-6 text-ink dark:text-[#faf4e6]">

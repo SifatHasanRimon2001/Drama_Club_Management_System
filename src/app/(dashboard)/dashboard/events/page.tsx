@@ -38,7 +38,7 @@ const ALLOWED_TRANSITIONS: Record<string, string[]> = {
 };
 
 const TONE_CLASSES: Record<string, string> = {
-  blue: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
+  blue: "bg-blue/12 text-blue dark:bg-blue/20 ",
   teal: "bg-teal/12 text-teal dark:bg-teal/20 dark:text-teal-300",
   purple: "bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300",
   pink: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300",
@@ -148,7 +148,7 @@ function EventsPage() {
           {rows.map((ev) => (
             <div
               key={ev.id}
-              className="flex flex-wrap items-center gap-3 rounded-apple border border-line bg-card px-4 py-3.5 shadow-card transition hover:border-accent/30 sm:flex-nowrap dark:border-white/10 dark:bg-[#0f172a]"
+              className="flex flex-wrap items-center gap-3 rounded-apple border border-line bg-card px-4 py-3.5 shadow-card transition hover:border-accent/30 sm:flex-nowrap dark:border-white/10 dark:bg-card"
             >
               <span
                 className={cn(

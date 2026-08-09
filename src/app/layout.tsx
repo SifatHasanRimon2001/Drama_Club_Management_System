@@ -34,7 +34,7 @@ export default function RootLayout({
       <head>
         <ThemeBootstrap />
       </head>
-      <body className="min-h-full bg-canvas text-ink dark:bg-[#0b1220] dark:text-slate-100">
+      <body className="min-h-full bg-canvas text-ink dark:bg-canvas dark:text-slate-100">
         <ThemeProvider>
           <SessionProvider>
             <ToastProvider>

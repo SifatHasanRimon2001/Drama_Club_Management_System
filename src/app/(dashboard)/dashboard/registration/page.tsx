@@ -597,7 +597,7 @@ function ApplicationsTab({ canCreate }: { canCreate: boolean }) {
                 onClick={() => setViewing(a)}
                 className="flex w-full items-center gap-4 px-5 py-3.5 text-left transition hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
               >
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent dark:bg-accent/20">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-ink dark:bg-accent/20">
                   <Icon name="user" size={18} />
                 </span>
                 <div className="min-w-0 flex-1">

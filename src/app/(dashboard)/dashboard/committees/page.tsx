@@ -194,7 +194,7 @@ function CommitteeCard({
             className={cn(
               "flex size-10 items-center justify-center rounded-xl",
               committee.isCurrent
-                ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white"
+                ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white dark:bg-accent dark:bg-none dark:text-on-accent"
                 : "bg-black/[0.05] text-sub dark:bg-white/10 dark:text-slate-400"
             )}
           >

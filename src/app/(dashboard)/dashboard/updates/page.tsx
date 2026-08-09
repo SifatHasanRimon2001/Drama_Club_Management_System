@@ -26,7 +26,7 @@ import { useRealtimeRefresh } from "@/lib/client/socket";
 import { RequirePermission } from "@/components/require-permission";
 
 const CATEGORY_TONES: Record<string, string> = {
-  ANNOUNCEMENT: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
+  ANNOUNCEMENT: "bg-blue/12 text-blue dark:bg-blue/20 ",
   NOTICE: "bg-orange/12 text-orange dark:bg-orange/20 dark:text-orange-300",
   ACHIEVEMENT: "bg-green/12 text-green dark:bg-green/20 dark:text-green-300",
   PRODUCTION: "bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300",
@@ -226,7 +226,7 @@ function ToolbarButton({
         "flex size-9 items-center justify-center rounded-lg transition",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         active
-          ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white"
+          ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white dark:bg-accent dark:bg-none dark:text-on-accent"
           : "text-sub hover:bg-black/[0.05] hover:text-ink dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100"
       )}
     >
@@ -263,7 +263,7 @@ function RichEditor({ value, onChange }: { value: string; onChange: (html: strin
   if (!editor) return null;
 
   return (
-    <div className="overflow-hidden rounded-apple border border-line bg-card shadow-card dark:border-white/10 dark:bg-[#0f172a]">
+    <div className="overflow-hidden rounded-apple border border-line bg-card shadow-card dark:border-white/10 dark:bg-card">
       <div
         role="toolbar"
         aria-label="Formatting tools"

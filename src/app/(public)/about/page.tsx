@@ -44,7 +44,7 @@ export default async function AboutPage() {
         ].map((s) => (
           <Card key={s.label}>
             <CardBody className="p-5">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-accent-soft text-accent">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-accent-soft text-accent-ink">
                 <Icon name={s.icon} size={17} />
               </span>
               <div className="mt-3 text-[26px] font-bold tracking-tight text-ink dark:text-slate-100">

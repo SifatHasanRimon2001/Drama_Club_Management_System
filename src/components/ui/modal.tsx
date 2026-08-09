@@ -103,11 +103,11 @@ export function Modal({
         ref={panelRef}
         className={cn(
           "animate-sheet relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-sheet sm:rounded-2xl",
-          "dark:bg-[#1e293b]",
+          "dark:bg-card",
           sizes[size]
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-5 py-4 sm:px-6 dark:border-white/8">
+        <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-5 py-4 sm:px-6 dark:border-line">
           <div className="min-w-0">
             <h2 id={titleId} className="text-[16px] font-semibold tracking-tight text-ink dark:text-slate-100">
               {title}
@@ -126,7 +126,7 @@ export function Modal({
         </div>
         <div className="thin-scroll flex-1 overflow-y-auto px-5 py-5 sm:px-6">{children}</div>
         {footer && (
-          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-gray-100 bg-gray-50/80 px-5 py-3.5 backdrop-blur sm:px-6 dark:border-white/8 dark:bg-[#0f172a]/80">
+          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-gray-100 bg-gray-50/80 px-5 py-3.5 backdrop-blur sm:px-6 dark:border-line dark:bg-card/80">
             {footer}
           </div>
         )}
@@ -176,7 +176,7 @@ export function ConfirmDialog({
               "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-[13px] font-medium text-white transition active:scale-[0.98] disabled:opacity-50",
               tone === "danger"
                 ? "bg-red-600 hover:bg-red-700"
-                : "bg-blue-600 font-semibold text-white hover:bg-blue-700"
+                : "bg-accent font-semibold text-white hover:bg-accent-hover dark:text-on-accent"
             )}
           >
             {loading && (

@@ -22,40 +22,44 @@ interface NavItem {
   href: string;
   label: string;
   icon: IconName;
+  tone?: string;
   perms?: string[];
   anyPerm?: string[];
 }
 
 const NAV: NavItem[] = [
-  { href: "/dashboard", label: "Overview", icon: "grid" },
-  { href: "/dashboard/members", label: "Members", icon: "members", perms: ["member.view"] },
-  { href: "/dashboard/departments", label: "Departments", icon: "folder", perms: ["department.view"] },
-  { href: "/dashboard/committees", label: "Committees", icon: "trophy", perms: ["committee.manage"] },
-  { href: "/dashboard/roles", label: "Roles & Access", icon: "shield", perms: ["permissions.manage"] },
-  { href: "/dashboard/audit", label: "Audit Log", icon: "list", perms: ["permissions.manage"] },
+  { href: "/dashboard", label: "Overview", icon: "grid", tone: "text-accent dark:text-accent" },
+  { href: "/dashboard/members", label: "Members", icon: "members", tone: "text-cyan-600 dark:text-cyan-400", perms: ["member.view"] },
+  { href: "/dashboard/departments", label: "Departments", icon: "folder", tone: "text-purple-600 dark:text-purple-400", perms: ["department.view"] },
+  { href: "/dashboard/committees", label: "Committees", icon: "trophy", tone: "text-yellow-600 dark:text-yellow-400", perms: ["committee.manage"] },
+  { href: "/dashboard/roles", label: "Roles & Access", icon: "shield", tone: "text-indigo-600 dark:text-indigo-400", perms: ["permissions.manage"] },
+  { href: "/dashboard/audit", label: "Audit Log", icon: "list", tone: "text-red-600 dark:text-red-400", perms: ["permissions.manage"] },
   {
     href: "/dashboard/registration",
     label: "Registration",
     icon: "megaphone",
+    tone: "text-green-600 dark:text-green-400",
     anyPerm: ["registration.manage", "registration.review"],
   },
   {
     href: "/dashboard/promotions",
     label: "Promotions",
     icon: "trend",
+    tone: "text-orange-600 dark:text-orange-400",
     anyPerm: ["promotion.submit", "promotion.approve"],
   },
-  { href: "/dashboard/events", label: "Events", icon: "calendar", perms: ["events.manage"] },
-  { href: "/dashboard/updates", label: "Updates", icon: "note", perms: ["updates.publish"] },
+  { href: "/dashboard/events", label: "Events", icon: "calendar", tone: "text-teal-600 dark:text-teal-400", perms: ["events.manage"] },
+  { href: "/dashboard/updates", label: "Updates", icon: "note", tone: "text-pink-600 dark:text-pink-400", perms: ["updates.publish"] },
   {
     href: "/dashboard/gallery",
     label: "Gallery",
     icon: "gallery",
+    tone: "text-rose-600 dark:text-rose-400",
     anyPerm: ["gallery.upload", "gallery.manage"],
   },
-  { href: "/dashboard/notifications", label: "Notifications", icon: "bell" },
-  { href: "/dashboard/contacts", label: "Contact Messages", icon: "mail", perms: ["settings.manage"] },
-  { href: "/dashboard/settings", label: "Settings", icon: "settings", perms: ["settings.manage"] },
+  { href: "/dashboard/notifications", label: "Notifications", icon: "bell", tone: "text-accent dark:text-accent" },
+  { href: "/dashboard/contacts", label: "Contact Messages", icon: "mail", tone: "text-emerald-600 dark:text-emerald-400", perms: ["settings.manage"] },
+  { href: "/dashboard/settings", label: "Settings", icon: "settings", tone: "text-gray-500 dark:text-slate-400", perms: ["settings.manage"] },
 ];
 
 const ICONS: Record<NotificationItem["type"], IconName> = {
@@ -68,19 +72,19 @@ const ICONS: Record<NotificationItem["type"], IconName> = {
 };
 
 const TAB_NAV: NavItem[] = [
-  { href: "/dashboard", label: "Overview", icon: "grid" },
-  { href: "/dashboard/members", label: "Members", icon: "members", perms: ["member.view"] },
-  { href: "/dashboard/events", label: "Events", icon: "calendar", perms: ["events.manage"] },
-  { href: "/dashboard/notifications", label: "Activity", icon: "bell" },
+  { href: "/dashboard", label: "Overview", icon: "grid", tone: "text-accent dark:text-accent" },
+  { href: "/dashboard/members", label: "Members", icon: "members", tone: "text-cyan-600 dark:text-cyan-400", perms: ["member.view"] },
+  { href: "/dashboard/events", label: "Events", icon: "calendar", tone: "text-teal-600 dark:text-teal-400", perms: ["events.manage"] },
+  { href: "/dashboard/notifications", label: "Activity", icon: "bell", tone: "text-accent dark:text-accent" },
 ];
 
 const NOTIF_TONES: Record<string, string> = {
-  PROMOTION: "bg-purple-50 text-purple-600 dark:bg-purple-500/15 dark:text-purple-400",
-  REGISTRATION: "bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400",
-  ANNOUNCEMENT: "bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
-  EVENT: "bg-teal-50 text-teal-600 dark:bg-teal-500/15 dark:text-teal-400",
-  GALLERY: "bg-pink-50 text-pink-600 dark:bg-pink-500/15 dark:text-pink-400",
-  GENERAL: "bg-gray-100 text-sub dark:bg-white/10 dark:text-slate-400",
+  PROMOTION: "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300",
+  REGISTRATION: "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300",
+  ANNOUNCEMENT: "bg-accent-soft-strong text-accent-ink",
+  EVENT: "bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300",
+  GALLERY: "bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300",
+  GENERAL: "bg-gray-100 text-sub dark:bg-white/10 dark:text-slate-300",
 };
 
 function StageLights() {
@@ -91,7 +95,7 @@ function StageLights() {
         <p className="truncate font-display text-[13px] font-bold tracking-tight text-ink dark:text-slate-100">
           Member Console
         </p>
-        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
+        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-accent ">
           Drama Club
         </p>
       </div>
@@ -171,7 +175,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // Brief loading guard
   if (loading) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-gray-50 dark:bg-[#0f172a]">
+      <div className="flex min-h-dvh items-center justify-center bg-gray-50 dark:bg-card">
         <div className="flex flex-col items-center gap-3">
           <ClubLogo size={32} />
           <p className="text-[13px] font-medium text-sub">Loading…</p>
@@ -190,7 +194,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <p className="whitespace-nowrap font-display text-left text-[12.5px] font-bold leading-snug tracking-tight text-ink dark:text-slate-100">
               BRAC University Drama Club
             </p>
-            <p className="text-left text-[9px] font-semibold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-400">
+            <p className="text-left text-[9px] font-semibold uppercase tracking-[0.16em] text-accent ">
               Management Console
             </p>
           </div>
@@ -210,11 +214,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className={cn(
                 "relative flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-150",
                 active
-                  ? "bg-blue-50 font-semibold text-blue-600 dark:bg-blue-500/15 dark:text-blue-400"
+                  ? "bg-accent-soft font-semibold text-accent-ink"
                   : "text-sub hover:bg-gray-100 hover:text-ink dark:text-slate-400 dark:hover:bg-white/8 dark:hover:text-slate-100"
               )}
             >
-              <Icon name={item.icon} size={16} className={active ? "text-blue-600 dark:text-blue-400" : ""} />
+              <Icon
+                name={item.icon}
+                size={16}
+                className={cn(item.tone, active && "text-accent-ink")}
+              />
               {item.label}
               {item.href === "/dashboard/notifications" && unread > 0 && (
                 <span className="ml-auto rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
@@ -225,7 +233,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           );
         })}
       </nav>
-      <div className="border-t border-gray-200 px-4 py-4 dark:border-white/8">
+      <div className="border-t border-gray-200 px-4 py-4 dark:border-line">
         <Link
           href="/"
           className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-sub transition hover:bg-gray-100 hover:text-ink dark:text-slate-400 dark:hover:bg-white/8 dark:hover:text-slate-100"
@@ -238,16 +246,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="flex min-h-dvh bg-gray-50 dark:bg-[#0f172a]">
+    <div className="flex min-h-dvh bg-gray-50 dark:bg-card">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-lg focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:text-on-accent"
       >
         Skip to main content
       </a>
 
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r border-gray-200/80 bg-white lg:block dark:border-white/8 dark:bg-[#1e293b]">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r border-gray-200/80 bg-white lg:block dark:border-line dark:bg-card">
         <div className="relative h-full">{sidebar}</div>
       </aside>
 
@@ -256,7 +264,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
           <aside
-            className="animate-sheet absolute inset-y-0 left-0 w-[82vw] max-w-72 border-r border-gray-200 bg-white shadow-sheet dark:bg-[#1e293b] dark:border-white/10"
+            className="animate-sheet absolute inset-y-0 left-0 w-[82vw] max-w-72 border-r border-gray-200 bg-white shadow-sheet dark:bg-card dark:border-white/10"
             role="dialog"
             aria-modal="true"
             aria-label="Navigation"
@@ -268,7 +276,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <div className="flex min-w-0 flex-1 flex-col lg:pl-60">
         {/* Top bar */}
-        <header className="glass sticky top-0 z-30 border-b border-gray-200/80 dark:border-white/8">
+        <header className="glass sticky top-0 z-30 border-b border-gray-200/80 dark:border-line">
           <div className="flex h-14 items-center gap-3 px-4 sm:px-6">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -318,12 +326,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <Link
                       href="/dashboard/notifications"
                       onClick={close}
-                      className="text-[12px] font-medium text-blue-600 hover:underline dark:text-blue-400"
+                      className="text-[12px] font-medium text-accent hover:underline "
                     >
                       View all
                     </Link>
                   </div>
-                  <div className="max-h-[360px] overflow-y-auto border-t border-gray-100 dark:border-white/8">
+                  <div className="max-h-[360px] overflow-y-auto border-t border-gray-100 dark:border-line">
                     {notifLoading ? (
                       <p className="px-4 py-6 text-center text-[13px] text-faint">Loading…</p>
                     ) : notifications.length === 0 ? (
@@ -343,7 +351,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                           }}
                           className={cn(
                             "flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-gray-50 dark:hover:bg-white/5",
-                            !n.readAt && "bg-blue-50/50 dark:bg-blue-500/5"
+                            !n.readAt && "bg-accent-soft/50 "
                           )}
                         >
                           <span
@@ -366,7 +374,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             </span>
                           </span>
                           {!n.readAt && (
-                            <span className="mt-2 size-2 shrink-0 rounded-full bg-blue-500" />
+                            <span className="mt-2 size-2 shrink-0 rounded-full bg-accent" />
                           )}
                         </button>
                       ))
@@ -399,7 +407,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               {(close) => (
                 <div className="p-1.5">
-                  <div className="border-b border-gray-100 px-3 py-2.5 dark:border-white/8">
+                  <div className="border-b border-gray-100 px-3 py-2.5 dark:border-line">
                     <p className="truncate text-[13px] font-semibold text-ink dark:text-slate-100">
                       {user?.name}
                     </p>
@@ -459,7 +467,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* iOS-style bottom tab bar (mobile) */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200/80 bg-white/85 backdrop-blur-2xl lg:hidden dark:border-white/8 dark:bg-[#1e293b]/90"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200/80 bg-white/85 backdrop-blur-2xl lg:hidden dark:border-line dark:bg-card/90"
         aria-label="Primary"
       >
         <div className="flex items-stretch justify-around pb-[env(safe-area-inset-bottom)]">
@@ -475,7 +483,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
                   "relative flex flex-1 flex-col items-center gap-0.5 pt-2 pb-1 text-[10px] font-semibold transition",
-                  active ? "text-blue-600 dark:text-blue-400" : "text-faint hover:text-sub dark:text-slate-400"
+                  active ? "text-accent" : "text-faint hover:text-sub dark:text-slate-400"
                 )}
               >
                 {item.href === "/dashboard/notifications" && unread > 0 && (
@@ -483,7 +491,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     {unread > 9 ? "9+" : unread}
                   </span>
                 )}
-                <Icon name={item.icon} size={20} strokeWidth={active ? 2.2 : 1.8} />
+                <Icon
+                  name={item.icon}
+                  size={20}
+                  strokeWidth={active ? 2.2 : 1.8}
+                  className={cn(item.tone, active && "text-accent")}
+                />
                 {item.label}
               </Link>
             );

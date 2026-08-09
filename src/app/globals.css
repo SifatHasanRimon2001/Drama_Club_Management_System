@@ -4,9 +4,9 @@
 /* ---------------------------------------------------------------------------
 
    DCMS — Premium Design System
-   Apple refinement + Google clarity + Microsoft professionalism.
-   Inter (house sans), cool neutral surfaces, crisp slate text,
-   single confident blue accent. Structure over decoration.
+   Dual-theme: Netflix-inspired near-black + electric blue in dark mode;
+   bright white + vibrant pop-blue in light mode. Bold, energetic,
+   high-contrast. Tuned for the Absolute Visibility Rule.
 
 --------------------------------------------------------------------------- */
 
@@ -20,52 +20,54 @@
     sans-serif;
 
   /* Cool neutral surfaces — Apple-inspired */
-  --color-canvas: #fafafa;
+  --color-canvas: #f4f6fb;
   --color-card: #ffffff;
-  --color-ink: #111827;
-  --color-sub: #6b7280;
-  --color-faint: #9ca3af;
-  --color-line: rgba(0, 0, 0, 0.06);
-  --color-line-strong: rgba(0, 0, 0, 0.12);
+  --color-ink: #0b1020;
+  --color-sub: #48546a;
+  --color-faint: #6b7690;
+  --color-line: rgba(11, 16, 32, 0.08);
+  --color-line-strong: rgba(11, 16, 32, 0.14);
 
   /* Steel-blue accent — refined, not loud */
-  --color-accent: #2563eb;
-  --color-accent-hover: #1d4ed8;
-  --color-accent-soft: rgba(37, 99, 235, 0.06);
-  --color-accent-soft-strong: rgba(37, 99, 235, 0.12);
+  --color-accent: #2f6bff;
+  --color-accent-hover: #1f55e8;
+  --color-accent-soft: rgba(47, 107, 255, 0.08);
+  --color-accent-soft-strong: rgba(47, 107, 255, 0.16);
+  --color-accent-ink: #1f55e8;
+  --color-on-accent: #ffffff;
 
   /* Brand gradient stops — premium blue spectrum */
-  --color-gold: #2563eb;
-  --color-gold-light: #93c5fd;
+  --color-gold: #2f6bff;
+  --color-gold-light: #9bd4ff;
   --color-plum: #1e293b;
   --color-stage: #0a0f1a;
 
   /* Semantic colors — refined, not garish */
-  --color-red: #ef4444;
-  --color-orange: #f97316;
-  --color-yellow: #eab308;
-  --color-green: #22c55e;
-  --color-mint: #14b8a6;
-  --color-teal: #14b8a6;
-  --color-cyan: #06b6d4;
-  --color-blue: #2563eb;
-  --color-indigo: #6366f1;
-  --color-purple: #8b5cf6;
-  --color-pink: #ec4899;
+  --color-red: #e11d48;
+  --color-orange: #ea580c;
+  --color-yellow: #ca8a04;
+  --color-green: #16a34a;
+  --color-mint: #0d9488;
+  --color-teal: #0d9488;
+  --color-cyan: #0891b2;
+  --color-blue: #2f6bff;
+  --color-indigo: #4f46e5;
+  --color-purple: #7c3aed;
+  --color-pink: #db2777;
   --color-brown: #9c7a4d;
-  --color-gray: #6b7280;
+  --color-gray: #48546a;
 
   /* Surfaces */
   --color-panel: #ffffff;
-  --color-panel-dark: #111827;
+  --color-panel-dark: #16161a;
   --color-surface: #fafafa;
-  --color-surface-dark: #0f172a;
+  --color-surface-dark: #0a0a0c;
 
   /* Premium layered shadows — Apple-inspired depth */
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-sheet: 0 16px 48px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 1px 3px rgba(11, 16, 32, 0.06), 0 1px 2px rgba(11, 16, 32, 0.08);
+  --shadow-card-hover: 0 6px 16px rgba(11, 16, 32, 0.1), 0 2px 4px rgba(11, 16, 32, 0.06);
+  --shadow-pop: 0 10px 28px rgba(11, 16, 32, 0.12), 0 2px 8px rgba(11, 16, 32, 0.06);
+  --shadow-sheet: 0 18px 52px rgba(11, 16, 32, 0.16), 0 4px 16px rgba(11, 16, 32, 0.1);
   --shadow-gold: 0 2px 8px rgba(37, 99, 235, 0.25), 0 1px 3px rgba(37, 99, 235, 0.15);
 
   /* Radii — refined, not overly round */
@@ -81,26 +83,44 @@
   color-scheme: light;
 }
 
-/* Dark mode: premium dark surfaces with refined accent */
+/* Dark mode: Netflix-inspired near-black, electric blue, vibrant pops.
+   All neutrals tuned for the Absolute Visibility Rule. */
 .dark {
-  --color-canvas: #0f172a;
-  --color-card: #1e293b;
-  --color-panel: #1e293b;
-  --color-ink: #f1f5f9;
-  --color-sub: #cbd5e1;
-  --color-faint: #64748b;
-  --color-line: rgba(255, 255, 255, 0.06);
-  --color-line-strong: rgba(255, 255, 255, 0.12);
-  --color-accent: #60a5fa;
-  --color-accent-hover: #93c5fd;
-  --color-accent-soft: rgba(96, 165, 250, 0.1);
-  --color-accent-soft-strong: rgba(96, 165, 250, 0.18);
-  --color-gold: #3b82f6;
-  --color-gold-light: #93c5fd;
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
-  --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
-  --shadow-sheet: 0 16px 48px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+  --color-canvas: #0a0a0c;
+  --color-card: #16161a;
+  --color-panel: #16161a;
+  --color-ink: #f4f5f7;
+  --color-sub: #b3bac7;
+  --color-faint: #8b93a6;
+  --color-line: rgba(255, 255, 255, 0.09);
+  --color-line-strong: rgba(255, 255, 255, 0.16);
+  --color-accent: #4fc1ff;
+  --color-accent-hover: #74c9ff;
+  --color-accent-soft: rgba(79, 193, 255, 0.15);
+  --color-accent-soft-strong: rgba(79, 193, 255, 0.25);
+  --color-gold: #4fc1ff;
+  --color-red: #f14c4c;
+  --color-orange: #ffa657;
+  --color-yellow: #e5c07b;
+  --color-green: #7ee787;
+  --color-mint: #34d399;
+  --color-teal: #4ec9b0;
+  --color-cyan: #22d3ee;
+  --color-blue: #4fc1ff;
+  --color-indigo: #818cf8;
+  --color-purple: #c586c0;
+  --color-pink: #f97583;
+  --color-brown: #d7a96f;
+  --color-gray: #b3bac7;
+  --color-on-accent: #0b1020;
+  --color-accent-ink: #4fc1ff;
+  --color-panel-dark: #0a0a0c;
+  --color-surface-dark: #0a0a0c;
+  --color-gold-light: #9bd4ff;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-card-hover: 0 6px 16px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-pop: 0 10px 28px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-sheet: 0 18px 52px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 html {
@@ -119,7 +139,11 @@ body {
 }
 
 ::selection {
-  background: rgba(37, 99, 235, 0.18);
+  background: rgba(47, 107, 255, 0.2);
+}
+
+.dark ::selection {
+  background: rgba(79, 142, 247, 0.3);
 }
 
 /* ---------------------------------------------------------------------------
@@ -165,17 +189,17 @@ select:focus-visible {
 --------------------------------------------------------------------------- */
 
 .glass {
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.86);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
 
 .dark .glass {
-  background: rgba(15, 23, 42, 0.82);
+  background: rgba(10, 10, 12, 0.85);
 }
 
 .glass-dark {
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(10, 10, 12, 0.88);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
@@ -239,16 +263,18 @@ select:focus-visible {
 
 .spotlight {
   background:
-    radial-gradient(60% 50% at 50% 0%, rgba(37, 99, 235, 0.06), transparent 60%),
-    radial-gradient(40% 40% at 20% 10%, rgba(99, 102, 241, 0.04), transparent 60%),
-    radial-gradient(40% 40% at 80% 15%, rgba(59, 130, 246, 0.04), transparent 60%);
+    radial-gradient(60% 55% at 50% 0%, rgba(47, 107, 255, 0.09), transparent 60%),
+    radial-gradient(40% 40% at 15% 10%, rgba(124, 58, 237, 0.07), transparent 60%),
+    radial-gradient(40% 45% at 85% 12%, rgba(219, 39, 119, 0.06), transparent 60%),
+    radial-gradient(50% 45% at 50% 100%, rgba(234, 88, 12, 0.04), transparent 60%);
 }
 
 .dark .spotlight {
   background:
-    radial-gradient(60% 50% at 50% 0%, rgba(59, 130, 246, 0.1), transparent 60%),
-    radial-gradient(40% 40% at 20% 10%, rgba(99, 102, 241, 0.06), transparent 60%),
-    radial-gradient(40% 40% at 80% 15%, rgba(59, 130, 246, 0.06), transparent 60%);
+    radial-gradient(60% 55% at 50% 0%, rgba(79, 193, 255, 0.13), transparent 60%),
+    radial-gradient(40% 40% at 15% 10%, rgba(197, 134, 192, 0.09), transparent 60%),
+    radial-gradient(40% 45% at 85% 12%, rgba(249, 117, 131, 0.07), transparent 60%),
+    radial-gradient(50% 45% at 50% 100%, rgba(255, 166, 87, 0.05), transparent 60%);
 }
 
 .vignette {
@@ -280,7 +306,11 @@ select:focus-visible {
 
 .thin-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(100, 116, 139, 0.3) transparent;
+  scrollbar-color: rgba(107, 118, 144, 0.35) transparent;
+}
+
+.dark .thin-scroll {
+  scrollbar-color: rgba(160, 170, 190, 0.4) transparent;
 }
 
 .thin-scroll::-webkit-scrollbar {
@@ -289,12 +319,20 @@ select:focus-visible {
 }
 
 .thin-scroll::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.25);
+  background: rgba(107, 118, 144, 0.3);
   border-radius: 999px;
 }
 
 .thin-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.4);
+  background: rgba(107, 118, 144, 0.45);
+}
+
+.dark .thin-scroll::-webkit-scrollbar-thumb {
+  background: rgba(160, 170, 190, 0.35);
+}
+
+.dark .thin-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(160, 170, 190, 0.55);
 }
 
 .thin-scroll::-webkit-scrollbar-track {
@@ -348,7 +386,11 @@ select:focus-visible {
 }
 
 .rich-text blockquote {
-  border-left: 3px solid rgba(37, 99, 235, 0.3);
+  border-left: 3px solid rgba(47, 107, 255, 0.35);
+}
+
+.dark .rich-text blockquote {
+  border-left-color: rgba(79, 142, 247, 0.5);
   padding-left: 1em;
   color: var(--color-sub);
   margin: 1em 0;
@@ -358,7 +400,9 @@ select:focus-visible {
 .rich-text code {
   font-family: var(--font-mono);
   font-size: 0.88em;
-  background: rgba(100, 116, 139, 0.08);
+  background: rgba(107, 118, 144, 0.1);
+  color: var(--color-ink);
+  border: 1px solid var(--color-line);
   padding: 0.15em 0.4em;
   border-radius: 5px;
 }

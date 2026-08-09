@@ -23,7 +23,7 @@ export default async function HomePage() {
     "Where passion meets the stage — join a community of storytellers, performers and creators.";
 
   return (
-    <div className="dark:bg-[#0a0f1a]">
+    <div className="dark:bg-surface-dark">
       {/* ---------- Hero ---------- */}
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 spotlight" aria-hidden="true" />
@@ -44,7 +44,7 @@ export default async function HomePage() {
           <div className="animate-rise mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/recruitment"
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-600 px-6 text-[15px] font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98] shadow-sm hover:shadow-md"
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-accent px-6 text-[15px] font-semibold text-white dark:text-on-accent transition hover:bg-accent-hover active:scale-[0.98] shadow-sm hover:shadow-md"
             >
               Join the Club
               <Icon name="arrow-right" size={15} />
@@ -72,14 +72,14 @@ export default async function HomePage() {
             {home.committee.memberRoles.slice(0, 8).map((mr) => (
               <div
                 key={mr.id}
-                className="flex items-center gap-3.5 rounded-xl border border-gray-200/80 bg-white p-4 shadow-card transition-shadow hover:shadow-card-hover dark:bg-[#1e293b] dark:border-white/8"
+                className="flex items-center gap-3.5 rounded-xl border border-gray-200/80 bg-white p-4 shadow-card transition-shadow hover:shadow-card-hover dark:bg-card dark:border-line"
               >
                 <Avatar name={mr.member.user.name} src={mr.member.user.image} size={40} />
                 <div className="min-w-0">
                   <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
                     {mr.member.user.name}
                   </p>
-                  <p className="truncate text-[12.5px] text-blue-600 dark:text-blue-400">{mr.role.name}</p>
+                  <p className="truncate text-[12.5px] text-accent ">{mr.role.name}</p>
                 </div>
               </div>
             ))}
@@ -105,13 +105,13 @@ export default async function HomePage() {
               <Link
                 key={u.id}
                 href={`/updates/${u.id}`}
-                className="group flex flex-col rounded-xl border border-gray-200/80 bg-white p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-[#1e293b] dark:border-white/8"
+                className="group flex flex-col rounded-xl border border-gray-200/80 bg-white p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-card dark:border-line"
               >
                 <div className="flex items-center justify-between">
                   <StatusPill value={u.category} />
                   <span className="text-[12px] text-faint">{formatDate(u.publishedAt)}</span>
                 </div>
-                <h3 className="mt-3 line-clamp-2 text-[15px] font-semibold tracking-tight text-ink group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-blue-400">
+                <h3 className="mt-3 line-clamp-2 text-[15px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-slate-100 dark:group-hover:text-accent">
                   {u.title}
                 </h3>
                 <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-sub dark:text-slate-400">
@@ -136,7 +136,7 @@ export default async function HomePage() {
               <Link
                 key={e.id}
                 href={`/events/${e.id}`}
-                className="flex flex-wrap items-center gap-4 rounded-xl border border-gray-200/80 bg-white p-4 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover sm:px-5 dark:bg-[#1e293b] dark:border-white/8"
+                className="flex flex-wrap items-center gap-4 rounded-xl border border-gray-200/80 bg-white p-4 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover sm:px-5 dark:bg-card dark:border-line"
               >
                 <TicketStub
                   date={new Date(e.startAt)}
@@ -181,12 +181,12 @@ export default async function HomePage() {
               <Link
                 key={d.id}
                 href="/departments"
-                className="group rounded-xl border border-gray-200/80 bg-white p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-[#1e293b] dark:border-white/8"
+                className="group rounded-xl border border-gray-200/80 bg-white p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-card dark:border-line"
               >
                 <span className="flex size-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-500/15 dark:text-purple-400">
                   <Icon name="folder" size={18} />
                 </span>
-                <h3 className="mt-3.5 truncate text-[15px] font-semibold tracking-tight text-ink group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-blue-400">
+                <h3 className="mt-3.5 truncate text-[15px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-slate-100 dark:group-hover:text-accent">
                   {d.name}
                 </h3>
                 {d.description && (
@@ -194,7 +194,7 @@ export default async function HomePage() {
                     {d.description}
                   </p>
                 )}
-                <div className="mt-3.5 flex items-center gap-3 border-t border-gray-100 pt-3.5 text-[12px] text-faint dark:border-white/8 dark:text-slate-400">
+                <div className="mt-3.5 flex items-center gap-3 border-t border-gray-100 pt-3.5 text-[12px] text-faint dark:border-line dark:text-slate-400">
                   <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                     <Icon name="members" size={12} />
                     {d._count.members} members
@@ -231,7 +231,7 @@ export default async function HomePage() {
           <div className="relative mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/recruitment"
-              className="inline-flex h-10 items-center gap-2 rounded-xl bg-blue-600 px-5 text-[14px] font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98] shadow-sm"
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-5 text-[14px] font-semibold text-white dark:text-on-accent transition hover:bg-accent-hover active:scale-[0.98] shadow-sm"
             >
               Apply Now
               <Icon name="arrow-right" size={14} />

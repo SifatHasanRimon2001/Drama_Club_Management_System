@@ -11,25 +11,25 @@ export function PublicFooter({
 }) {
   const year = new Date().getFullYear();
   return (
-    <footer className="relative border-t border-gray-200/80 bg-gray-950 text-left dark:border-white/8 dark:bg-[#0a0f1a]">
-      <Container size="page" className="pt-12 pb-10">
+    <footer className="relative border-t border-gray-200/80 bg-gray-950 text-left dark:border-line dark:bg-surface-dark">
+      <Container size="wide" className="pt-12 pb-10 2xl:max-w-[1440px]">
         <div className="grid gap-10 sm:grid-cols-3">
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="grid content-start gap-3">
+            <div className="grid grid-flow-col auto-cols-max items-center gap-2.5">
               <ClubLogo size={28} />
-              <span className="font-display text-left text-[14px] font-bold tracking-tight text-gray-100">
+              <span className="min-w-0 font-display text-left text-[14px] font-bold tracking-tight text-gray-100">
                 {clubName || "BRAC University Drama Club"}
               </span>
             </div>
-            <p className="mt-3 max-w-xs text-[13px] leading-relaxed text-gray-400">
+            <p className="max-w-xs text-[13px] leading-relaxed text-gray-400">
               Creating unforgettable performances, one production at a time.
             </p>
           </div>
-          <div>
+          <div className="grid content-start gap-3">
             <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-300">
               Explore
             </h4>
-            <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
               {[
                 { href: "/about", label: "About Us" },
                 { href: "/committee", label: "Committee" },
@@ -51,11 +51,11 @@ export function PublicFooter({
               ))}
             </ul>
           </div>
-          <div>
+          <div className="grid content-start gap-3">
             <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-300">
               Members
             </h4>
-            <ul className="mt-3 space-y-2">
+            <ul className="grid gap-y-2">
               <li>
                 <Link
                   href="/login"

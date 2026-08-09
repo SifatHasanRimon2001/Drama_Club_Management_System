@@ -26,7 +26,7 @@ const ICONS: Record<string, IconName> = {
 const TONES: Record<string, string> = {
   PROMOTION: "bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300",
   REGISTRATION: "bg-orange/12 text-orange dark:bg-orange/20 dark:text-orange-300",
-  ANNOUNCEMENT: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
+  ANNOUNCEMENT: "bg-blue/12 text-blue dark:bg-blue/20 ",
   EVENT: "bg-teal/12 text-teal dark:bg-teal/20 dark:text-teal-300",
   GALLERY: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300",
   GENERAL: "bg-gray-500/10 text-sub dark:text-slate-400",

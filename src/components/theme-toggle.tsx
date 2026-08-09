@@ -33,7 +33,7 @@ export function ThemeToggle({ className, asSegmented }: ThemeToggleProps) {
             className={cn(
               "rounded-full px-3 py-1 text-[12.5px] font-medium capitalize transition-all",
               theme === t
-                ? "bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,0.12)] dark:bg-[#1e293b] dark:text-white"
+                ? "bg-accent text-white shadow-[0_1px_3px_rgba(0,0,0,0.12)] dark:text-on-accent"
                 : "text-sub hover:text-ink dark:text-slate-400 dark:hover:text-slate-200"
             )}
           >
@@ -63,7 +63,15 @@ export function ThemeToggle({ className, asSegmented }: ThemeToggleProps) {
       aria-label={`Appearance: ${theme}. Click to switch theme.`}
       title={`Appearance: ${theme}`}
     >
-      <Icon name={theme === "dark" ? "moon" : "sun"} size={18} />
+      <Icon
+        name={theme === "dark" ? "moon" : "sun"}
+        size={18}
+        className={
+          theme === "dark"
+            ? "text-indigo-400 dark:text-indigo-300"
+            : "text-amber-500"
+        }
+      />
     </button>
   );
 }

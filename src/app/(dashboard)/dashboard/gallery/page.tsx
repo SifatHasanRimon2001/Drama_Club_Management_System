@@ -20,7 +20,7 @@ import { RequirePermission } from "@/components/require-permission";
 
 const CATEGORY_TONES: Record<string, string> = {
   PRODUCTIONS: "bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300",
-  WORKSHOPS: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
+  WORKSHOPS: "bg-blue/12 text-blue dark:bg-blue/20 ",
   BEHIND_THE_SCENES: "bg-teal/12 text-teal dark:bg-teal/20 dark:text-teal-300",
   FESTIVALS: "bg-orange/12 text-orange dark:bg-orange/20 dark:text-orange-300",
   REHEARSALS: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300",
@@ -111,7 +111,7 @@ function GalleryPage() {
           {albums.map((a) => (
             <div
               key={a.id}
-              className="flex flex-col overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-card-hover dark:border-white/10 dark:bg-[#0f172a]"
+              className="flex flex-col overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-card-hover dark:border-white/10 dark:bg-card"
             >
               <button
                 onClick={() => setViewing(a)}

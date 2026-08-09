@@ -47,7 +47,7 @@ export default async function GalleryPage() {
               <Link
                 key={album.id}
                 href={`/gallery/${album.id}`}
-                className="group overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-card-hover dark:bg-[#0f172a] dark:border-white/10"
+                className="group overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-card-hover dark:bg-card dark:border-white/10"
               >
                 <div className="relative h-48 bg-black/5 dark:bg-white/5">
                   {coverUrl ? (

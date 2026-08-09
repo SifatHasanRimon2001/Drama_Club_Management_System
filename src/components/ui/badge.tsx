@@ -14,16 +14,16 @@ export type Tone =
   | "indigo";
 
 const tones: Record<Tone, string> = {
-  blue: "bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
-  green: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
-  red: "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300",
-  orange: "bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300",
-  yellow: "bg-yellow-50 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-300",
-  purple: "bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300",
-  gray: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-slate-400",
-  teal: "bg-teal-50 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300",
-  pink: "bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300",
-  indigo: "bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300",
+  blue: "bg-accent-soft-strong text-accent-ink",
+  green: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400",
+  red: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400",
+  orange: "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400",
+  yellow: "bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-400",
+  purple: "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-400",
+  gray: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-slate-300",
+  teal: "bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-400",
+  pink: "bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-400",
+  indigo: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400",
 };
 
 export function Badge({

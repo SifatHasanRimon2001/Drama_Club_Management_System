@@ -20,20 +20,20 @@ export function StatCard({
   className?: string;
 }) {
   const tones: Record<string, string> = {
-    blue: "bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
-    green: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400",
-    orange: "bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400",
-    purple: "bg-purple-50 text-purple-600 dark:bg-purple-500/15 dark:text-purple-400",
-    red: "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400",
-    teal: "bg-teal-50 text-teal-600 dark:bg-teal-500/15 dark:text-teal-400",
-    gray: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-slate-400",
+    blue: "bg-accent-soft-strong text-accent-ink",
+    green: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
+    orange: "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300",
+    purple: "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300",
+    red: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
+    teal: "bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300",
+    gray: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-slate-300",
   };
 
   return (
     <div
       className={cn(
         "rounded-xl border border-gray-200/80 bg-white p-5 shadow-card transition-shadow hover:shadow-card-hover",
-        "dark:bg-[#1e293b] dark:border-white/8",
+        "dark:bg-card dark:border-line",
         className
       )}
     >
@@ -64,7 +64,7 @@ export function ProgressBar({
   tone?: "blue" | "green" | "orange" | "purple";
 }) {
   const tones: Record<string, string> = {
-    blue: "bg-blue-500",
+    blue: "bg-accent",
     green: "bg-emerald-500",
     orange: "bg-orange-500",
     purple: "bg-purple-500",

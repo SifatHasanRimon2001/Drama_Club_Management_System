@@ -72,7 +72,7 @@ export default function ContactPage() {
               },
             ].map((c) => (
               <div key={c.title} className="flex items-start gap-3.5">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent-ink">
                   <Icon name={c.icon} size={18} />
                 </span>
                 <div>
@@ -85,7 +85,7 @@ export default function ContactPage() {
         </div>
 
         {done ? (
-          <div className="flex h-full flex-col items-center justify-center rounded-apple border border-line bg-card p-8 text-center shadow-card sm:p-10 dark:bg-[#0f172a] dark:border-white/10">
+          <div className="flex h-full flex-col items-center justify-center rounded-apple border border-line bg-card p-8 text-center shadow-card sm:p-10 dark:bg-card dark:border-white/10">
             <span className="flex size-14 items-center justify-center rounded-full bg-green/12 text-[#248a3d] dark:text-green-400">
               <Icon name="check" size={26} />
             </span>
@@ -97,7 +97,7 @@ export default function ContactPage() {
             </p>
           </div>
         ) : (
-          <div className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-[#0f172a] dark:border-white/10">
+          <div className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-card dark:border-white/10">
             <h2 className="text-[17px] font-semibold tracking-tight text-ink dark:text-slate-100">
               Send us a message
             </h2>

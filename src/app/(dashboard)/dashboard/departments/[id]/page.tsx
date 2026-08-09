@@ -227,19 +227,19 @@ function DepartmentDetailPage() {
               </CardBody>
             </Card>
             <Grid preset="stats3">
-              <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-[#0f172a]">
+              <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-card">
                 <p className="text-[22px] font-bold tabular-nums text-ink dark:text-slate-100">
                   {members.length}
                 </p>
                 <p className="text-[11.5px] font-medium text-faint dark:text-slate-400">Members</p>
               </div>
-              <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-[#0f172a]">
+              <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-card">
                 <p className="text-[22px] font-bold tabular-nums text-ink dark:text-slate-100">
                   {dept._count?.events ?? 0}
                 </p>
                 <p className="text-[11.5px] font-medium text-faint dark:text-slate-400">Events</p>
               </div>
-              <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-[#0f172a]">
+              <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-card">
                 <p className="text-[22px] font-bold tabular-nums text-ink dark:text-slate-100">
                   {taskCounts.DONE}/{tasks.length}
                 </p>

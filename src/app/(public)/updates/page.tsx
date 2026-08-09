@@ -37,7 +37,7 @@ export default async function UpdatesPage() {
             <Link
               key={u.id}
               href={`/updates/${u.id}`}
-              className="group flex flex-col gap-3 rounded-apple border border-line bg-card p-6 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover sm:flex-row sm:items-start sm:gap-5 dark:bg-[#0f172a] dark:border-white/10"
+              className="group flex flex-col gap-3 rounded-apple border border-line bg-card p-6 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover sm:flex-row sm:items-start sm:gap-5 dark:bg-card dark:border-white/10"
             >
               <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-start">
                 <StatusPill value={u.category} />

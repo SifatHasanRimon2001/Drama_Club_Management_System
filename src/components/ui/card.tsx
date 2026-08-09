@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
  * Shared card surface — premium, clean, Apple-inspired.
  */
 export const cardSurface =
-  "rounded-xl border border-gray-200/80 bg-white shadow-card dark:bg-[#1e293b] dark:border-white/8";
+  "rounded-xl border border-gray-200/80 bg-white shadow-card dark:bg-card dark:border-line";
 
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn(cardSurface, className)} {...props} />;
@@ -60,7 +60,7 @@ export function CardFooter({ className, ...props }: HTMLAttributes<HTMLDivElemen
     <div
       className={cn(
         "flex items-center justify-between gap-3 border-t border-gray-100 px-5 sm:px-6 py-4",
-        "dark:border-white/8",
+        "dark:border-line",
         className
       )}
       {...props}

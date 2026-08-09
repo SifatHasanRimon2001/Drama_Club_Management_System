@@ -29,8 +29,8 @@ interface AuditEntry {
 const PAGE_SIZE = 25;
 
 const ENTITY_META: Record<string, { icon: IconName; tone: string }> = {
-  Member: { icon: "members", tone: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300" },
-  User: { icon: "user", tone: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300" },
+  Member: { icon: "members", tone: "bg-blue/12 text-blue dark:bg-blue/20 " },
+  User: { icon: "user", tone: "bg-blue/12 text-blue dark:bg-blue/20 " },
   Role: { icon: "shield", tone: "bg-red/12 text-red dark:bg-red/20 dark:text-red-300" },
   Permission: { icon: "shield", tone: "bg-red/12 text-red dark:bg-red/20 dark:text-red-300" },
   Committee: { icon: "trophy", tone: "bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300" },
@@ -40,7 +40,7 @@ const ENTITY_META: Record<string, { icon: IconName; tone: string }> = {
   RegistrationWindow: { icon: "window", tone: "bg-orange/12 text-orange dark:bg-orange/20 dark:text-orange-300" },
   Applicant: { icon: "user", tone: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300" },
   PromotionRequest: { icon: "trend", tone: "bg-green/12 text-green dark:bg-green/20 dark:text-green-300" },
-  Event: { icon: "calendar", tone: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300" },
+  Event: { icon: "calendar", tone: "bg-blue/12 text-blue dark:bg-blue/20 " },
   ClubUpdate: { icon: "note", tone: "bg-indigo/12 text-indigo dark:bg-indigo/20 dark:text-indigo-300" },
   GalleryAlbum: { icon: "gallery", tone: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300" },
   GalleryItem: { icon: "image", tone: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300" },
@@ -55,7 +55,7 @@ const ACTION_TONES: Record<string, string> = {
   rejected: "bg-red/12 text-red dark:bg-red/20 dark:text-red-300",
   deleted: "bg-red/12 text-red dark:bg-red/20 dark:text-red-300",
   blocked: "bg-red/12 text-red dark:bg-red/20 dark:text-red-300",
-  created: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
+  created: "bg-blue/12 text-blue dark:bg-blue/20 ",
   updated: "bg-orange/12 text-orange dark:bg-orange/20 dark:text-orange-300",
   submitted: "bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300",
   converted: "bg-teal/12 text-teal dark:bg-teal/20 dark:text-teal-300",

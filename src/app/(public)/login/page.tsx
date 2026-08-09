@@ -113,14 +113,14 @@ export default function LoginPage() {
       />
 
       <div className="relative w-full max-w-[400px]">
-        <div className="rounded-2xl border border-gray-200/80 bg-white p-7 shadow-card sm:p-8 dark:bg-[#1e293b] dark:border-white/8">
+        <div className="rounded-2xl border border-gray-200/80 bg-white p-7 shadow-card sm:p-8 dark:bg-card dark:border-line">
           <div className="mb-6 flex items-center gap-3">
             <ClubLogo size={36} />
             <div className="min-w-0">
               <p className="font-display text-[16px] font-bold tracking-tight text-ink dark:text-slate-100">
                 BRAC University Drama Club
               </p>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-600 dark:text-blue-400">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-ink ">
                 Member Portal
               </p>
             </div>
@@ -136,7 +136,7 @@ export default function LoginPage() {
           {sessionExpired && !noticeDismissed && (
             <div
               role="status"
-              className="mt-4 flex items-start gap-2.5 rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-3 text-[13px] text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300"
+              className="mt-4 flex items-start gap-2.5 rounded-xl border border-accent-soft-strong bg-accent-soft px-3.5 py-3 text-[13px] text-accent-ink dark:border-accent-soft-strong "
             >
               <Icon name="warn" size={15} className="mt-0.5 shrink-0" />
               <span className="flex-1">
@@ -145,7 +145,7 @@ export default function LoginPage() {
               <button
                 onClick={() => setNoticeDismissed(true)}
                 aria-label="Dismiss"
-                className="shrink-0 rounded-lg p-1 text-blue-600 transition hover:bg-blue-100 dark:text-blue-300 dark:hover:bg-blue-500/20"
+                className="shrink-0 rounded-lg p-1 text-accent transition hover:bg-accent-soft-strong  dark:hover:bg-accent/20"
               >
                 <Icon name="close" size={13} />
               </button>
@@ -191,14 +191,14 @@ export default function LoginPage() {
             Don&apos;t have an account?{" "}
             <Link
               href="/register"
-              className="font-medium text-blue-600 hover:underline dark:text-blue-400"
+              className="font-medium text-accent-ink hover:underline "
             >
               Create one
             </Link>
           </p>
         </div>
 
-        <div className="mt-4 rounded-xl border border-gray-200/80 bg-white/80 p-4 backdrop-blur dark:bg-white/5 dark:border-white/8">
+        <div className="mt-4 rounded-xl border border-gray-200/80 bg-white/80 p-4 backdrop-blur dark:bg-white/5 dark:border-line">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-faint">
             Demo accounts
           </p>
@@ -208,7 +208,7 @@ export default function LoginPage() {
                 setEmail("admin@dcms.local");
                 setPassword("admin123");
               }}
-              className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-left transition hover:border-blue-300 hover:bg-blue-50/50 dark:border-white/8 dark:hover:bg-blue-500/10"
+              className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-left transition hover:border-accent hover:bg-accent-soft/50 dark:border-line dark:hover:bg-accent/10"
             >
               <span className="text-[12px] font-semibold text-ink dark:text-slate-200">
                 Admin
@@ -223,7 +223,7 @@ export default function LoginPage() {
                 setEmail("demo@dcms.local");
                 setPassword("demo123");
               }}
-              className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-left transition hover:border-blue-300 hover:bg-blue-50/50 dark:border-white/8 dark:hover:bg-blue-500/10"
+              className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-left transition hover:border-accent hover:bg-accent-soft/50 dark:border-line dark:hover:bg-accent/10"
             >
               <span className="text-[12px] font-semibold text-ink dark:text-slate-200">
                 Member

@@ -42,7 +42,7 @@ export default async function DepartmentsPage() {
                   <span className="flex size-12 items-center justify-center rounded-2xl bg-purple/10 text-purple transition-transform group-hover:scale-110">
                     <Icon name={DEPARTMENT_ICONS[i % DEPARTMENT_ICONS.length]} size={22} />
                   </span>
-                  <span className="rounded-full bg-accent-soft px-2.5 py-1 text-[12px] font-semibold text-accent">
+                  <span className="rounded-full bg-accent-soft px-2.5 py-1 text-[12px] font-semibold text-accent-ink">
                     {d._count.members} member{d._count.members === 1 ? "" : "s"}
                   </span>
                 </div>

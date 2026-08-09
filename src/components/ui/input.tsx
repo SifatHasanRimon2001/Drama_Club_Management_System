@@ -15,8 +15,8 @@ import { cn } from "@/lib/cn";
 
 const baseField =
   "w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-[14px] text-ink placeholder:text-faint " +
-  "transition-all duration-150 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 " +
-  "disabled:opacity-50 dark:bg-[#1e293b] dark:text-slate-100 dark:border-white/10 dark:focus:border-blue-400 dark:focus:ring-blue-400/10";
+  "transition-all duration-150 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/15 " +
+  "disabled:opacity-50 dark:bg-card dark:text-slate-100 dark:border-white/10 dark:focus:border-accent dark:focus:ring-accent/20";
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   ({ className, ...props }, ref) => (

@@ -17,12 +17,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-blue-600 text-white font-semibold hover:bg-blue-700 active:bg-blue-800 active:scale-[0.98] shadow-sm hover:shadow-md",
+    "bg-accent text-white font-semibold hover:bg-accent-hover active:bg-accent-hover active:scale-[0.98] shadow-sm hover:shadow-md dark:text-on-accent",
   secondary:
-    "bg-white text-ink border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:scale-[0.98] shadow-sm dark:bg-[#1e293b] dark:border-white/10 dark:hover:bg-[#273449]",
-  ghost: "text-accent hover:bg-accent-soft active:scale-[0.98]",
+    "bg-white text-ink border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:scale-[0.98] shadow-sm dark:bg-card dark:border-white/10 dark:hover:bg-white/10",
+  ghost: "text-accent hover:bg-accent-soft active:scale-[0.98] dark:text-accent dark:hover:bg-accent-soft",
   subtle: "bg-gray-100 text-ink hover:bg-gray-200 active:scale-[0.98] dark:bg-white/10 dark:hover:bg-white/15",
-  danger: "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] shadow-sm hover:shadow-md",
+  danger:
+    "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] shadow-sm hover:shadow-md dark:bg-red dark:text-on-accent dark:hover:bg-red-500",
 };
 
 const sizeClasses: Record<Size, string> = {

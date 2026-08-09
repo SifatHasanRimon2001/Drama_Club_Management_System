@@ -49,7 +49,7 @@ export function Pagination({
             className={cn(
               "flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-[13px] font-medium transition",
               p === page
-                ? "bg-blue-600 font-semibold text-white shadow-sm"
+                ? "bg-accent font-semibold text-white shadow-sm dark:text-on-accent"
                 : "text-sub hover:bg-gray-100 dark:hover:bg-white/10"
             )}
           >

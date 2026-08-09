@@ -64,7 +64,7 @@ export function Segmented<T extends string>({
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
               size === "sm" ? "px-3 py-1 text-[13px]" : "px-3.5 py-1.5 text-[13.5px]",
               active
-                ? "bg-white text-ink shadow-sm dark:bg-[#1e293b] dark:text-white"
+                ? "bg-accent font-semibold text-white shadow-sm dark:text-on-accent"
                 : "text-sub hover:text-ink dark:text-slate-400 dark:hover:text-slate-200"
             )}
           >

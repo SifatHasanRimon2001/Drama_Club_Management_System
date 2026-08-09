@@ -55,7 +55,10 @@ export function PublicNav({
   }, [clear]);
 
   const navLinks = (
-    <nav className="hidden items-center gap-1 xl:flex" aria-label="Primary">
+    <nav
+      className="hidden grid-flow-col auto-cols-max items-center justify-self-center gap-2 xl:grid"
+      aria-label="Primary"
+    >
       {LINKS.map((l) => {
         const active = l.href === "/" ? pathname === "/" : pathname.startsWith(l.href);
         return (
@@ -64,11 +67,11 @@ export function PublicNav({
             href={l.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "relative inline-flex items-center whitespace-nowrap rounded-lg px-3 py-2 text-[13.5px] font-medium transition-colors duration-150",
+              "relative inline-flex items-center whitespace-nowrap rounded-lg px-1.5 py-2 text-[12.5px] font-medium transition-colors duration-150",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
               active
-                ? "text-blue-600 dark:text-blue-400"
-                : "text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-100"
+                ? "bg-accent-soft font-semibold text-accent-ink"
+                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-white/8 dark:hover:text-slate-100"
             )}
           >
             {l.label}
@@ -79,7 +82,7 @@ export function PublicNav({
   );
 
   const authArea = (
-    <div className="hidden items-center gap-2 sm:flex shrink-0">
+    <div className="hidden sm:grid shrink-0 grid-flow-col auto-cols-max items-center gap-2">
       {!loading && user ? (
         <Dropdown
           width="w-60"
@@ -105,7 +108,7 @@ export function PublicNav({
         >
           {(close) => (
             <div className="p-1.5">
-              <div className="border-b border-gray-100 px-3 py-2.5 dark:border-white/8">
+              <div className="border-b border-gray-100 px-3 py-2.5 dark:border-line">
                 <p className="truncate text-[13.5px] font-semibold text-ink dark:text-slate-100">
                   {user.name}
                 </p>
@@ -145,16 +148,16 @@ export function PublicNav({
           )}
         </Dropdown>
       ) : (
-        <div className="flex items-center gap-2">
+        <div className="grid grid-flow-col auto-cols-max items-center gap-2">
           <Link
             href="/login"
-            className="hidden h-9 items-center rounded-lg bg-blue-600 px-4 text-[13px] font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:inline-flex"
+            className="hidden h-9 items-center rounded-lg bg-accent px-4 text-[13px] font-semibold text-white dark:text-on-accent transition hover:bg-accent-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:inline-flex"
           >
             Sign In
           </Link>
           <Link
             href="/dashboard"
-            className="hidden h-9 items-center rounded-lg border border-gray-200 bg-white px-4 text-[13px] font-medium text-ink transition hover:bg-gray-50 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:inline-flex dark:bg-white/5 dark:text-slate-100 dark:border-white/10 dark:hover:bg-white/10"
+            className="hidden h-9 items-center rounded-lg border border-gray-200 bg-white px-4 text-[13px] font-medium text-ink transition hover:bg-gray-50 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:inline-flex xl:hidden 2xl:inline-flex dark:bg-white/5 dark:text-slate-100 dark:border-white/10 dark:hover:bg-white/10"
           >
             <Icon name="grid" size={14} className="mr-1.5" />
             Member Area
@@ -169,12 +172,18 @@ export function PublicNav({
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-200",
         scrolled || menuOpen
-          ? "glass border-b border-gray-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:border-white/8"
+          ? "glass border-b border-gray-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:border-line"
           : ""
       )}
     >
-      <Container size="wide" className="flex h-14 items-center justify-between gap-3">
-        <Link href="/" className="group flex min-w-0 shrink items-center gap-2.5">
+      <Container
+        size="wide"
+        className="grid h-14 grid-cols-[1fr_auto_1fr] items-center gap-1 sm:gap-4 2xl:max-w-[1440px]"
+      >
+        <Link
+          href="/"
+          className="group grid shrink-0 grid-flow-col auto-cols-max items-center justify-self-start gap-2.5"
+        >
           {logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={logoUrl} alt="" className="size-8 shrink-0 rounded-lg object-cover" />
@@ -184,14 +193,14 @@ export function PublicNav({
               className="transition-transform duration-200 group-hover:scale-105"
             />
           )}
-          <span className="min-w-0 whitespace-nowrap text-left font-display text-[15px] font-bold tracking-tight text-ink dark:text-slate-100">
+          <span className="whitespace-nowrap text-left font-display text-[12px] font-bold tracking-tight text-ink dark:text-slate-100 min-[350px]:text-[13px] min-[375px]:text-[14px] 2xl:text-[15px]">
             {clubName || "BRAC University Drama Club"}
           </span>
         </Link>
 
         {navLinks}
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="grid shrink-0 grid-flow-col auto-cols-max items-center justify-self-end gap-2 sm:gap-3">
           <ThemeToggle />
           {authArea}
           <button
@@ -210,7 +219,7 @@ export function PublicNav({
       {menuOpen && (
         <div
           id="public-nav-menu"
-          className="animate-fade max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-t border-gray-200/80 px-4 pb-4 pt-3 xl:hidden dark:border-white/8"
+          className="animate-fade max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-t border-gray-200/80 px-4 pb-4 pt-3 xl:hidden dark:border-line"
         >
           <nav className="flex flex-col gap-1" aria-label="Mobile">
             {LINKS.map((l) => {
@@ -224,15 +233,15 @@ export function PublicNav({
                     "relative inline-flex items-center whitespace-nowrap rounded-lg px-3 py-2.5 text-[14px] font-medium transition-colors duration-150",
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                     active
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-100"
+                      ? "bg-accent-soft font-semibold text-accent-ink"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-white/8 dark:hover:text-slate-100"
                   )}
                 >
                   {l.label}
                 </Link>
               );
             })}
-            <div className="mt-2 flex flex-col gap-2.5 border-t border-gray-200 pt-3 dark:border-white/8">
+            <div className="mt-2 flex flex-col gap-2.5 border-t border-gray-200 pt-3 dark:border-line">
               {!loading && user ? (
                 <>
                   <div className="flex items-center gap-3 rounded-xl bg-gray-50 px-3.5 py-3 dark:bg-white/5">
@@ -248,7 +257,7 @@ export function PublicNav({
                   </div>
                   <Link
                     href="/dashboard"
-                    className="flex-1 rounded-lg bg-blue-600 py-2.5 text-center text-[13.5px] font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    className="flex-1 rounded-lg bg-accent py-2.5 text-center text-[13.5px] font-semibold text-white dark:text-on-accent transition hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
                     Go to Dashboard
                   </Link>
@@ -263,7 +272,7 @@ export function PublicNav({
                 <>
                   <Link
                     href="/login"
-                    className="flex-1 rounded-lg bg-blue-600 py-2.5 text-center text-[13.5px] font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    className="flex-1 rounded-lg bg-accent py-2.5 text-center text-[13.5px] font-semibold text-white dark:text-on-accent transition hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
                     Sign In
                   </Link>

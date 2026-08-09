@@ -100,7 +100,7 @@ export default async function CommitteePage() {
             {committee.departments.map((d) => (
               <span
                 key={d.id}
-                className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3.5 py-1.5 text-[13px] font-medium text-ink shadow-card dark:bg-[#0f172a] dark:border-white/10 dark:text-slate-200"
+                className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3.5 py-1.5 text-[13px] font-medium text-ink shadow-card dark:bg-card dark:border-white/10 dark:text-slate-200"
               >
                 <Icon name="folder" size={14} className="text-purple" />
                 {d.name}

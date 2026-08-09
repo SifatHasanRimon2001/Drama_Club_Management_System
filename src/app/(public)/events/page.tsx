@@ -48,8 +48,8 @@ export default async function EventsPage({
             "inline-flex items-center rounded-full px-4 py-2 text-[13.5px] font-medium transition",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
             upcoming
-              ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white shadow-gold"
-              : "border border-line bg-card text-sub hover:text-ink dark:bg-[#0f172a] dark:text-slate-400 dark:hover:text-slate-200"
+              ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white dark:bg-accent dark:bg-none dark:text-on-accent shadow-gold"
+              : "border border-line bg-card text-sub hover:text-ink dark:bg-card dark:text-slate-400 dark:hover:text-slate-200"
           )}
         >
           Upcoming
@@ -61,8 +61,8 @@ export default async function EventsPage({
             "inline-flex items-center rounded-full px-4 py-2 text-[13.5px] font-medium transition",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
             !upcoming
-              ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white shadow-gold"
-              : "border border-line bg-card text-sub hover:text-ink dark:bg-[#0f172a] dark:text-slate-400 dark:hover:text-slate-200"
+              ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white dark:bg-accent dark:bg-none dark:text-on-accent shadow-gold"
+              : "border border-line bg-card text-sub hover:text-ink dark:bg-card dark:text-slate-400 dark:hover:text-slate-200"
           )}
         >
           All
@@ -105,7 +105,7 @@ export default async function EventsPage({
             return (
               <article
                 key={e.id}
-                className="group overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-card-hover dark:bg-[#0f172a] dark:border-white/10"
+                className="group overflow-hidden rounded-apple border border-line bg-card shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-card-hover dark:bg-card dark:border-white/10"
               >
                 <Link href={`/events/${e.id}`} className="flex w-full flex-wrap items-center gap-4 px-4 py-4 sm:px-6">
                 <TicketStub date={date} />

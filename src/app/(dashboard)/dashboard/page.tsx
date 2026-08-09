@@ -33,13 +33,13 @@ import { r2Url } from "@/lib/server";
 const MEMBER_TONES: Record<string, string> = {
   ACTIVE: "bg-green/12 text-green dark:bg-green/20 dark:text-green-300",
   PENDING: "bg-orange/12 text-orange dark:bg-orange/20 dark:text-orange-300",
-  ALUMNI: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
+  ALUMNI: "bg-blue/12 text-blue dark:bg-blue/20 ",
   INACTIVE: "bg-gray/12 text-sub dark:bg-white/10 dark:text-slate-400",
   SUSPENDED: "bg-red/12 text-red dark:bg-red/20 dark:text-red-300",
 };
 
 const ICON_TONES: Record<string, string> = {
-  blue: "bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300",
+  blue: "bg-blue/12 text-blue dark:bg-blue/20 ",
   green: "bg-green/12 text-green dark:bg-green/20 dark:text-green-300",
   orange: "bg-orange/12 text-orange dark:bg-orange/20 dark:text-orange-300",
   purple: "bg-purple/12 text-purple dark:bg-purple/20 dark:text-purple-300",
@@ -457,7 +457,7 @@ function MemberView({
       ) : (
         <Card>
           <CardBody className="flex flex-col items-center gap-3 py-10 text-center">
-            <span className="flex size-12 items-center justify-center rounded-full bg-accent-soft text-accent dark:bg-accent/20">
+            <span className="flex size-12 items-center justify-center rounded-full bg-accent-soft text-accent-ink dark:bg-accent/20">
               <Icon name="user" size={22} />
             </span>
             <p className="text-[15px] font-semibold text-ink dark:text-slate-100">
@@ -611,7 +611,7 @@ function DepartmentWidget({ data }: { data: DepartmentDashboardData }) {
                   key={ev.id}
                   className="flex items-center gap-3 rounded-2xl border border-line px-4 py-2.5 dark:border-white/10"
                 >
-                  <span className="flex size-9 items-center justify-center rounded-xl bg-blue/12 text-blue dark:bg-blue/20 dark:text-blue-300">
+                  <span className="flex size-9 items-center justify-center rounded-xl bg-blue/12 text-blue dark:bg-blue/20 ">
                     <Icon name={(EVENT_TYPE_ICONS[ev.type] as IconName) || "calendar"} size={15} />
                   </span>
                   <div className="min-w-0 flex-1">

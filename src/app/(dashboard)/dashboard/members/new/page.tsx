@@ -163,7 +163,7 @@ function AddMemberPage() {
                 hint={picked ? `${picked.name} · ${picked.email}` : "Search by name or email"}
               >
                 {picked ? (
-                  <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white px-3.5 py-2.5 dark:border-white/15 dark:bg-[#0f172a]">
+                  <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white px-3.5 py-2.5 dark:border-white/15 dark:bg-card">
                     <div className="min-w-0">
                       <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
                         {picked.name}
@@ -210,7 +210,7 @@ function AddMemberPage() {
                         id="user-search-results"
                         role="listbox"
                         aria-label="Matching accounts"
-                        className="absolute inset-x-0 top-full z-20 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-line bg-white p-1.5 shadow-card dark:border-white/15 dark:bg-[#0f172a]"
+                        className="absolute inset-x-0 top-full z-20 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-line bg-white p-1.5 shadow-card dark:border-white/15 dark:bg-card"
                       >
                         {searching && (
                           <p className="px-3 py-2.5 text-[13px] text-faint">
@@ -248,7 +248,7 @@ function AddMemberPage() {
                                   : "hover:bg-black/[0.04] dark:hover:bg-white/10"
                               )}
                             >
-                              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent dark:bg-accent/20">
+                              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-ink dark:bg-accent/20">
                                 <Icon name="user" size={14} />
                               </span>
                               <span className="min-w-0">
