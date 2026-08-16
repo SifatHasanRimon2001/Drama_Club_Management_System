@@ -46,11 +46,11 @@ export default async function DepartmentsPage() {
                     {d._count.members} member{d._count.members === 1 ? "" : "s"}
                   </span>
                 </div>
-                <h2 className="mt-5 truncate text-[19px] font-bold tracking-tight text-ink dark:text-slate-100">
+                <h2 className="mt-5 truncate text-[19px] font-bold tracking-tight text-ink">
                   {d.name}
                 </h2>
                 {d.description && (
-                  <p className="mt-2 text-[14px] leading-relaxed text-sub dark:text-slate-400">
+                  <p className="mt-2 text-[14px] leading-relaxed text-sub">
                     {d.description}
                   </p>
                 )}
@@ -58,9 +58,9 @@ export default async function DepartmentsPage() {
                   {d.coordinator ? (
                     <>
                       <Avatar name={d.coordinator.user.name} src={d.coordinator.user.image} size={30} />
-                      <p className="min-w-0 truncate text-[13px] text-sub dark:text-slate-400">
+                      <p className="min-w-0 truncate text-[13px] text-sub">
                         Coordinated by{" "}
-                        <span className="font-medium text-ink dark:text-slate-200">
+                        <span className="font-medium text-ink">
                           {d.coordinator.user.name}
                         </span>
                       </p>

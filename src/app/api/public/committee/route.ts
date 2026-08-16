@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { PUBLIC_MEMBER_SELECT } from "@/lib/member-select";
 
 export async function GET() {
   try {
@@ -9,11 +10,10 @@ export async function GET() {
       include: {
         memberRoles: {
           include: {
-            member: {
-              include: {
-                user: { select: { id: true, name: true, image: true } },
-              },
-            },
+            // `select`, not `include` — an `include` here would ship every
+            // Member scalar (phone, address, emergencyContact) to anonymous
+            // callers just to render a name and avatar.
+            member: { select: PUBLIC_MEMBER_SELECT },
             role: true,
           },
         },

@@ -9,17 +9,36 @@
 
 export const LOGIN_PATH = "/login";
 
+// Control characters (NUL, CR, LF, tab, DEL) can truncate or split the value
+// on its way through a header or a URL parser, changing how the remainder is
+// interpreted. No legitimate route contains one.
+const CONTROL_CHARS = /[\u0000-\u001f\u007f]/;
+
 /** Returns a safe same-origin path, or null when the value must be ignored. */
 export function sanitizeCallbackUrl(raw: string | null | undefined): string | null {
   if (!raw) return null;
   const trimmed = raw.trim();
   if (!trimmed.startsWith("/")) return null;
-  // Protocol-relative (//host) and backslash variants bypass the "/" check.
-  if (trimmed.startsWith("//")) return null;
-  if (trimmed.startsWith("\\\\")) return null;
+
+  if (CONTROL_CHARS.test(trimmed)) return null;
+
+  // In the URL spec a backslash is equivalent to a forward slash for special
+  // schemes, so "/\evil.com" resolves to https://evil.com/ exactly the way
+  // "//evil.com" does. Normalize every separator spelling to "/" before
+  // testing — checking only the literal "//" form leaves the backslash
+  // variants as a working open redirect.
+  const normalized = trimmed.replace(/\\/g, "/");
+  if (normalized.startsWith("//")) return null;
+
   // Never bounce the user back onto auth pages after signing in.
-  if (trimmed.startsWith("/login") || trimmed.startsWith("/register")) return null;
-  return trimmed;
+  if (normalized.startsWith("/login") || normalized.startsWith("/register")) {
+    return null;
+  }
+
+  // Return the normalized form: it is what the browser would resolve anyway,
+  // and it guarantees the value handed to location.assign() is the same string
+  // this function actually validated.
+  return normalized;
 }
 
 /**

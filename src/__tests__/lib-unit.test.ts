@@ -762,6 +762,43 @@ describe("R2 Library — configured branches (mocked AWS SDK)", () => {
     expect(publicUrl).toBe("https://cdn.example/gallery/x.jpg");
   });
 
+  it("signs ContentLength into the upload URL so the size limit is binding", async () => {
+    // Without a signed length, a caller could declare one byte to pass the
+    // API-layer size check and then PUT an arbitrarily large object.
+    vi.resetModules();
+    const captured: Record<string, unknown>[] = [];
+    vi.doMock("@aws-sdk/s3-request-presigner", () => ({
+      getSignedUrl: vi.fn(async () => "https://signed.example/ok"),
+    }));
+    vi.doMock("@aws-sdk/client-s3", () => ({
+      S3Client: class {
+        async send() {
+          return {};
+        }
+      },
+      PutObjectCommand: class {
+        constructor(public input: Record<string, unknown>) {
+          captured.push(input);
+        }
+      },
+      GetObjectCommand: class {
+        constructor(public input: unknown) {}
+      },
+    }));
+    vi.stubEnv("R2_ACCOUNT_ID", "acct");
+    vi.stubEnv("R2_ACCESS_KEY_ID", "key");
+    vi.stubEnv("R2_SECRET_ACCESS_KEY", "secret");
+    vi.stubEnv("R2_BUCKET_NAME", "bucket");
+    vi.stubEnv("R2_PUBLIC_URL", "https://cdn.example");
+    const r2 = await import("@/lib/r2");
+
+    await r2.getPresignedUploadUrl("gallery/x.jpg", "image/jpeg", 12345);
+
+    expect(captured).toHaveLength(1);
+    expect(captured[0].ContentLength).toBe(12345);
+    expect(captured[0].ContentType).toBe("image/jpeg");
+  });
+
   it("getPresignedDownloadUrl returns a signed URL when configured", async () => {
     const r2 = await importConfiguredR2();
     const url = await r2.getPresignedDownloadUrl("gallery/x.jpg");

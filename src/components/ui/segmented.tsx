@@ -37,7 +37,7 @@ export function Segmented<T extends string>({
       role="tablist"
       aria-label="Filter"
       className={cn(
-        "inline-flex items-center rounded-xl bg-gray-100 p-1 dark:bg-white/10",
+        "inline-flex items-center rounded-xl border border-line bg-elevated p-1",
         scrollable && "no-scrollbar max-w-full overflow-x-auto",
         className
       )}
@@ -62,10 +62,10 @@ export function Segmented<T extends string>({
             className={cn(
               "inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg font-medium transition-all duration-150",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-              size === "sm" ? "px-3 py-1 text-[13px]" : "px-3.5 py-1.5 text-[13.5px]",
+              size === "sm" ? "px-3 py-1.5 text-[13px]" : "px-4 py-2 text-[13.5px]",
               active
-                ? "bg-accent font-semibold text-white shadow-sm dark:text-on-accent"
-                : "text-sub hover:text-ink dark:text-slate-400 dark:hover:text-slate-200"
+                ? "bg-accent font-semibold text-on-accent shadow-[0_2px_10px_var(--color-accent-soft-strong)]"
+                : "text-faint hover:text-ink"
             )}
           >
             {opt.icon}

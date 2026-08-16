@@ -4,6 +4,7 @@ import { requireAuth, validateEnumParam, parseJsonBody } from "@/lib/api-helpers
 import { can } from "@/lib/permissions";
 import { taskSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { PUBLIC_MEMBER_SELECT } from "@/lib/member-select";
 import { ZodError } from "zod";
 
 const VALID_TASK_STATUSES = ["TODO", "IN_PROGRESS", "DONE"] as const;
@@ -66,11 +67,7 @@ export async function GET(
     const tasks = await prisma.task.findMany({
       where,
       include: {
-        assignee: {
-          include: {
-            user: { select: { id: true, name: true, email: true } },
-          },
-        },
+        assignee: { select: PUBLIC_MEMBER_SELECT },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -129,9 +126,7 @@ export async function POST(
         dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
       },
       include: {
-        assignee: {
-          include: { user: { select: { id: true, name: true } } },
-        },
+        assignee: { select: PUBLIC_MEMBER_SELECT },
       },
     });
 

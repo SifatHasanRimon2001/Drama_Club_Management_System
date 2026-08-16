@@ -139,7 +139,7 @@ function ContactMessagesPage() {
                 <Avatar name={m.name} size={40} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
+                    <p className="truncate text-[14.5px] font-semibold text-ink">
                       {m.name}
                     </p>
                     {m.handledAt ? (
@@ -152,10 +152,10 @@ function ContactMessagesPage() {
                       </span>
                     )}
                   </div>
-                  <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
+                  <p className="truncate text-[12.5px] text-sub">
                     {m.email} · {timeAgo(m.createdAt)}
                   </p>
-                  <p className="mt-0.5 line-clamp-1 text-[13px] text-ink/80 dark:text-slate-300">
+                  <p className="mt-0.5 line-clamp-1 text-[13px] text-ink/80">
                     {m.message}
                   </p>
                 </div>
@@ -212,7 +212,7 @@ function ContactMessagesPage() {
             </>
           }
         >
-          <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink dark:text-slate-200">
+          <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink">
             {viewing.message}
           </p>
         </Modal>

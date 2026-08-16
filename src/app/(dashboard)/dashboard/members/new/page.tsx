@@ -144,7 +144,7 @@ function AddMemberPage() {
         </CardHeader>
         <CardBody>
           <form onSubmit={save} className="space-y-4">
-            <div className="rounded-2xl bg-accent-soft/50 p-4 text-[13px] leading-relaxed text-sub dark:bg-accent/10 dark:text-slate-400">
+            <div className="rounded-2xl bg-accent-soft/50 p-4 text-[13px] leading-relaxed text-sub dark:bg-accent/10">
               <span className="flex items-start gap-2">
                 <Icon name="info" size={15} className="mt-0.5 shrink-0 text-accent" />
                 <span>
@@ -163,12 +163,12 @@ function AddMemberPage() {
                 hint={picked ? `${picked.name} · ${picked.email}` : "Search by name or email"}
               >
                 {picked ? (
-                  <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white px-3.5 py-2.5 dark:border-white/15 dark:bg-card">
+                  <div className="bg-card flex items-center justify-between gap-3 rounded-xl border border-line px-3.5 py-2.5 dark:border-white/15">
                     <div className="min-w-0">
-                      <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
+                      <p className="truncate text-[14.5px] font-semibold text-ink">
                         {picked.name}
                       </p>
-                      <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
+                      <p className="truncate text-[12.5px] text-sub">
                         {picked.email}
                       </p>
                     </div>
@@ -210,7 +210,7 @@ function AddMemberPage() {
                         id="user-search-results"
                         role="listbox"
                         aria-label="Matching accounts"
-                        className="absolute inset-x-0 top-full z-20 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-line bg-white p-1.5 shadow-card dark:border-white/15 dark:bg-card"
+                        className="bg-card absolute inset-x-0 top-full z-20 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-line p-1.5 shadow-card dark:border-white/15"
                       >
                         {searching && (
                           <p className="px-3 py-2.5 text-[13px] text-faint">
@@ -252,10 +252,10 @@ function AddMemberPage() {
                                 <Icon name="user" size={14} />
                               </span>
                               <span className="min-w-0">
-                                <span className="block truncate text-[13.5px] font-medium text-ink dark:text-slate-100">
+                                <span className="block truncate text-[13.5px] font-medium text-ink">
                                   {u.name}
                                 </span>
-                                <span className="block truncate text-[12px] text-sub dark:text-slate-400">
+                                <span className="block truncate text-[12px] text-sub">
                                   {u.email}
                                 </span>
                               </span>

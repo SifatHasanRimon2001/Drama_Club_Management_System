@@ -76,8 +76,8 @@ export default function ContactPage() {
                   <Icon name={c.icon} size={18} />
                 </span>
                 <div>
-                  <p className="text-[14.5px] font-semibold text-ink dark:text-slate-100">{c.title}</p>
-                  <p className="text-[13.5px] text-sub dark:text-slate-400">{c.text}</p>
+                  <p className="text-[14.5px] font-semibold text-ink">{c.title}</p>
+                  <p className="text-[13.5px] text-sub">{c.text}</p>
                 </div>
               </div>
             ))}
@@ -89,16 +89,16 @@ export default function ContactPage() {
             <span className="flex size-14 items-center justify-center rounded-full bg-green/12 text-[#248a3d] dark:text-green-400">
               <Icon name="check" size={26} />
             </span>
-            <h2 className="mt-5 text-[19px] font-bold tracking-tight text-ink dark:text-slate-100">
+            <h2 className="mt-5 text-[19px] font-bold tracking-tight text-ink">
               Message received
             </h2>
-            <p className="mt-2 max-w-sm text-[14px] leading-relaxed text-sub dark:text-slate-400">
+            <p className="mt-2 max-w-sm text-[14px] leading-relaxed text-sub">
               Thanks for reaching out! We&apos;ll get back to you as soon as we can.
             </p>
           </div>
         ) : (
           <div className="rounded-apple border border-line bg-card p-6 shadow-card sm:p-8 dark:bg-card dark:border-white/10">
-            <h2 className="text-[17px] font-semibold tracking-tight text-ink dark:text-slate-100">
+            <h2 className="text-[17px] font-semibold tracking-tight text-ink">
               Send us a message
             </h2>
             <form onSubmit={submit} className="mt-5 space-y-4">

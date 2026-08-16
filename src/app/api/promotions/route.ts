@@ -4,6 +4,7 @@ import { requireAuth, getPaginationParams, validateEnumParam, parseJsonBody } fr
 import { promotionRequestSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { can } from "@/lib/permissions";
+import { INTERNAL_MEMBER_SELECT } from "@/lib/member-select";
 import { ZodError } from "zod";
 
 const VALID_PROMOTION_STATUSES = [
@@ -38,15 +39,24 @@ export async function GET(request: NextRequest) {
     if (statusResult.value) where.status = statusResult.value;
     if (memberId) where.memberId = memberId;
 
+    // `promotion.submit` lets a member raise their OWN request; it is not a
+    // licence to read everyone else's case file (reason, achievements, and the
+    // subject's contact details). Reviewers — `promotion.approve` — see the
+    // full queue; everybody else is scoped to their own promotions.
+    if (!canApprove) {
+      const self = await prisma.member.findUnique({
+        where: { userId: auth.userId },
+        select: { id: true },
+      });
+      // No member profile ⇒ nothing of their own to list.
+      where.memberId = self?.id ?? "__none__";
+    }
+
     const [promotions, total] = await Promise.all([
       prisma.promotionRequest.findMany({
         where,
         include: {
-          member: {
-            include: {
-              user: { select: { id: true, name: true, email: true } },
-            },
-          },
+          member: { select: INTERNAL_MEMBER_SELECT },
           currentRole: { select: { id: true, name: true } },
           proposedRole: { select: { id: true, name: true } },
           submittedBy: { select: { id: true, name: true } },

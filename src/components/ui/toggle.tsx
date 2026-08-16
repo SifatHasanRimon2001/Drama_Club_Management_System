@@ -36,7 +36,9 @@ export function Toggle({
       <span
         className={cn(
           "relative inline-flex h-[31px] w-[51px] shrink-0 items-center rounded-full transition-colors duration-200",
-          checked ? "bg-green" : "bg-black/20 dark:bg-white/25"
+          checked
+            ? "bg-accent shadow-[0_0_14px_var(--color-accent-soft-strong)]"
+            : "bg-line-strong"
         )}
       >
         <span
@@ -49,12 +51,12 @@ export function Toggle({
       {(label || description) && (
         <span className="min-w-0">
           {label && (
-            <span className="block text-[15px] font-medium text-ink dark:text-slate-100">
+            <span className="block text-[14.5px] font-medium text-ink">
               {label}
             </span>
           )}
           {description && (
-            <span className="block text-[13px] text-sub dark:text-slate-400">
+            <span className="block text-[13px] text-sub">
               {description}
             </span>
           )}

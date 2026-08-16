@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { departmentUpdateSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { INTERNAL_MEMBER_SELECT, PUBLIC_MEMBER_SELECT } from "@/lib/member-select";
 import { ZodError } from "zod";
 
 export async function GET(
@@ -18,16 +19,14 @@ export async function GET(
       where: { id },
       include: {
         committee: true,
-        coordinator: {
-          include: {
-            user: { select: { id: true, name: true, email: true, image: true } },
-          },
-        },
+        // Directory-level projections: `department.view` is held by ordinary
+        // members, who have no business reading a colleague's home address.
+        coordinator: { select: INTERNAL_MEMBER_SELECT },
         members: {
           include: {
             member: {
-              include: {
-                user: { select: { id: true, name: true, email: true, image: true } },
+              select: {
+                ...INTERNAL_MEMBER_SELECT,
                 committeeRoles: {
                   where: { committee: { isCurrent: true } },
                   include: { role: true },
@@ -43,11 +42,7 @@ export async function GET(
         tasks: {
           orderBy: { createdAt: "desc" },
           include: {
-            assignee: {
-              include: {
-                user: { select: { id: true, name: true } },
-              },
-            },
+            assignee: { select: PUBLIC_MEMBER_SELECT },
           },
         },
         _count: {

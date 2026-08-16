@@ -113,11 +113,11 @@ export default function LoginPage() {
       />
 
       <div className="relative w-full max-w-[400px]">
-        <div className="rounded-2xl border border-gray-200/80 bg-white p-7 shadow-card sm:p-8 dark:bg-card dark:border-line">
+        <div className="border-line bg-card rounded-2xl border p-7 shadow-card sm:p-8">
           <div className="mb-6 flex items-center gap-3">
             <ClubLogo size={36} />
             <div className="min-w-0">
-              <p className="font-display text-[16px] font-bold tracking-tight text-ink dark:text-slate-100">
+              <p className="font-display text-[16px] font-bold tracking-tight text-ink">
                 BRAC University Drama Club
               </p>
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-ink ">
@@ -126,10 +126,10 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <h1 className="text-[20px] font-bold tracking-tight text-ink dark:text-slate-100">
+          <h1 className="text-[20px] font-bold tracking-tight text-ink">
             Sign in to your account
           </h1>
-          <p className="mt-1 text-[13.5px] text-sub dark:text-slate-400">
+          <p className="mt-1 text-[13.5px] text-sub">
             Welcome back — access the management console.
           </p>
 
@@ -187,7 +187,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="mt-5 text-center text-[13px] text-sub dark:text-slate-400">
+          <p className="mt-5 text-center text-[13px] text-sub">
             Don&apos;t have an account?{" "}
             <Link
               href="/register"
@@ -198,7 +198,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="mt-4 rounded-xl border border-gray-200/80 bg-white/80 p-4 backdrop-blur dark:bg-white/5 dark:border-line">
+        <div className="border-line mt-4 rounded-xl border bg-white/80 p-4 backdrop-blur dark:bg-white/5">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-faint">
             Demo accounts
           </p>
@@ -208,13 +208,13 @@ export default function LoginPage() {
                 setEmail("admin@dcms.local");
                 setPassword("admin123");
               }}
-              className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-left transition hover:border-accent hover:bg-accent-soft/50 dark:border-line dark:hover:bg-accent/10"
+              className="border-line rounded-xl border bg-white px-3 py-2.5 text-left transition hover:border-accent hover:bg-accent-soft/50 dark:hover:bg-accent/10"
             >
-              <span className="text-[12px] font-semibold text-ink dark:text-slate-200">
+              <span className="text-[12px] font-semibold text-ink">
                 Admin
               </span>
               <br />
-              <span className="text-[11px] text-sub dark:text-slate-400">
+              <span className="text-[11px] text-sub">
                 admin@dcms.local / admin123
               </span>
             </button>
@@ -223,13 +223,13 @@ export default function LoginPage() {
                 setEmail("demo@dcms.local");
                 setPassword("demo123");
               }}
-              className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-left transition hover:border-accent hover:bg-accent-soft/50 dark:border-line dark:hover:bg-accent/10"
+              className="border-line rounded-xl border bg-white px-3 py-2.5 text-left transition hover:border-accent hover:bg-accent-soft/50 dark:hover:bg-accent/10"
             >
-              <span className="text-[12px] font-semibold text-ink dark:text-slate-200">
+              <span className="text-[12px] font-semibold text-ink">
                 Member
               </span>
               <br />
-              <span className="text-[11px] text-sub dark:text-slate-400">
+              <span className="text-[11px] text-sub">
                 demo@dcms.local / demo123
               </span>
             </button>

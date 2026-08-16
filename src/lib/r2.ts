@@ -40,16 +40,35 @@ function getR2() {
   return { r2: _r2, config: _config! };
 }
 
+/**
+ * Issues a presigned PUT URL for a single object.
+ *
+ * `contentLength` is signed into the request, not merely validated in the API
+ * layer. The declared size in the request body decides whether we hand out a
+ * URL at all, but only signing the length makes that limit binding: without
+ * it, a caller could declare one byte to pass validation and then PUT an
+ * arbitrarily large file to the signed URL, since the signature would not
+ * cover the body size. R2 rejects a mismatched Content-Length outright.
+ *
+ * Browsers set Content-Length automatically from the request body, so a
+ * correct client needs no extra work; `file.size` is exactly the byte count
+ * that gets sent.
+ *
+ * Expiry defaults to 15 minutes — long enough for a large upload on a slow
+ * connection, short enough that a leaked URL is not a lasting write primitive.
+ */
 export async function getPresignedUploadUrl(
   key: string,
   contentType: string,
-  expiresIn = 3600
+  contentLength?: number,
+  expiresIn = 15 * 60
 ): Promise<{ uploadUrl: string; publicUrl: string }> {
   const { r2, config } = getR2();
   const command = new PutObjectCommand({
     Bucket: config.bucket,
     Key: key,
     ContentType: contentType,
+    ...(typeof contentLength === "number" ? { ContentLength: contentLength } : {}),
   });
 
   const uploadUrl = await getSignedUrl(r2, command, { expiresIn });

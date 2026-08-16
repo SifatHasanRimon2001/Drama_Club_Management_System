@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/api-helpers";
+import { INTERNAL_MEMBER_SELECT } from "@/lib/member-select";
 
 export async function GET() {
   try {
@@ -38,9 +39,10 @@ export async function GET() {
       prisma.promotionRequest.findMany({
         where: { status: { in: ["SUBMITTED", "PENDING_APPROVAL"] } },
         include: {
-          member: {
-            include: { user: { select: { id: true, name: true, email: true } } },
-          },
+          // This dashboard is gated on `permissions.manage`, which a role may
+          // hold without `member.view` — so keep the projection at directory
+          // level rather than shipping full member records.
+          member: { select: INTERNAL_MEMBER_SELECT },
         },
         orderBy: { createdAt: "desc" },
         take: 10,

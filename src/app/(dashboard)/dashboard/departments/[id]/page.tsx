@@ -163,7 +163,7 @@ function DepartmentDetailPage() {
             All departments
           </BackLink>
           <div className="flex items-center gap-3">
-            <h1 className="text-[26px] font-bold tracking-tight text-ink dark:text-slate-100">
+            <h1 className="text-[26px] font-bold tracking-tight text-ink">
               {dept.name}
             </h1>
             {dept.committee?.isCurrent && (
@@ -172,7 +172,7 @@ function DepartmentDetailPage() {
               </span>
             )}
           </div>
-          <p className="mt-1 text-[13.5px] text-sub dark:text-slate-400">
+          <p className="mt-1 text-[13.5px] text-sub">
             {dept.committee?.year ? `${dept.committee.year} committee` : "Committee"} ·{" "}
             {members.length} members · {tasks.length} tasks
           </p>
@@ -196,7 +196,7 @@ function DepartmentDetailPage() {
               <CardTitle>About</CardTitle>
             </CardHeader>
             <CardBody>
-              <p className="text-[14px] leading-relaxed text-ink dark:text-slate-300">
+              <p className="text-[14px] leading-relaxed text-ink">
                 {dept.description || "No description provided for this department yet."}
               </p>
             </CardBody>
@@ -211,16 +211,16 @@ function DepartmentDetailPage() {
                   <div className="flex items-center gap-3">
                     <Avatar name={dept.coordinator.user.name} src={dept.coordinator.user.image} size={44} />
                     <div className="min-w-0">
-                      <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
+                      <p className="truncate text-[14.5px] font-semibold text-ink">
                         {dept.coordinator.user.name}
                       </p>
-                      <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
+                      <p className="truncate text-[12.5px] text-sub">
                         {dept.coordinator.user.email}
                       </p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-[13.5px] text-sub dark:text-slate-400">
+                  <p className="text-[13.5px] text-sub">
                     No coordinator assigned yet.
                   </p>
                 )}
@@ -228,22 +228,22 @@ function DepartmentDetailPage() {
             </Card>
             <Grid preset="stats3">
               <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-card">
-                <p className="text-[22px] font-bold tabular-nums text-ink dark:text-slate-100">
+                <p className="text-[22px] font-bold tabular-nums text-ink">
                   {members.length}
                 </p>
-                <p className="text-[11.5px] font-medium text-faint dark:text-slate-400">Members</p>
+                <p className="text-[11.5px] font-medium text-faint">Members</p>
               </div>
               <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-card">
-                <p className="text-[22px] font-bold tabular-nums text-ink dark:text-slate-100">
+                <p className="text-[22px] font-bold tabular-nums text-ink">
                   {dept._count?.events ?? 0}
                 </p>
-                <p className="text-[11.5px] font-medium text-faint dark:text-slate-400">Events</p>
+                <p className="text-[11.5px] font-medium text-faint">Events</p>
               </div>
               <div className="rounded-apple border border-line bg-card p-4 text-center shadow-card dark:border-white/10 dark:bg-card">
-                <p className="text-[22px] font-bold tabular-nums text-ink dark:text-slate-100">
+                <p className="text-[22px] font-bold tabular-nums text-ink">
                   {taskCounts.DONE}/{tasks.length}
                 </p>
-                <p className="text-[11.5px] font-medium text-faint dark:text-slate-400">Tasks done</p>
+                <p className="text-[11.5px] font-medium text-faint">Tasks done</p>
               </div>
             </Grid>
           </div>
@@ -294,18 +294,18 @@ function DepartmentDetailPage() {
                   <div className="min-w-0 flex-1">
                     <p
                       className={cn(
-                        "text-[14px] font-semibold text-ink dark:text-slate-100",
+                        "text-[14px] font-semibold text-ink",
                         t.status === "DONE" && "text-faint line-through"
                       )}
                     >
                       {t.title}
                     </p>
                     {t.description && (
-                      <p className="mt-0.5 line-clamp-1 text-[12.5px] text-sub dark:text-slate-400">
+                      <p className="mt-0.5 line-clamp-1 text-[12.5px] text-sub">
                         {t.description}
                       </p>
                     )}
-                    <p className="mt-0.5 text-[11.5px] text-faint dark:text-slate-400">
+                    <p className="mt-0.5 text-[11.5px] text-faint">
                       {t.dueDate ? `Due ${formatDateTime(t.dueDate)}` : "No due date"}
                       {t.assignee ? ` · ${t.assignee.user.name}` : ""}
                     </p>
@@ -342,7 +342,7 @@ function DepartmentDetailPage() {
                                   "flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] font-medium transition hover:bg-black/[0.05] dark:hover:bg-white/10",
                                   t.status === s
                                     ? "text-accent"
-                                    : "text-ink dark:text-slate-200"
+                                    : "text-ink"
                                 )}
                               >
                                 <span className="size-1.5 rounded-full bg-current" />
@@ -401,7 +401,7 @@ function DepartmentDetailPage() {
                 >
                   <Avatar name={m.user.name} src={m.user.image} size={38} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
+                    <p className="truncate text-[14px] font-semibold text-ink">
                       {m.user.name}
                       {dept.coordinatorId === m.id && (
                         <span className="ml-2 rounded-full bg-purple/12 px-2 py-0.5 text-[10.5px] font-semibold text-purple dark:bg-purple/20 dark:text-purple-300">
@@ -409,7 +409,7 @@ function DepartmentDetailPage() {
                         </span>
                       )}
                     </p>
-                    <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
+                    <p className="truncate text-[12.5px] text-sub">
                       {m.memberCode} · {m.user.email}
                     </p>
                   </div>
@@ -637,7 +637,7 @@ function AddMemberModal({
     <Modal open onClose={onClose} title="Add Member to Department">
       <form onSubmit={save} className="space-y-4">
         {members.length === 0 ? (
-          <p className="rounded-2xl bg-black/[0.03] p-4 text-[13.5px] text-sub dark:bg-white/5 dark:text-slate-400">
+          <p className="rounded-2xl bg-black/[0.03] p-4 text-[13.5px] text-sub dark:bg-white/5">
             All members are already in this department.
           </p>
         ) : (

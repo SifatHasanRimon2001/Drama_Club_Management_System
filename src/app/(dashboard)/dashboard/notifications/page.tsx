@@ -29,7 +29,7 @@ const TONES: Record<string, string> = {
   ANNOUNCEMENT: "bg-blue/12 text-blue dark:bg-blue/20 ",
   EVENT: "bg-teal/12 text-teal dark:bg-teal/20 dark:text-teal-300",
   GALLERY: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300",
-  GENERAL: "bg-gray-500/10 text-sub dark:text-slate-400",
+  GENERAL: "bg-gray-500/10 text-sub",
 };
 
 export default function NotificationsPage() {
@@ -132,15 +132,15 @@ export default function NotificationsPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-[14.5px] font-semibold text-ink dark:text-slate-100">
+                    <p className="text-[14.5px] font-semibold text-ink">
                       {n.title}
                     </p>
                     {!n.readAt && <span className="size-2 rounded-full bg-accent" />}
                   </div>
-                  <p className="mt-0.5 text-[13px] leading-relaxed text-sub dark:text-slate-400">
+                  <p className="mt-0.5 text-[13px] leading-relaxed text-sub">
                     {n.message}
                   </p>
-                  <p className="mt-1 text-[11.5px] text-faint dark:text-slate-400">{timeAgo(n.createdAt)}</p>
+                  <p className="mt-1 text-[11.5px] text-faint">{timeAgo(n.createdAt)}</p>
                 </div>
               </button>
             ))}

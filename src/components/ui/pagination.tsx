@@ -33,24 +33,24 @@ export function Pagination({
       <button
         disabled={page <= 1}
         onClick={() => onChange(page - 1)}
-        className="flex size-8 items-center justify-center rounded-lg text-sub transition hover:bg-gray-100 disabled:opacity-40 dark:hover:bg-white/10"
+        className="flex size-9 items-center justify-center rounded-lg text-sub transition hover:bg-elevated hover:text-ink disabled:opacity-40 disabled:pointer-events-none"
         aria-label="Previous page"
       >
         <Icon name="chevron-left" size={16} />
       </button>
       {pages.map((p, i) =>
         p === "…" ? (
-          <span key={`e${i}`} className="px-1 text-sub">…</span>
+          <span key={`e${i}`} className="px-1 text-faint">…</span>
         ) : (
           <button
             key={p}
             onClick={() => onChange(p)}
             aria-current={p === page ? "page" : undefined}
             className={cn(
-              "flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-[13px] font-medium transition",
+              "tabular flex h-9 min-w-9 items-center justify-center rounded-lg px-2.5 text-[13px] font-medium transition",
               p === page
-                ? "bg-accent font-semibold text-white shadow-sm dark:text-on-accent"
-                : "text-sub hover:bg-gray-100 dark:hover:bg-white/10"
+                ? "bg-accent font-semibold text-on-accent shadow-[0_2px_10px_var(--color-accent-soft-strong)]"
+                : "text-sub hover:bg-elevated hover:text-ink"
             )}
           >
             {p}
@@ -60,7 +60,7 @@ export function Pagination({
       <button
         disabled={page >= totalPages}
         onClick={() => onChange(page + 1)}
-        className="flex size-8 items-center justify-center rounded-lg text-sub transition hover:bg-gray-100 disabled:opacity-40 dark:hover:bg-white/10"
+        className="flex size-9 items-center justify-center rounded-lg text-sub transition hover:bg-elevated hover:text-ink disabled:opacity-40 disabled:pointer-events-none"
         aria-label="Next page"
       >
         <Icon name="chevron-right" size={16} />

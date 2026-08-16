@@ -122,8 +122,8 @@ function SettingsPage() {
           <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-red/10 text-red" aria-hidden="true">
             <Icon name="warn" size={26} />
           </span>
-          <h3 className="text-[16px] font-semibold text-ink dark:text-slate-100">Couldn&apos;t load settings</h3>
-          <p className="mt-1 max-w-sm text-sm text-sub dark:text-slate-400">{error}</p>
+          <h3 className="text-[16px] font-semibold text-ink">Couldn&apos;t load settings</h3>
+          <p className="mt-1 max-w-sm text-sm text-sub">{error}</p>
         </div>
       );
     }
@@ -208,8 +208,8 @@ function SettingsPage() {
           </CardHeader>
           <CardBody className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-[14.5px] font-medium text-ink dark:text-slate-100">Theme</p>
-              <p className="mt-0.5 text-[12.5px] text-sub dark:text-slate-400">
+              <p className="text-[14.5px] font-medium text-ink">Theme</p>
+              <p className="mt-0.5 text-[12.5px] text-sub">
                 System matches your device automatically.
               </p>
             </div>
@@ -224,10 +224,10 @@ function SettingsPage() {
           <CardBody className="space-y-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[14.5px] font-medium text-ink dark:text-slate-100">
+                <p className="text-[14.5px] font-medium text-ink">
                   Allow registration
                 </p>
-                <p className="mt-0.5 text-[12.5px] text-sub dark:text-slate-400">
+                <p className="mt-0.5 text-[12.5px] text-sub">
                   Show open registration windows on the public site.
                 </p>
               </div>
@@ -239,10 +239,10 @@ function SettingsPage() {
             </div>
             <div className="flex items-start justify-between gap-4 border-t border-line pt-5 dark:border-white/10">
               <div>
-                <p className="text-[14.5px] font-medium text-ink dark:text-slate-100">
+                <p className="text-[14.5px] font-medium text-ink">
                   Maintenance mode
                 </p>
-                <p className="mt-0.5 text-[12.5px] text-sub dark:text-slate-400">
+                <p className="mt-0.5 text-[12.5px] text-sub">
                   Temporarily hide the public site.
                 </p>
               </div>
@@ -264,10 +264,10 @@ function SettingsPage() {
               <div className="flex items-start gap-3 rounded-2xl bg-red/10 px-4 py-3.5 dark:bg-red/15">
                 <Icon name="warn" size={17} className="mt-0.5 shrink-0 text-red dark:text-red-300" />
                 <div>
-                  <p className="text-[14px] font-semibold text-ink dark:text-slate-100">
+                  <p className="text-[14px] font-semibold text-ink">
                     Couldn&apos;t check storage configuration
                   </p>
-                  <p className="mt-0.5 text-[13px] text-sub dark:text-slate-400">
+                  <p className="mt-0.5 text-[13px] text-sub">
                     The storage status endpoint didn&apos;t respond.{" "}
                     <button
                       type="button"
@@ -289,10 +289,10 @@ function SettingsPage() {
                 <div className="flex items-start gap-3 rounded-2xl bg-green/12 px-4 py-3.5 dark:bg-green/20">
                   <span className="mt-1 size-2.5 shrink-0 rounded-full bg-green" />
                   <div>
-                    <p className="text-[14px] font-semibold text-ink dark:text-slate-100">
+                    <p className="text-[14px] font-semibold text-ink">
                       Connected to {storage.bucket}
                     </p>
-                    <p className="mt-0.5 text-[13px] text-sub dark:text-slate-400">
+                    <p className="mt-0.5 text-[13px] text-sub">
                       Gallery uploads are stored in Cloudflare R2.
                       {storage.publicUrl
                         ? ` Public URL: ${storage.publicUrl}`
@@ -308,10 +308,10 @@ function SettingsPage() {
                     className="mt-0.5 shrink-0 text-orange dark:text-orange-400"
                   />
                   <div>
-                    <p className="text-[14px] font-semibold text-ink dark:text-slate-100">
+                    <p className="text-[14px] font-semibold text-ink">
                       Storage is not configured
                     </p>
-                    <p className="mt-0.5 text-[13px] leading-relaxed text-sub dark:text-slate-400">
+                    <p className="mt-0.5 text-[13px] leading-relaxed text-sub">
                       Gallery uploads will be disabled until the following environment variables
                       are set in <code className="rounded bg-black/[0.06] px-1.5 py-0.5 font-mono text-[12px] dark:bg-white/10">.env</code>:
                     </p>
@@ -320,24 +320,24 @@ function SettingsPage() {
                         (v) => (
                           <code
                             key={v}
-                            className="rounded-full bg-black/[0.06] px-2.5 py-1 font-mono text-[11.5px] font-medium text-ink dark:bg-white/10 dark:text-slate-200"
+                            className="rounded-full bg-black/[0.06] px-2.5 py-1 font-mono text-[11.5px] font-medium text-ink dark:bg-white/10"
                           >
                             {v}
                           </code>
                         )
                       )}
-                      <code className="rounded-full bg-black/[0.06] px-2.5 py-1 font-mono text-[11.5px] font-medium text-ink dark:bg-white/10 dark:text-slate-200">
+                      <code className="rounded-full bg-black/[0.06] px-2.5 py-1 font-mono text-[11.5px] font-medium text-ink dark:bg-white/10">
                         R2_PUBLIC_URL
                       </code>
                     </div>
-                    <p className="mt-2.5 text-[12.5px] text-faint dark:text-slate-400">
+                    <p className="mt-2.5 text-[12.5px] text-faint">
                       Restart the server after updating environment variables.
                     </p>
                   </div>
                 </div>
               )
             ) : (
-              <p className="text-[13.5px] text-sub dark:text-slate-400">
+              <p className="text-[13.5px] text-sub">
                 Checking storage configuration…
               </p>
             )}

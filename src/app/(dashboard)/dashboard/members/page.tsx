@@ -152,11 +152,11 @@ function MembersPage() {
                 <div className="min-w-0 flex-1">
                   <Link
                     href={`/dashboard/members/${m.id}`}
-                    className="truncate text-[14.5px] font-semibold text-ink transition hover:text-accent dark:text-slate-100 dark:hover:text-accent"
+                    className="truncate text-[14.5px] font-semibold text-ink transition hover:text-accent dark:hover:text-accent"
                   >
                     {m.user.name}
                   </Link>
-                  <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
+                  <p className="truncate text-[12.5px] text-sub">
                     {m.memberCode} · {m.user.email}
                   </p>
                 </div>
@@ -164,7 +164,7 @@ function MembersPage() {
                   {m.departments.slice(0, 3).map((d) => (
                     <span
                       key={d.departmentId}
-                      className="rounded-full bg-black/[0.05] px-2.5 py-1 text-[11.5px] font-medium text-sub dark:bg-white/10 dark:text-slate-400"
+                      className="rounded-full bg-black/[0.05] px-2.5 py-1 text-[11.5px] font-medium text-sub dark:bg-white/10"
                     >
                       {d.department.name}
                     </span>
@@ -204,7 +204,7 @@ function MembersPage() {
                             setEditing(m);
                             close();
                           }}
-                          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:text-slate-200 dark:hover:bg-white/10"
+                          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:hover:bg-white/10"
                         >
                           <Icon name="edit" size={15} /> Edit details
                         </button>
@@ -215,7 +215,7 @@ function MembersPage() {
                               void updateStatus(m, s);
                               close();
                             }}
-                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:text-slate-200 dark:hover:bg-white/10"
+                            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink transition hover:bg-black/[0.05] dark:hover:bg-white/10"
                           >
                             <Icon name="flag" size={15} /> Mark {membershipStatusLabel(s)}
                           </button>
@@ -310,10 +310,10 @@ function EditMemberModal({
         <div className="flex items-center gap-3 rounded-2xl bg-black/[0.03] p-3 dark:bg-white/5">
           <Avatar name={member.user.name} src={member.user.image} size={40} />
           <div className="min-w-0">
-            <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
+            <p className="truncate text-[14px] font-semibold text-ink">
               {member.user.name}
             </p>
-            <p className="truncate text-[12px] text-sub dark:text-slate-400">
+            <p className="truncate text-[12px] text-sub">
               {member.memberCode} · {member.user.email}
             </p>
           </div>

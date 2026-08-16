@@ -49,7 +49,7 @@ export default async function EventsPage({
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
             upcoming
               ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white dark:bg-accent dark:bg-none dark:text-on-accent shadow-gold"
-              : "border border-line bg-card text-sub hover:text-ink dark:bg-card dark:text-slate-400 dark:hover:text-slate-200"
+              : "border border-line bg-card text-sub hover:text-ink dark:bg-card dark:hover:text-slate-200"
           )}
         >
           Upcoming
@@ -62,7 +62,7 @@ export default async function EventsPage({
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
             !upcoming
               ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white dark:bg-accent dark:bg-none dark:text-on-accent shadow-gold"
-              : "border border-line bg-card text-sub hover:text-ink dark:bg-card dark:text-slate-400 dark:hover:text-slate-200"
+              : "border border-line bg-card text-sub hover:text-ink dark:bg-card dark:hover:text-slate-200"
           )}
         >
           All
@@ -78,7 +78,7 @@ export default async function EventsPage({
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
               type === t
                 ? "bg-black/[0.08] text-ink dark:bg-white/20 dark:text-white"
-                : "text-sub hover:text-ink dark:text-slate-400 dark:hover:text-slate-200"
+                : "text-sub hover:text-ink dark:hover:text-slate-200"
             )}
           >
             {t.charAt(0) + t.slice(1).toLowerCase()}
@@ -111,12 +111,12 @@ export default async function EventsPage({
                 <TicketStub date={date} />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-[16.5px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-slate-100">
+                    <h2 className="text-[16.5px] font-semibold tracking-tight text-ink group-hover:text-accent">
                       {e.title}
                     </h2>
                     <StatusPill value={e.type} />
                   </div>
-                  <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-sub dark:text-slate-400">
+                  <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-sub">
                     <span className="inline-flex items-center gap-1">
                       <Icon name="clock" size={13} />
                       {formatDateTime(e.startAt)}

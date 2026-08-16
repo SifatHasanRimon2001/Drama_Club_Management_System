@@ -2,12 +2,14 @@ import Link from "next/link";
 import { publicFetch } from "@/lib/server";
 import type { PublicAbout, PublicHomeData } from "@/lib/types";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { Icon } from "@/components/icons";
+import { Icon, type IconName } from "@/components/icons";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusPill } from "@/components/ui/badge";
 import { Container, Grid } from "@/components/ui/layout";
+import { ButtonLink } from "@/components/ui/button";
+import { Reveal } from "@/components/ui/reveal";
+import { AnimatedCounter } from "@/components/ui/counter";
 import { TicketStub } from "@/components/ticket-stub";
-import { cn } from "@/lib/cn";
 
 export const metadata = { title: "Home" };
 
@@ -22,66 +24,100 @@ export default async function HomePage() {
     about?.clubDescription ||
     "Where passion meets the stage — join a community of storytellers, performers and creators.";
 
+  const memberCount = about?.activeMemberCount ?? 0;
+  const departmentCount = about?.departmentCount ?? home?.departments?.length ?? 0;
+  const eventCount = home?.upcomingEvents?.length ?? 0;
+  const productionCount = home?.recentUpdates?.length ?? 0;
+
   return (
-    <div className="dark:bg-surface-dark">
-      {/* ---------- Hero ---------- */}
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 spotlight" aria-hidden="true" />
+    <div className="relative">
+      {/* ================= Hero ================= */}
+      <section className="grain relative isolate overflow-hidden">
+        {/* Layered backdrop: drifting aurora, blueprint grid, edge vignette. */}
+        <div className="aurora" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-0 grid-pattern" aria-hidden="true" />
         <div className="pointer-events-none absolute inset-0 vignette" aria-hidden="true" />
 
-        <Container size="page" className="relative flex min-h-[70dvh] flex-col items-center justify-center pt-28 pb-16 text-center">
-          <span className="theatre-eyebrow mb-6 text-accent">
-            {about?.activeMemberCount != null
-              ? `${about.activeMemberCount} members · ${about.departmentCount ?? 0} departments`
-              : "Est. Backstage at BRAC"}
-          </span>
-          <h1 className="display-title animate-rise max-w-4xl text-ink dark:text-[#faf4e6]">
-            {clubName}
-          </h1>
-          <p className="animate-rise mt-5 max-w-2xl text-[16px] leading-relaxed text-sub sm:text-[18px] dark:text-slate-400">
-            {description}
-          </p>
-          <div className="animate-rise mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/recruitment"
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-accent px-6 text-[15px] font-semibold text-white dark:text-on-accent transition hover:bg-accent-hover active:scale-[0.98] shadow-sm hover:shadow-md"
-            >
-              Join the Club
-              <Icon name="arrow-right" size={15} />
-            </Link>
-            <Link
-              href="/productions"
-              className="inline-flex h-11 items-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-6 text-[15px] font-semibold text-ink backdrop-blur transition hover:bg-white active:scale-[0.98] dark:bg-white/5 dark:text-slate-100 dark:border-white/10 dark:hover:bg-white/10"
-            >
-              <Icon name="star" size={15} />
-              Our Productions
-            </Link>
-          </div>
+        <Container
+          size="page"
+          className="relative flex min-h-[88dvh] flex-col items-center justify-center py-28 text-center sm:py-32"
+        >
+          <Reveal>
+            {/* The club name lives here rather than in the headline: it keeps
+                the brand present for readers and crawlers while the <h1> stays
+                free to say something. Counts are not repeated — the metric
+                cards below already carry them. */}
+            <span className="inline-flex items-center gap-2.5 rounded-full border border-line-strong bg-card/60 px-4 py-1.5 text-[11.5px] font-semibold uppercase tracking-[0.16em] text-sub backdrop-blur">
+              <span className="relative flex size-1.5" aria-hidden="true">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
+                <span className="relative inline-flex size-1.5 rounded-full bg-accent" />
+              </span>
+              {clubName}
+            </span>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <h1 className="hero-title mt-8 max-w-5xl text-balance text-ink">
+              Every great story{" "}
+              <span className="gradient-text">starts backstage</span>
+            </h1>
+          </Reveal>
+
+          <Reveal delay={160}>
+            <p className="mx-auto mt-7 max-w-2xl text-pretty text-[16.5px] leading-relaxed text-sub sm:text-[18px]">
+              {description}
+            </p>
+          </Reveal>
+
+          <Reveal delay={240}>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+              <ButtonLink href="/recruitment" size="lg" icon="arrow-right" iconTrailing>
+                Join the Club
+              </ButtonLink>
+              <ButtonLink href="/productions" variant="secondary" size="lg" icon="star">
+                Our Productions
+              </ButtonLink>
+            </div>
+          </Reveal>
+
+          {/* Floating metric cards — the "dashboard preview" beat, built from
+              real counts rather than decorative placeholders. */}
+          <Reveal delay={320} className="mt-20 w-full">
+            <Grid preset="stats" className="mx-auto max-w-4xl gap-4">
+              <HeroMetric icon="members" value={memberCount} label="Active members" />
+              <HeroMetric icon="folder" value={departmentCount} label="Departments" />
+              <HeroMetric icon="calendar" value={eventCount} label="Upcoming events" />
+              <HeroMetric icon="megaphone" value={productionCount} label="Recent updates" />
+            </Grid>
+          </Reveal>
         </Container>
       </section>
 
-      {/* ---------- Committee ---------- */}
+      {/* ================= Committee ================= */}
       {home?.committee ? (
-        <Container size="page" className="py-16">
-          <SectionHeader
-            eyebrow="Current Committee"
-            title={`Committee ${home.committee.year}`}
-            link={{ href: "/committee", label: "View full committee" }}
-          />
-          <Grid preset="stats" className="mt-8 lg:grid-cols-4">
-            {home.committee.memberRoles.slice(0, 8).map((mr) => (
-              <div
-                key={mr.id}
-                className="flex items-center gap-3.5 rounded-xl border border-gray-200/80 bg-white p-4 shadow-card transition-shadow hover:shadow-card-hover dark:bg-card dark:border-line"
-              >
-                <Avatar name={mr.member.user.name} src={mr.member.user.image} size={40} />
-                <div className="min-w-0">
-                  <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
-                    {mr.member.user.name}
-                  </p>
-                  <p className="truncate text-[12.5px] text-accent ">{mr.role.name}</p>
+        <Container size="page" className="py-20">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Current Committee"
+              title={`Committee ${home.committee.year}`}
+              link={{ href: "/committee", label: "View full committee" }}
+            />
+          </Reveal>
+          <Grid preset="stats" className="mt-10 lg:grid-cols-4">
+            {home.committee.memberRoles.slice(0, 8).map((mr, i) => (
+              <Reveal key={mr.id} delay={Math.min(i * 50, 240)}>
+                <div className="card-glow flex h-full items-center gap-3.5 rounded-2xl border border-line bg-card p-4 shadow-card">
+                  <Avatar name={mr.member.user.name} src={mr.member.user.image} size={42} />
+                  <div className="min-w-0">
+                    <p className="truncate text-[14px] font-semibold text-ink">
+                      {mr.member.user.name}
+                    </p>
+                    <p className="truncate text-[12.5px] font-medium text-accent-ink">
+                      {mr.role.name}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </Reveal>
             ))}
             {home.committee.memberRoles.length === 0 && (
               <p className="col-span-full text-center text-[13.5px] text-sub">
@@ -92,159 +128,187 @@ export default async function HomePage() {
         </Container>
       ) : null}
 
-      {/* ---------- Latest updates ---------- */}
+      {/* ================= Latest updates ================= */}
       {home?.recentUpdates && home.recentUpdates.length > 0 ? (
-        <Container size="page" className="py-8">
-          <SectionHeader
-            eyebrow="Latest News"
-            title="Club Updates"
-            link={{ href: "/updates", label: "All updates" }}
-          />
-          <Grid preset="cards" className="mt-8">
-            {home.recentUpdates.slice(0, 6).map((u) => (
-              <Link
-                key={u.id}
-                href={`/updates/${u.id}`}
-                className="group flex flex-col rounded-xl border border-gray-200/80 bg-white p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-card dark:border-line"
-              >
-                <div className="flex items-center justify-between">
-                  <StatusPill value={u.category} />
-                  <span className="text-[12px] text-faint">{formatDate(u.publishedAt)}</span>
-                </div>
-                <h3 className="mt-3 line-clamp-2 text-[15px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-slate-100 dark:group-hover:text-accent">
-                  {u.title}
-                </h3>
-                <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-sub dark:text-slate-400">
-                  {stripHtml(u.bodyRichText)}
-                </p>
-              </Link>
+        <Container size="page" className="py-12">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Latest News"
+              title="Club Updates"
+              link={{ href: "/updates", label: "All updates" }}
+            />
+          </Reveal>
+          <Grid preset="cards" className="mt-10">
+            {home.recentUpdates.slice(0, 6).map((u, i) => (
+              <Reveal key={u.id} delay={Math.min(i * 60, 240)}>
+                <Link
+                  href={`/updates/${u.id}`}
+                  className="card-glow group flex h-full flex-col rounded-2xl border border-line bg-card p-5 shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <StatusPill value={u.category} />
+                    <span className="text-[12px] text-faint">{formatDate(u.publishedAt)}</span>
+                  </div>
+                  <h3 className="mt-4 line-clamp-2 text-[15.5px] font-semibold tracking-[-0.02em] text-ink transition-colors group-hover:text-accent-ink">
+                    {u.title}
+                  </h3>
+                  <p className="mt-2.5 line-clamp-3 text-[13px] leading-relaxed text-sub">
+                    {stripHtml(u.bodyRichText)}
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-accent-ink opacity-0 transition-opacity group-hover:opacity-100">
+                    Read more
+                    <Icon name="arrow-right" size={12} />
+                  </span>
+                </Link>
+              </Reveal>
             ))}
           </Grid>
         </Container>
       ) : null}
 
-      {/* ---------- Upcoming events ---------- */}
+      {/* ================= Upcoming events ================= */}
       {home?.upcomingEvents && home.upcomingEvents.length > 0 ? (
-        <Container size="page" className="py-8">
-          <SectionHeader
-            eyebrow="Mark Your Calendar"
-            title="Upcoming Events"
-            link={{ href: "/events", label: "All events" }}
-          />
-          <div className="mt-8 space-y-3">
-            {home.upcomingEvents.map((e) => (
-              <Link
-                key={e.id}
-                href={`/events/${e.id}`}
-                className="flex flex-wrap items-center gap-4 rounded-xl border border-gray-200/80 bg-white p-4 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover sm:px-5 dark:bg-card dark:border-line"
-              >
-                <TicketStub
-                  date={new Date(e.startAt)}
-                  size="sm"
-                  className="min-w-[56px]"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
-                    {e.title}
-                  </p>
-                  <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[12.5px] text-sub dark:text-slate-400">
-                    <span className="inline-flex items-center gap-1">
-                      <Icon name="clock" size={12} />
-                      {formatDateTime(e.startAt)}
-                    </span>
-                    {e.location && (
-                      <span className="inline-flex items-center gap-1">
-                        <Icon name="pin" size={12} />
-                        {e.location}
+        <Container size="page" className="py-12">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Mark Your Calendar"
+              title="Upcoming Events"
+              link={{ href: "/events", label: "All events" }}
+            />
+          </Reveal>
+          <div className="mt-10 space-y-3">
+            {home.upcomingEvents.map((e, i) => (
+              <Reveal key={e.id} delay={Math.min(i * 50, 200)}>
+                <Link
+                  href={`/events/${e.id}`}
+                  className="card-glow flex flex-wrap items-center gap-4 rounded-2xl border border-line bg-card p-4 shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:px-5"
+                >
+                  <TicketStub date={new Date(e.startAt)} size="sm" className="min-w-[56px]" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[14.5px] font-semibold text-ink">{e.title}</p>
+                    <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] text-sub">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Icon name="clock" size={12} className="text-faint" />
+                        {formatDateTime(e.startAt)}
                       </span>
-                    )}
-                    {e.department && <span>{e.department.name}</span>}
-                  </p>
-                </div>
-                <StatusPill value={e.type} />
-              </Link>
+                      {e.location && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <Icon name="pin" size={12} className="text-faint" />
+                          {e.location}
+                        </span>
+                      )}
+                      {e.department && <span className="text-faint">{e.department.name}</span>}
+                    </p>
+                  </div>
+                  <StatusPill value={e.type} />
+                </Link>
+              </Reveal>
             ))}
           </div>
         </Container>
       ) : null}
 
-      {/* ---------- Departments ---------- */}
+      {/* ================= Departments ================= */}
       {home?.departments && home.departments.length > 0 ? (
-        <Container size="page" className="py-8 pb-20">
-          <SectionHeader
-            eyebrow="Explore the Crew"
-            title="Our Departments"
-            link={{ href: "/departments", label: "All departments" }}
-          />
-          <Grid preset="cards" className="mt-8">
-            {home.departments.map((d) => (
-              <Link
-                key={d.id}
-                href="/departments"
-                className="group rounded-xl border border-gray-200/80 bg-white p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-card dark:border-line"
-              >
-                <span className="flex size-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-500/15 dark:text-purple-400">
-                  <Icon name="folder" size={18} />
-                </span>
-                <h3 className="mt-3.5 truncate text-[15px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-slate-100 dark:group-hover:text-accent">
-                  {d.name}
-                </h3>
-                {d.description && (
-                  <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-sub dark:text-slate-400">
-                    {d.description}
-                  </p>
-                )}
-                <div className="mt-3.5 flex items-center gap-3 border-t border-gray-100 pt-3.5 text-[12px] text-faint dark:border-line dark:text-slate-400">
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                    <Icon name="members" size={12} />
-                    {d._count.members} members
+        <Container size="page" className="py-12 pb-20">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Explore the Crew"
+              title="Our Departments"
+              link={{ href: "/departments", label: "All departments" }}
+            />
+          </Reveal>
+          <Grid preset="cards" className="mt-10">
+            {home.departments.map((d, i) => (
+              <Reveal key={d.id} delay={Math.min(i * 50, 240)}>
+                <Link
+                  href="/departments"
+                  className="card-glow group flex h-full flex-col rounded-2xl border border-line bg-card p-5 shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  <span className="flex size-11 items-center justify-center rounded-xl border border-accent-soft-strong bg-accent-soft text-accent-ink transition-transform duration-300 group-hover:scale-105">
+                    <Icon name="folder" size={18} />
                   </span>
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                    <Icon name="calendar" size={12} />
-                    {d._count.events} events
-                  </span>
-                </div>
-                {d.coordinator && (
-                  <p className="mt-2.5 flex min-w-0 items-center gap-1.5 text-[12px] text-sub dark:text-slate-400">
-                    <Icon name="user" size={11} className="shrink-0 text-faint" />
-                    <span className="truncate">
-                      Coordinated by {d.coordinator.user.name}
+                  <h3 className="mt-4 truncate text-[15.5px] font-semibold tracking-[-0.02em] text-ink transition-colors group-hover:text-accent-ink">
+                    {d.name}
+                  </h3>
+                  {d.description && (
+                    <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-sub">
+                      {d.description}
+                    </p>
+                  )}
+                  <div className="mt-auto flex items-center gap-4 border-t border-line pt-4 text-[12px] text-faint">
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                      <Icon name="members" size={12} />
+                      {d._count.members} members
                     </span>
-                  </p>
-                )}
-              </Link>
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                      <Icon name="calendar" size={12} />
+                      {d._count.events} events
+                    </span>
+                  </div>
+                  {d.coordinator && (
+                    <p className="mt-3 flex min-w-0 items-center gap-1.5 text-[12px] text-sub">
+                      <Icon name="user" size={11} className="shrink-0 text-faint" />
+                      <span className="truncate">Coordinated by {d.coordinator.user.name}</span>
+                    </p>
+                  )}
+                </Link>
+              </Reveal>
             ))}
           </Grid>
         </Container>
       ) : null}
 
-      {/* ---------- CTA ---------- */}
-      <Container size="page" className="pb-24">
-        <div className="dark-band relative overflow-hidden rounded-2xl px-6 py-14 text-center shadow-pop sm:px-12">
-          <h2 className="gold-text font-display relative text-[26px] font-bold tracking-tight sm:text-[32px]">
-            Ready to take the stage?
-          </h2>
-          <p className="relative mx-auto mt-2 max-w-xl text-[14px] leading-relaxed text-slate-300/80 dark:text-slate-300/80">
-            Registration windows open every semester. Sign up, audition, and become part of the
-            story.
-          </p>
-          <div className="relative mt-6 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/recruitment"
-              className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-5 text-[14px] font-semibold text-white dark:text-on-accent transition hover:bg-accent-hover active:scale-[0.98] shadow-sm"
-            >
-              Apply Now
-              <Icon name="arrow-right" size={14} />
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex h-10 items-center rounded-xl border border-white/20 px-5 text-[14px] font-semibold text-white transition hover:bg-white/10 active:scale-[0.98]"
-            >
-              Get in Touch
-            </Link>
+      {/* ================= Closing CTA ================= */}
+      <Container size="page" className="pb-28">
+        <Reveal>
+          <div className="grain relative isolate overflow-hidden rounded-3xl border border-line-strong bg-card px-6 py-16 text-center shadow-pop sm:px-12 sm:py-20">
+            <div className="pointer-events-none absolute inset-0 glow-violet" aria-hidden="true" />
+            <div
+              className="pointer-events-none absolute -bottom-24 left-1/2 size-72 -translate-x-1/2 animate-pulse-glow rounded-full bg-accent/25 blur-[80px]"
+              aria-hidden="true"
+            />
+            <h2 className="font-display relative text-[30px] font-bold tracking-[-0.035em] text-ink sm:text-[40px]">
+              Ready to take <span className="gradient-text">the stage?</span>
+            </h2>
+            <p className="relative mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-sub">
+              Registration windows open every semester. Sign up, audition, and become part of the
+              story.
+            </p>
+            <div className="relative mt-9 flex flex-wrap items-center justify-center gap-3">
+              <ButtonLink href="/recruitment" size="lg" icon="arrow-right" iconTrailing>
+                Apply Now
+              </ButtonLink>
+              <ButtonLink href="/contact" variant="secondary" size="lg">
+                Get in Touch
+              </ButtonLink>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </Container>
+    </div>
+  );
+}
+
+/** Glass metric tile used in the hero. Counts up once scrolled into view. */
+function HeroMetric({
+  icon,
+  value,
+  label,
+}: {
+  icon: IconName;
+  value: number;
+  label: string;
+}) {
+  return (
+    <div className="glass edge-glow rounded-2xl border border-line-strong p-5 text-left shadow-card">
+      <span className="flex size-9 items-center justify-center rounded-lg bg-accent-soft text-accent-ink">
+        <Icon name={icon} size={16} />
+      </span>
+      <div className="mt-4 font-display text-[26px] font-bold leading-none tracking-[-0.03em] text-ink">
+        <AnimatedCounter value={value} />
+      </div>
+      <div className="mt-2 text-[12.5px] font-medium text-sub">{label}</div>
     </div>
   );
 }
@@ -259,22 +323,23 @@ function SectionHeader({
   link: { href: string; label: string };
 }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <p className="theatre-eyebrow text-accent">{eyebrow}</p>
-        <h2 className="font-display mt-2.5 text-[24px] font-bold tracking-tight text-ink sm:text-[28px] dark:text-slate-100">
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="min-w-0">
+        <p className="theatre-eyebrow">{eyebrow}</p>
+        <h2 className="font-display mt-3.5 text-[26px] font-bold tracking-[-0.03em] text-ink sm:text-[32px]">
           {title}
         </h2>
       </div>
       <Link
         href={link.href}
-        className={cn(
-          "inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-[13px] font-medium text-ink backdrop-blur transition hover:bg-gray-50 dark:bg-white/5 dark:text-slate-100 dark:border-white/10 dark:hover:bg-white/10",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        )}
+        className="group inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-line-strong bg-card px-4 text-[13px] font-medium text-ink transition-all hover:border-accent hover:text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         {link.label}
-        <Icon name="chevron-right" size={13} />
+        <Icon
+          name="chevron-right"
+          size={13}
+          className="transition-transform duration-200 group-hover:translate-x-0.5"
+        />
       </Link>
     </div>
   );

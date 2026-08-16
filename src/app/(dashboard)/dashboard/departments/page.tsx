@@ -118,13 +118,13 @@ function DepartmentsPage() {
                     </span>
                   )}
                 </div>
-                <h3 className="mt-4 truncate text-[16.5px] font-bold tracking-tight text-ink group-hover:text-accent dark:text-slate-100">
+                <h3 className="mt-4 truncate text-[16.5px] font-bold tracking-tight text-ink group-hover:text-accent">
                   {d.name}
                 </h3>
-                <p className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-sub dark:text-slate-400">
+                <p className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-sub">
                   {d.description || "No description yet."}
                 </p>
-                <div className="mt-4 flex items-center gap-3 text-[12.5px] text-sub dark:text-slate-400">
+                <div className="mt-4 flex items-center gap-3 text-[12.5px] text-sub">
                   <span className="flex items-center gap-1.5">
                     <Icon name="members" size={14} />
                     {d._count?.members ?? 0} members
@@ -146,7 +146,7 @@ function DepartmentsPage() {
                       <Avatar name={d.coordinator.user.name} size={22} />
                       <div className="min-w-0 leading-tight">
                         <p className="text-[11px] text-faint">Coordinator</p>
-                        <p className="truncate text-[12.5px] font-semibold text-ink dark:text-slate-200">
+                        <p className="truncate text-[12.5px] font-semibold text-ink">
                           {d.coordinator.user.name}
                         </p>
                       </div>

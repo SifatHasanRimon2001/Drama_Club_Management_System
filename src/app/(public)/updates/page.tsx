@@ -41,19 +41,19 @@ export default async function UpdatesPage() {
             >
               <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-start">
                 <StatusPill value={u.category} />
-                <span className="text-[12px] text-faint dark:text-slate-400">{formatDate(u.publishedAt)}</span>
+                <span className="text-[12px] text-faint">{formatDate(u.publishedAt)}</span>
               </div>
               <div className="min-w-0 flex-1">
-                <h2 className="truncate text-[17px] font-semibold tracking-tight text-ink group-hover:text-accent dark:text-slate-100">
+                <h2 className="truncate text-[17px] font-semibold tracking-tight text-ink group-hover:text-accent">
                   {u.title}
                 </h2>
                 {u.bodyRichText && (
-                  <p className="mt-1.5 line-clamp-3 text-[13.5px] leading-relaxed text-sub dark:text-slate-400">
+                  <p className="mt-1.5 line-clamp-3 text-[13.5px] leading-relaxed text-sub">
                     {stripHtml(u.bodyRichText)}
                   </p>
                 )}
                 {u.author?.name && (
-                  <p className="mt-2 flex items-center gap-1.5 text-[12px] text-faint dark:text-slate-400">
+                  <p className="mt-2 flex items-center gap-1.5 text-[12px] text-faint">
                     <Icon name="user" size={12} />
                     {u.author.name}
                   </p>

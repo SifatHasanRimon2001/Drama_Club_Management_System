@@ -942,12 +942,36 @@ describe("Comprehensive Backend Coverage Expansion", () => {
     });
 
     it("department dashboard without access returns 403", async () => {
-      await setupAdmin();
+      // This previously called setupAdmin(), which grants ALL permissions —
+      // including global `department.manage`. PRD §3b says that permission
+      // alone grants access, so the "no access" case has to be a user who
+      // holds neither the global permission nor a link to the department.
+      const { committee } = await setupAdmin();
+      const dept = await createTestDepartment({ committeeId: committee.id });
+
+      const outsider = await createTestUser({ email: `outsider-${uniqueSuffix()}@test.com` });
+      const outsiderMember = await createTestMember({ userId: outsider.user.id, status: "ACTIVE" });
+      const viewOnly = await prisma.permission.findUnique({ where: { key: "department.view" } });
+      const role = await createTestRole({
+        name: `ViewOnly-${uniqueSuffix()}`,
+        permissionIds: [viewOnly!.id],
+      });
+      await assignCommitteeRole(outsiderMember.id, role.id, committee.id);
+      mockAuth(outsider.user.id, ["department.view"]);
+
+      const { GET: DEPT_DASH } = await import("@/app/api/dashboard/department/route");
+      const res = await DEPT_DASH(mockRequest("/api/dashboard/department", { searchParams: { departmentId: dept.id } }));
+      expect(res.status).toBe(403);
+    });
+
+    it("department dashboard grants access on global department.manage alone", async () => {
+      // PRD §3b rule 1: an admin with the global permission does not have to
+      // be a member of a department to see its dashboard.
       const { committee } = await setupAdmin();
       const dept = await createTestDepartment({ committeeId: committee.id });
       const { GET: DEPT_DASH } = await import("@/app/api/dashboard/department/route");
       const res = await DEPT_DASH(mockRequest("/api/dashboard/department", { searchParams: { departmentId: dept.id } }));
-      expect(res.status).toBe(403);
+      expect(res.status).toBe(200);
     });
   });
 

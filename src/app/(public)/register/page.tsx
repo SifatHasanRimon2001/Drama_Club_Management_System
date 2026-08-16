@@ -41,14 +41,14 @@ export default function RegisterPage() {
   if (success) {
     return (
       <div className="flex min-h-[70dvh] flex-col items-center justify-center px-4 py-12">
-        <div className="w-full max-w-[420px] rounded-[26px] border border-line bg-white/80 p-6 text-center shadow-pop backdrop-blur-2xl sm:p-8 dark:bg-card/90 dark:border-white/10">
+        <div className="bg-card w-full max-w-[420px] rounded-[26px] border border-line /80 p-6 text-center shadow-pop backdrop-blur-2xl sm:p-8 /90 dark:border-white/10">
           <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-green/12 text-[#248a3d] dark:text-green-400">
             <Icon name="check" size={26} />
           </span>
-          <h1 className="mt-5 text-[22px] font-bold tracking-tight text-ink dark:text-slate-100">
+          <h1 className="mt-5 text-[22px] font-bold tracking-tight text-ink">
             Account created
           </h1>
-          <p className="mt-2 text-[14px] leading-relaxed text-sub dark:text-slate-400">
+          <p className="mt-2 text-[14px] leading-relaxed text-sub">
             You can now sign in. A club administrator will link a member profile to your
             account.
           </p>
@@ -87,10 +87,10 @@ export default function RegisterPage() {
             Member Portal
           </span>
         </div>
-        <h1 className="font-display text-[26px] font-bold tracking-tight text-ink dark:text-slate-100">
+        <h1 className="font-display text-[26px] font-bold tracking-tight text-ink">
           Create your account
         </h1>
-        <p className="mt-1.5 text-[14px] text-sub dark:text-slate-400">
+        <p className="mt-1.5 text-[14px] text-sub">
           Members-only access requires a linked profile.
         </p>
 
@@ -125,7 +125,7 @@ export default function RegisterPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-[13.5px] text-sub dark:text-slate-400">
+        <p className="mt-6 text-center text-[13.5px] text-sub">
           Already a member?{" "}
           <Link href="/login" className="font-medium text-accent hover:underline">
             Sign in

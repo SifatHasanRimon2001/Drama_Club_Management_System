@@ -44,14 +44,14 @@ function DetailRow({
 }) {
   return (
     <div className="flex items-start gap-3 py-2.5">
-      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-faint dark:bg-white/10 dark:text-slate-400">
+      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-faint dark:bg-white/10">
         <Icon name={icon as "user"} size={15} />
       </span>
       <div className="min-w-0">
-        <p className="text-[12px] font-medium uppercase tracking-wide text-faint dark:text-slate-400">
+        <p className="text-[12px] font-medium uppercase tracking-wide text-faint">
           {label}
         </p>
-        <p className="mt-0.5 text-[14px] font-medium text-ink dark:text-slate-100">{children}</p>
+        <p className="mt-0.5 text-[14px] font-medium text-ink">{children}</p>
       </div>
     </div>
   );
@@ -122,7 +122,7 @@ function MemberProfilePage() {
             <Avatar name={member.user.name} src={photo} size={76} />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="text-[24px] font-bold tracking-tight text-ink dark:text-slate-100">
+                <h1 className="text-[24px] font-bold tracking-tight text-ink">
                   {member.user.name}
                 </h1>
                 <StatusPill value={member.status} />
@@ -132,8 +132,8 @@ function MemberProfilePage() {
                   </span>
                 )}
               </div>
-              <p className="mt-1 text-[14px] text-sub dark:text-slate-400">{member.user.email}</p>
-              <p className="mt-1 text-[12.5px] text-faint dark:text-slate-400">
+              <p className="mt-1 text-[14px] text-sub">{member.user.email}</p>
+              <p className="mt-1 text-[12.5px] text-faint">
                 {member.memberCode} · Joined {formatDate(member.joiningDate)}
               </p>
             </div>
@@ -186,7 +186,7 @@ function MemberProfilePage() {
                     <Link
                       key={d.departmentId}
                       href={`/dashboard/departments/${d.department.id}`}
-                      className="rounded-full bg-black/[0.05] px-3 py-1.5 text-[13px] font-medium text-ink transition hover:bg-black/[0.08] dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/15"
+                      className="rounded-full bg-black/[0.05] px-3 py-1.5 text-[13px] font-medium text-ink transition hover:bg-black/[0.08] dark:bg-white/10 dark:hover:bg-white/15"
                     >
                       {d.department.name}
                     </Link>
@@ -253,7 +253,7 @@ function CommitteeSection({
   if (roles.length === 0) return null;
   return (
     <div>
-      <p className="text-[12px] font-semibold uppercase tracking-wide text-faint dark:text-slate-400">
+      <p className="text-[12px] font-semibold uppercase tracking-wide text-faint">
         {title}
       </p>
       <div className="mt-2 space-y-2">
@@ -267,10 +267,10 @@ function CommitteeSection({
                 <Icon name="role" size={14} />
               </span>
               <div className="min-w-0">
-                <p className="truncate text-[13.5px] font-semibold text-ink dark:text-slate-100">
+                <p className="truncate text-[13.5px] font-semibold text-ink">
                   {r.role.name}
                 </p>
-                <p className="text-[12px] text-sub dark:text-slate-400">{r.committee.year}</p>
+                <p className="text-[12px] text-sub">{r.committee.year}</p>
               </div>
             </div>
             <span className="text-[12px] text-faint">
@@ -329,10 +329,10 @@ function EditProfileModal({
         <div className="flex items-center gap-3 rounded-2xl bg-black/[0.03] p-3 dark:bg-white/5">
           <Avatar name={member.user.name} src={member.photoUrl || member.user.image} size={40} />
           <div className="min-w-0">
-            <p className="truncate text-[14px] font-semibold text-ink dark:text-slate-100">
+            <p className="truncate text-[14px] font-semibold text-ink">
               {member.user.name}
             </p>
-            <p className="truncate text-[12px] text-sub dark:text-slate-400">
+            <p className="truncate text-[12px] text-sub">
               {member.memberCode} · {member.user.email}
             </p>
           </div>

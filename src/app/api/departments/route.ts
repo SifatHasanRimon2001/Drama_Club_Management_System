@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { departmentSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { INTERNAL_MEMBER_SELECT } from "@/lib/member-select";
 import { ZodError } from "zod";
 
 export async function GET(request: NextRequest) {
@@ -24,11 +25,9 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         committee: { select: { id: true, year: true, isCurrent: true } },
-        coordinator: {
-          include: {
-            user: { select: { id: true, name: true, email: true } },
-          },
-        },
+        // `department.view` is granted to ordinary members, so the coordinator
+        // projection stays at directory level — no phone/address/DOB.
+        coordinator: { select: INTERNAL_MEMBER_SELECT },
         _count: {
           select: { members: true, events: true, tasks: true },
         },

@@ -59,7 +59,7 @@ const NAV: NavItem[] = [
   },
   { href: "/dashboard/notifications", label: "Notifications", icon: "bell", tone: "text-accent dark:text-accent" },
   { href: "/dashboard/contacts", label: "Contact Messages", icon: "mail", tone: "text-emerald-600 dark:text-emerald-400", perms: ["settings.manage"] },
-  { href: "/dashboard/settings", label: "Settings", icon: "settings", tone: "text-gray-500 dark:text-slate-400", perms: ["settings.manage"] },
+  { href: "/dashboard/settings", label: "Settings", icon: "settings", tone: "text-faint", perms: ["settings.manage"] },
 ];
 
 const ICONS: Record<NotificationItem["type"], IconName> = {
@@ -84,7 +84,7 @@ const NOTIF_TONES: Record<string, string> = {
   ANNOUNCEMENT: "bg-accent-soft-strong text-accent-ink",
   EVENT: "bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300",
   GALLERY: "bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300",
-  GENERAL: "bg-gray-100 text-sub dark:bg-white/10 dark:text-slate-300",
+  GENERAL: "bg-gray-100 text-sub dark:bg-white/10",
 };
 
 function StageLights() {
@@ -92,7 +92,7 @@ function StageLights() {
     <div className="flex items-center gap-2.5 px-5 pt-5">
       <ClubLogo size={28} />
       <div className="min-w-0 leading-tight">
-        <p className="truncate font-display text-[13px] font-bold tracking-tight text-ink dark:text-slate-100">
+        <p className="truncate font-display text-[13px] font-bold tracking-tight text-ink">
           Member Console
         </p>
         <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-accent ">
@@ -191,7 +191,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Link href="/" className="flex items-center gap-2.5">
           <ClubLogo size={28} />
           <div className="flex min-w-0 flex-col justify-center leading-tight">
-            <p className="whitespace-nowrap font-display text-left text-[12.5px] font-bold leading-snug tracking-tight text-ink dark:text-slate-100">
+            <p className="whitespace-nowrap font-display text-left text-[12.5px] font-bold leading-snug tracking-tight text-ink">
               BRAC University Drama Club
             </p>
             <p className="text-left text-[9px] font-semibold uppercase tracking-[0.16em] text-accent ">
@@ -215,7 +215,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 "relative flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-150",
                 active
                   ? "bg-accent-soft font-semibold text-accent-ink"
-                  : "text-sub hover:bg-gray-100 hover:text-ink dark:text-slate-400 dark:hover:bg-white/8 dark:hover:text-slate-100"
+                  : "text-sub hover:bg-gray-100 hover:text-ink dark:hover:bg-white/8 dark:hover:text-slate-100"
               )}
             >
               <Icon
@@ -233,10 +233,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           );
         })}
       </nav>
-      <div className="border-t border-gray-200 px-4 py-4 dark:border-line">
+      <div className="border-line border-t px-4 py-4">
         <Link
           href="/"
-          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-sub transition hover:bg-gray-100 hover:text-ink dark:text-slate-400 dark:hover:bg-white/8 dark:hover:text-slate-100"
+          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-sub transition hover:bg-gray-100 hover:text-ink dark:hover:bg-white/8 dark:hover:text-slate-100"
         >
           <Icon name="external" size={15} />
           View public site
@@ -255,7 +255,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </a>
 
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r border-gray-200/80 bg-white lg:block dark:border-line dark:bg-card">
+      <aside className="border-line bg-card fixed inset-y-0 left-0 z-40 hidden w-60 border-r lg:block">
         <div className="relative h-full">{sidebar}</div>
       </aside>
 
@@ -264,7 +264,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
           <aside
-            className="animate-sheet absolute inset-y-0 left-0 w-[82vw] max-w-72 border-r border-gray-200 bg-white shadow-sheet dark:bg-card dark:border-white/10"
+            className="bg-card animate-sheet absolute inset-y-0 left-0 w-[82vw] max-w-72 border-r border-gray-200 shadow-sheet dark:border-white/10"
             role="dialog"
             aria-modal="true"
             aria-label="Navigation"
@@ -276,17 +276,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <div className="flex min-w-0 flex-1 flex-col lg:pl-60">
         {/* Top bar */}
-        <header className="glass sticky top-0 z-30 border-b border-gray-200/80 dark:border-line">
+        <header className="border-line glass sticky top-0 z-30 border-b">
           <div className="flex h-14 items-center gap-3 px-4 sm:px-6">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="flex size-9 items-center justify-center rounded-lg text-ink transition hover:bg-gray-100 lg:hidden dark:text-slate-100 dark:hover:bg-white/10"
+              className="flex size-9 items-center justify-center rounded-lg text-ink transition hover:bg-gray-100 lg:hidden dark:hover:bg-white/10"
               aria-label="Open menu"
             >
               <Icon name="menu" size={18} />
             </button>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[13px] font-medium text-sub dark:text-slate-400">
+              <p className="truncate text-[13px] font-medium text-sub">
                 {pathname === "/dashboard" ? "Overview" : pageTitle(pathname)}
               </p>
             </div>
@@ -304,7 +304,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                     open
                       ? "bg-gray-100 dark:bg-white/15"
-                      : "text-sub hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-white/10"
+                      : "text-sub hover:bg-gray-100 dark:hover:bg-white/10"
                   )}
                   aria-label="Notifications"
                 >
@@ -320,7 +320,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {(close) => (
                 <div>
                   <div className="flex items-center justify-between px-4 py-3">
-                    <p className="text-[13.5px] font-semibold text-ink dark:text-slate-100">
+                    <p className="text-[13.5px] font-semibold text-ink">
                       Notifications
                     </p>
                     <Link
@@ -331,11 +331,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       View all
                     </Link>
                   </div>
-                  <div className="max-h-[360px] overflow-y-auto border-t border-gray-100 dark:border-line">
+                  <div className="border-line max-h-[360px] overflow-y-auto border-t">
                     {notifLoading ? (
                       <p className="px-4 py-6 text-center text-[13px] text-faint">Loading…</p>
                     ) : notifications.length === 0 ? (
-                      <p className="px-4 py-8 text-center text-[13px] text-sub dark:text-slate-400">
+                      <p className="px-4 py-8 text-center text-[13px] text-sub">
                         You&apos;re all caught up.
                       </p>
                     ) : (
@@ -363,10 +363,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             <Icon name={ICONS[n.type] || "bell"} size={14} />
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[13px] font-semibold text-ink dark:text-slate-100">
+                            <span className="block truncate text-[13px] font-semibold text-ink">
                               {n.title}
                             </span>
-                            <span className="mt-0.5 line-clamp-2 block text-[12px] leading-snug text-sub dark:text-slate-400">
+                            <span className="mt-0.5 line-clamp-2 block text-[12px] leading-snug text-sub">
                               {n.message}
                             </span>
                             <span className="mt-1 block text-[11px] text-faint">
@@ -398,7 +398,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   aria-label="Account menu"
                 >
                   <Avatar name={user?.name} src={user?.image} size={28} />
-                  <span className="hidden max-w-[100px] truncate text-[13px] font-medium text-ink sm:block dark:text-slate-200">
+                  <span className="hidden max-w-[100px] truncate text-[13px] font-medium text-ink sm:block">
                     {user?.name?.split(" ")[0]}
                   </span>
                   <Icon name="chevron-down" size={12} className="hidden text-faint sm:block" />
@@ -407,18 +407,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               {(close) => (
                 <div className="p-1.5">
-                  <div className="border-b border-gray-100 px-3 py-2.5 dark:border-line">
-                    <p className="truncate text-[13px] font-semibold text-ink dark:text-slate-100">
+                  <div className="border-line border-b px-3 py-2.5">
+                    <p className="truncate text-[13px] font-semibold text-ink">
                       {user?.name}
                     </p>
-                    <p className="truncate text-[12px] text-sub dark:text-slate-400">{user?.email}</p>
+                    <p className="truncate text-[12px] text-sub">{user?.email}</p>
                   </div>
                   <div className="pt-1.5">
                     {user?.memberId && (
                       <Link
                         href={`/dashboard/members/${user.memberId}`}
                         onClick={close}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-ink transition hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-white/10"
+                        className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-ink transition hover:bg-gray-100 dark:hover:bg-white/10"
                       >
                         <Icon name="user" size={15} />
                         My Profile
@@ -427,7 +427,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <Link
                       href="/dashboard/notifications"
                       onClick={close}
-                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-ink transition hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-white/10"
+                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-ink transition hover:bg-gray-100 dark:hover:bg-white/10"
                     >
                       <Icon name="bell" size={15} />
                       Notifications
@@ -435,7 +435,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <Link
                       href="/"
                       onClick={close}
-                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-ink transition hover:bg-gray-100 dark:text-slate-200 dark:hover:bg-white/10"
+                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-ink transition hover:bg-gray-100 dark:hover:bg-white/10"
                     >
                       <Icon name="external" size={15} />
                       Public site
@@ -467,7 +467,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* iOS-style bottom tab bar (mobile) */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200/80 bg-white/85 backdrop-blur-2xl lg:hidden dark:border-line dark:bg-card/90"
+        className="border-line bg-card fixed inset-x-0 bottom-0 z-40 border-t /85 backdrop-blur-2xl lg:hidden /90"
         aria-label="Primary"
       >
         <div className="flex items-stretch justify-around pb-[env(safe-area-inset-bottom)]">
@@ -483,11 +483,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
                   "relative flex flex-1 flex-col items-center gap-0.5 pt-2 pb-1 text-[10px] font-semibold transition",
-                  active ? "text-accent" : "text-faint hover:text-sub dark:text-slate-400"
+                  active ? "text-accent" : "text-faint hover:text-sub"
                 )}
               >
+              <span className="relative">
                 {item.href === "/dashboard/notifications" && unread > 0 && (
-                  <span className="absolute right-[calc(50%-18px)] top-1.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+                  <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
                     {unread > 9 ? "9+" : unread}
                   </span>
                 )}
@@ -497,13 +498,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   strokeWidth={active ? 2.2 : 1.8}
                   className={cn(item.tone, active && "text-accent")}
                 />
+              </span>
                 {item.label}
               </Link>
             );
           })}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="flex flex-1 flex-col items-center gap-0.5 pt-2 pb-1 text-[10px] font-medium text-faint transition hover:text-sub dark:text-slate-400"
+            className="flex flex-1 flex-col items-center gap-0.5 pt-2 pb-1 text-[10px] font-medium text-faint transition hover:text-sub"
             aria-label="More"
           >
             <Icon name="menu" size={20} />

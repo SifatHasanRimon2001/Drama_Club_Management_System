@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { PUBLIC_MEMBER_SELECT } from "@/lib/member-select";
 
 export async function GET() {
   try {
@@ -10,11 +11,9 @@ export async function GET() {
           include: {
             memberRoles: {
               include: {
-                member: {
-                  include: {
-                    user: { select: { id: true, name: true, image: true } },
-                  },
-                },
+                // Narrowed at the query level so no personal field is ever
+                // loaded, rather than fetched and stripped afterwards.
+                member: { select: PUBLIC_MEMBER_SELECT },
                 role: true,
               },
             },
@@ -23,11 +22,7 @@ export async function GET() {
         prisma.department.findMany({
           where: { committee: { isCurrent: true } },
           include: {
-            coordinator: {
-              include: {
-                user: { select: { id: true, name: true } },
-              },
-            },
+            coordinator: { select: PUBLIC_MEMBER_SELECT },
             _count: { select: { members: true, events: true } },
           },
         }),
@@ -44,26 +39,8 @@ export async function GET() {
         }),
       ]);
 
-    // Strip emails from committee member roles for public response
-    const safeCommittee = committee
-      ? {
-          ...committee,
-          memberRoles: committee.memberRoles.map((mr) => ({
-            ...mr,
-            member: {
-              ...mr.member,
-              user: {
-                id: mr.member.user.id,
-                name: mr.member.user.name,
-                image: mr.member.user.image,
-              },
-            },
-          })),
-        }
-      : null;
-
     return NextResponse.json({
-      committee: safeCommittee,
+      committee,
       departments,
       recentUpdates,
       upcomingEvents,

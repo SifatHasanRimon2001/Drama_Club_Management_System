@@ -195,7 +195,7 @@ function CommitteeCard({
               "flex size-10 items-center justify-center rounded-xl",
               committee.isCurrent
                 ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white dark:bg-accent dark:bg-none dark:text-on-accent"
-                : "bg-black/[0.05] text-sub dark:bg-white/10 dark:text-slate-400"
+                : "bg-black/[0.05] text-sub dark:bg-white/10"
             )}
           >
             <Icon name="trophy" size={18} />
@@ -209,7 +209,7 @@ function CommitteeCard({
                 </span>
               )}
             </CardTitle>
-            <p className="text-[12.5px] text-sub dark:text-slate-400">
+            <p className="text-[12.5px] text-sub">
               {formatDate(committee.startDate)}
               {committee.endDate ? ` → ${formatDate(committee.endDate)}` : ""} ·{" "}
               {active.length} officers · {committee.departments.length} departments
@@ -229,7 +229,7 @@ function CommitteeCard({
       </CardHeader>
       <CardBody>
         {active.length === 0 ? (
-          <p className="py-4 text-center text-[13.5px] text-sub dark:text-slate-400">
+          <p className="py-4 text-center text-[13.5px] text-sub">
             No officers assigned to this committee yet.
           </p>
         ) : (
@@ -241,7 +241,7 @@ function CommitteeCard({
               >
                 <Avatar name={mr.member.user.name} src={mr.member.user.image} size={38} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13.5px] font-semibold text-ink dark:text-slate-100">
+                  <p className="truncate text-[13.5px] font-semibold text-ink">
                     {mr.member.user.name}
                   </p>
                   <p className="truncate text-[12px] font-medium text-accent">

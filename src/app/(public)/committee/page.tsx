@@ -67,7 +67,7 @@ export default async function CommitteePage() {
         <div className="mt-14 space-y-12">
           {entries.map(([roleName, members]) => (
             <section key={roleName}>
-              <h2 className="flex items-center gap-2.5 text-[20px] font-bold tracking-tight text-ink dark:text-slate-100">
+              <h2 className="flex items-center gap-2.5 text-[20px] font-bold tracking-tight text-ink">
                 <span className="h-5 w-1 rounded-full bg-accent" />
                 {roleName}
               </h2>
@@ -76,10 +76,10 @@ export default async function CommitteePage() {
                   <Card key={mr.id}>
                     <CardBody className="flex flex-col items-center px-5 py-7 text-center">
                       <Avatar name={mr.member.user.name} src={mr.member.user.image} size={64} />
-                      <p className="mt-4 truncate text-[15.5px] font-semibold text-ink dark:text-slate-100">
+                      <p className="mt-4 truncate text-[15.5px] font-semibold text-ink">
                         {mr.member.user.name}
                       </p>
-                      <p className="mt-1 text-[13px] text-sub dark:text-slate-400">
+                      <p className="mt-1 text-[13px] text-sub">
                         Member since {formatDate(mr.startedAt).split(",")[0]}
                       </p>
                     </CardBody>
@@ -93,14 +93,14 @@ export default async function CommitteePage() {
 
       {committee.departments && committee.departments.length > 0 && (
         <div className="mt-20">
-          <h2 className="text-[20px] font-bold tracking-tight text-ink dark:text-slate-100">
+          <h2 className="text-[20px] font-bold tracking-tight text-ink">
             Departments in this term
           </h2>
           <div className="mt-5 flex flex-wrap gap-2.5">
             {committee.departments.map((d) => (
               <span
                 key={d.id}
-                className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3.5 py-1.5 text-[13px] font-medium text-ink shadow-card dark:bg-card dark:border-white/10 dark:text-slate-200"
+                className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3.5 py-1.5 text-[13px] font-medium text-ink shadow-card dark:bg-card dark:border-white/10"
               >
                 <Icon name="folder" size={14} className="text-purple" />
                 {d.name}

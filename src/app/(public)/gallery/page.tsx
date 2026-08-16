@@ -71,10 +71,10 @@ export default async function GalleryPage() {
                 </div>
                 <div className="flex items-center justify-between gap-3 p-5">
                   <div className="min-w-0">
-                    <h2 className="truncate text-[16.5px] font-semibold tracking-tight text-ink dark:text-slate-100">
+                    <h2 className="truncate text-[16.5px] font-semibold tracking-tight text-ink">
                       {album.name}
                     </h2>
-                    <p className="mt-0.5 text-[13px] text-sub dark:text-slate-400">
+                    <p className="mt-0.5 text-[13px] text-sub">
                       {ALBUM_CATEGORIES.includes(album.category as (typeof ALBUM_CATEGORIES)[number])
                         ? album.category.charAt(0) + album.category.slice(1).toLowerCase().replace(/_/g, " ")
                         : album.category}

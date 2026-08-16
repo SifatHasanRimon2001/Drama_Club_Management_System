@@ -92,7 +92,7 @@ export function MediaGrid({ items }: { items: MediaItem[] }) {
               />
             )}
             {active.caption && (
-              <p className="text-[14px] text-sub dark:text-slate-400">{active.caption}</p>
+              <p className="text-[14px] text-sub">{active.caption}</p>
             )}
           </div>
         )}

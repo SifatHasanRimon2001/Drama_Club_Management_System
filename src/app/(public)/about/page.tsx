@@ -47,16 +47,16 @@ export default async function AboutPage() {
               <span className="flex size-9 items-center justify-center rounded-xl bg-accent-soft text-accent-ink">
                 <Icon name={s.icon} size={17} />
               </span>
-              <div className="mt-3 text-[26px] font-bold tracking-tight text-ink dark:text-slate-100">
+              <div className="mt-3 text-[26px] font-bold tracking-tight text-ink">
                 {s.value}
               </div>
-              <p className="text-[13px] text-sub dark:text-slate-400">{s.label}</p>
+              <p className="text-[13px] text-sub">{s.label}</p>
             </CardBody>
           </Card>
         ))}
       </Grid>
 
-      <h2 className="mt-20 text-[26px] font-bold tracking-tight text-ink dark:text-slate-100">
+      <h2 className="mt-20 text-[26px] font-bold tracking-tight text-ink">
         What we stand for
       </h2>
       <Grid preset="split" className="mt-6">
@@ -78,10 +78,10 @@ export default async function AboutPage() {
       <Card className="mt-20 p-8 sm:p-12">
         <div className="grid items-center gap-8 sm:grid-cols-[1fr_auto]">
           <div>
-            <h2 className="text-[24px] font-bold tracking-tight text-ink dark:text-slate-100">
+            <h2 className="text-[24px] font-bold tracking-tight text-ink">
               Want to be part of the story?
             </h2>
-            <p className="mt-2 max-w-lg text-[15px] leading-relaxed text-sub dark:text-slate-400">
+            <p className="mt-2 max-w-lg text-[15px] leading-relaxed text-sub">
               New members join at the start of every semester through our recruitment drive.
               No experience required — just bring your enthusiasm.
             </p>

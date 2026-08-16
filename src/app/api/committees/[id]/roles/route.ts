@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { committeeRoleSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { INTERNAL_MEMBER_SELECT } from "@/lib/member-select";
 import { ZodError } from "zod";
 
 export async function POST(
@@ -60,9 +61,7 @@ export async function POST(
     const memberRole = await prisma.committeeMemberRole.create({
       data: { committeeId, memberId, roleId },
       include: {
-        member: {
-          include: { user: { select: { id: true, name: true, email: true } } },
-        },
+        member: { select: INTERNAL_MEMBER_SELECT },
         role: true,
         committee: true,
       },

@@ -6,6 +6,7 @@ import { logAudit } from "@/lib/audit";
 import { ZodError } from "zod";
 import { can } from "@/lib/permissions";
 import { auth } from "@/lib/auth";
+import { INTERNAL_MEMBER_SELECT, PUBLIC_MEMBER_SELECT } from "@/lib/member-select";
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,16 +24,18 @@ export async function GET(request: NextRequest) {
 
     const where = all ? {} : { isCurrent: true };
 
+    // This endpoint serves the anonymous public "current committee" page as
+    // well as the admin console, so the member projection follows the caller:
+    // anonymous gets identity only, signed-in staff additionally get the
+    // directory fields. Neither audience gets phone/address/DOB.
+    const memberSelect = userId ? INTERNAL_MEMBER_SELECT : PUBLIC_MEMBER_SELECT;
+
     const committees = await prisma.committee.findMany({
       where,
       include: {
         memberRoles: {
           include: {
-            member: {
-              include: {
-                user: { select: { id: true, name: true, image: true, ...(userId ? { email: true } : {}) } },
-              },
-            },
+            member: { select: memberSelect },
             role: true,
           },
         },

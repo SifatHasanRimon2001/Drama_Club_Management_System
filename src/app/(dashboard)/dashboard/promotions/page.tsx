@@ -159,10 +159,10 @@ function PromotionsPage() {
               >
                 <Avatar name={p.member?.user?.name} size={40} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
+                  <p className="truncate text-[14.5px] font-semibold text-ink">
                     {p.member?.user?.name ?? "Member"}
                   </p>
-                  <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
+                  <p className="truncate text-[12.5px] text-sub">
                     {p.member?.user?.email} · submitted {timeAgo(p.createdAt)}
                   </p>
                   {p.reason && (
@@ -223,7 +223,7 @@ function PromotionsPage() {
         <PromotionModal
           promotion={viewing}
           onClose={() => setViewing(null)}
-          onDecide={(s) => void decide(viewing.id, s)}
+          onDecide={(s) => decide(viewing.id, s)}
           canApprove={canApprove}
           canSubmit={canSubmit}
           onSubmitted={() => {
@@ -379,7 +379,7 @@ function PromotionModal({
 }: {
   promotion: PromotionRow;
   onClose: () => void;
-  onDecide: (status: string) => void;
+  onDecide: (status: string) => Promise<void>;
   canApprove: boolean;
   canSubmit: boolean;
   onSubmitted: () => void;
@@ -391,8 +391,8 @@ function PromotionModal({
   const approve = async (status: string) => {
     setDeciding(true);
     try {
-      onDecide(status);
-    } finally {
+       await onDecide(status);
+     } finally {
       setDeciding(false);
     }
   };
@@ -414,16 +414,16 @@ function PromotionModal({
         <Grid preset="split">
           <div className="rounded-2xl border border-line px-4 py-3.5 dark:border-white/10">
             <p className="text-[11px] font-medium uppercase tracking-wide text-faint">Member</p>
-            <p className="mt-0.5 text-[14.5px] font-semibold text-ink dark:text-slate-100">
+            <p className="mt-0.5 text-[14.5px] font-semibold text-ink">
               {promotion.member?.user?.name}
             </p>
-            <p className="text-[12.5px] text-sub dark:text-slate-400">
+            <p className="text-[12.5px] text-sub">
               {promotion.member?.user?.email}
             </p>
           </div>
           <div className="rounded-2xl border border-line px-4 py-3.5 dark:border-white/10">
             <p className="text-[11px] font-medium uppercase tracking-wide text-faint">Requested move</p>
-            <p className="mt-0.5 text-[14.5px] font-semibold text-ink dark:text-slate-100">
+            <p className="mt-0.5 text-[14.5px] font-semibold text-ink">
               {promotion.currentRole?.name ?? "Member"} →{" "}
               <span className="text-accent">{promotion.proposedRole?.name}</span>
             </p>
@@ -433,7 +433,7 @@ function PromotionModal({
         {promotion.reason && (
           <div className="rounded-2xl border border-line p-4 dark:border-white/10">
             <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-faint">Reason</p>
-            <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink dark:text-slate-200">
+            <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink">
               {promotion.reason}
             </p>
           </div>
@@ -444,7 +444,7 @@ function PromotionModal({
             <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-faint">
               Achievements
             </p>
-            <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink dark:text-slate-200">
+            <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink">
               {promotion.achievements}
             </p>
           </div>

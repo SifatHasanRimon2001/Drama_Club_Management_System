@@ -44,9 +44,9 @@ const ENTITY_META: Record<string, { icon: IconName; tone: string }> = {
   ClubUpdate: { icon: "note", tone: "bg-indigo/12 text-indigo dark:bg-indigo/20 dark:text-indigo-300" },
   GalleryAlbum: { icon: "gallery", tone: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300" },
   GalleryItem: { icon: "image", tone: "bg-pink/12 text-pink dark:bg-pink/20 dark:text-pink-300" },
-  SystemSetting: { icon: "settings", tone: "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-slate-300" },
+  SystemSetting: { icon: "settings", tone: "bg-black/[0.06] text-sub dark:bg-white/10" },
   Notification: { icon: "bell", tone: "bg-yellow/12 text-yellow dark:bg-yellow/20 dark:text-yellow-300" },
-  ContactSubmission: { icon: "mail", tone: "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-slate-300" },
+  ContactSubmission: { icon: "mail", tone: "bg-black/[0.06] text-sub dark:bg-white/10" },
 };
 
 const ACTION_TONES: Record<string, string> = {
@@ -65,7 +65,7 @@ function actionTone(action: string): string {
   for (const [key, tone] of Object.entries(ACTION_TONES)) {
     if (action.endsWith(key)) return tone;
   }
-  return "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-slate-300";
+  return "bg-black/[0.06] text-sub dark:bg-white/10";
 }
 
 function AuditPage() {
@@ -169,7 +169,7 @@ function AuditPage() {
               Clear filters
             </Button>
           )}
-          <div className="ml-auto text-[13px] text-sub dark:text-slate-400">
+          <div className="ml-auto text-[13px] text-sub">
             {total.toLocaleString()} {total === 1 ? "event" : "events"}
           </div>
         </div>
@@ -203,7 +203,7 @@ function AuditPage() {
           {entries.map((entry) => {
             const meta = ENTITY_META[entry.entityType] || {
               icon: "list" as IconName,
-              tone: "bg-black/[0.06] text-sub dark:bg-white/10 dark:text-slate-300",
+              tone: "bg-black/[0.06] text-sub dark:bg-white/10",
             };
             const hasMetadata = entry.metadata && Object.keys(entry.metadata).length > 0;
             const isOpen = expanded.has(entry.id);
@@ -215,20 +215,20 @@ function AuditPage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="text-[14px] font-semibold text-ink dark:text-slate-100">
+                      <span className="text-[14px] font-semibold text-ink">
                         {entry.action}
                       </span>
                       <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", actionTone(entry.action))}>
                         {entry.action.split(".").pop()}
                       </span>
-                      <span className="text-[12.5px] text-sub dark:text-slate-400">
+                      <span className="text-[12.5px] text-sub">
                         {entry.entityType}
                         <span className="ml-1 font-mono text-[11.5px] text-faint">
                           {entry.entityId.slice(0, 10)}…
                         </span>
                       </span>
                     </div>
-                    <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] text-sub dark:text-slate-400">
+                    <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] text-sub">
                       <span className="inline-flex items-center gap-1.5">
                         <Avatar name={entry.actorName} size={16} />
                         {entry.actorName}
@@ -247,7 +247,7 @@ function AuditPage() {
                   )}
                 </div>
                 {hasMetadata && isOpen && (
-                  <pre className="thin-scroll mt-3 overflow-x-auto rounded-xl bg-black/[0.04] p-3 font-mono text-[12px] leading-relaxed text-sub dark:bg-white/5 dark:text-slate-300">
+                  <pre className="thin-scroll mt-3 overflow-x-auto rounded-xl bg-black/[0.04] p-3 font-mono text-[12px] leading-relaxed text-sub dark:bg-white/5">
                     {JSON.stringify(entry.metadata, null, 2)}
                   </pre>
                 )}

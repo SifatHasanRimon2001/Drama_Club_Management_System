@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/api-helpers";
+import { can } from "@/lib/permissions";
+import { INTERNAL_MEMBER_SELECT, PUBLIC_MEMBER_SELECT } from "@/lib/member-select";
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,20 +19,31 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Verify user has access to this department
-    const member = await prisma.member.findUnique({
-      where: { userId: auth.userId },
-      include: {
-        departments: { where: { departmentId } },
-        coordinatedDepts: { where: { id: departmentId } },
-      },
-    });
+    // PRD §3b grants department access two ways: holding the permission
+    // globally, OR being attached to that specific department. Only the second
+    // was implemented, which locked administrators — the very people with
+    // global `department.manage` — out of every department they had not
+    // personally joined.
+    const hasGlobalManage = await can(auth.userId, "department.manage");
 
-    if (!member || (member.departments.length === 0 && member.coordinatedDepts.length === 0)) {
-      return NextResponse.json(
-        { error: "You do not have access to this department" },
-        { status: 403 }
-      );
+    if (!hasGlobalManage) {
+      const member = await prisma.member.findUnique({
+        where: { userId: auth.userId },
+        include: {
+          departments: { where: { departmentId } },
+          coordinatedDepts: { where: { id: departmentId } },
+        },
+      });
+
+      if (
+        !member ||
+        (member.departments.length === 0 && member.coordinatedDepts.length === 0)
+      ) {
+        return NextResponse.json(
+          { error: "You do not have access to this department" },
+          { status: 403 }
+        );
+      }
     }
 
     const now = new Date();
@@ -52,11 +65,7 @@ export async function GET(request: NextRequest) {
       prisma.memberDepartment.findMany({
         where: { departmentId },
         include: {
-          member: {
-            include: {
-              user: { select: { id: true, name: true, email: true, image: true } },
-            },
-          },
+          member: { select: INTERNAL_MEMBER_SELECT },
         },
       }),
       prisma.memberDepartment.count({ where: { departmentId } }),
@@ -68,9 +77,7 @@ export async function GET(request: NextRequest) {
       prisma.task.findMany({
         where: { departmentId },
         include: {
-          assignee: {
-            include: { user: { select: { id: true, name: true } } },
-          },
+          assignee: { select: PUBLIC_MEMBER_SELECT },
         },
         orderBy: { createdAt: "desc" },
         take: 20,

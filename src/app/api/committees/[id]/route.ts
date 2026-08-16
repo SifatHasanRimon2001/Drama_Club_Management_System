@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth, getSession, parseJsonBody } from "@/lib/api-helpers";
 import { committeeSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { INTERNAL_MEMBER_SELECT, PUBLIC_MEMBER_SELECT } from "@/lib/member-select";
 import { ZodError } from "zod";
 
 export async function GET(
@@ -19,10 +20,10 @@ export async function GET(
       include: {
         memberRoles: {
           include: {
+            // Audience-scoped, mirroring /api/committees: anonymous callers
+            // get identity only, never personal contact fields.
             member: {
-              include: {
-                user: { select: { id: true, name: true, image: true, ...(isAuthenticated ? { email: true } : {}) } },
-              },
+              select: isAuthenticated ? INTERNAL_MEMBER_SELECT : PUBLIC_MEMBER_SELECT,
             },
             role: true,
           },

@@ -53,7 +53,7 @@ export default async function EventDetailPage({
                 </h1>
                 <StatusPill value={event.type} />
               </div>
-              <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-sub dark:text-slate-400">
+              <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-sub">
                 <span className="inline-flex items-center gap-1.5">
                   <Icon name="clock" size={14} />
                   {formatDateTime(event.startAt)}
@@ -77,12 +77,12 @@ export default async function EventDetailPage({
 
         {event.description ? (
           <div className="mt-8 border-t border-line pt-8 dark:border-white/10">
-            <p className="whitespace-pre-line text-[15.5px] leading-relaxed text-ink dark:text-slate-200">
+            <p className="whitespace-pre-line text-[15.5px] leading-relaxed text-ink">
               {event.description}
             </p>
           </div>
         ) : (
-          <p className="mt-8 border-t border-line pt-8 text-[14.5px] text-sub dark:border-white/10 dark:text-slate-400">
+          <p className="mt-8 border-t border-line pt-8 text-[14.5px] text-sub dark:border-white/10">
             No description provided for this event.
           </p>
         )}
@@ -93,8 +93,8 @@ export default async function EventDetailPage({
             <Icon name="ticket" size={18} />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[14.5px] font-semibold text-ink dark:text-slate-100">Tickets & RSVPs</p>
-            <p className="mt-0.5 text-[13px] leading-relaxed text-sub dark:text-slate-400">
+            <p className="text-[14.5px] font-semibold text-ink">Tickets & RSVPs</p>
+            <p className="mt-0.5 text-[13px] leading-relaxed text-sub">
               Seating is arranged through the club — message us and we&apos;ll save your place.
             </p>
           </div>
@@ -112,7 +112,7 @@ export default async function EventDetailPage({
             <Link
               key={t}
               href={`/events?type=${t}`}
-              className="rounded-full border border-line px-3.5 py-1.5 text-[12.5px] font-medium text-sub transition hover:border-accent/40 hover:text-accent dark:border-white/15 dark:text-slate-400"
+              className="rounded-full border border-line px-3.5 py-1.5 text-[12.5px] font-medium text-sub transition hover:border-accent/40 hover:text-accent dark:border-white/15"
             >
               More {t.charAt(0) + t.slice(1).toLowerCase()} events
             </Link>

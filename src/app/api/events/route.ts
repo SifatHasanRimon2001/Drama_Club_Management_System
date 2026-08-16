@@ -102,7 +102,12 @@ export async function POST(request: NextRequest) {
         title: data.title,
         type: data.type,
         departmentId: data.departmentId,
-        status: "UPCOMING",
+        // `eventSchema` accepts a status but this used to hardcode UPCOMING,
+        // so a DRAFT event could never be created through the API — the one
+        // status the public site specifically filters out. Only DRAFT and
+        // UPCOMING are valid entry states; the later lifecycle values are
+        // reached through the PATCH transition rules.
+        status: data.status === "DRAFT" ? "DRAFT" : "UPCOMING",
         startAt: new Date(data.startAt),
         endAt: data.endAt ? new Date(data.endAt) : undefined,
         location: data.location,
@@ -113,28 +118,33 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // PRD §3c: New Event → EVENT in-app to department members (all members if dept is null)
-    try {
-      if (data.departmentId) {
-        await notifyDepartmentMembers({
-          departmentId: data.departmentId,
-          type: "EVENT",
-          title: `New Event: ${event.title}`,
-          message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt?.toLocaleDateString() ?? "TBD"}.`,
-          payload: { eventId: event.id },
-          link: `/events/${event.id}`,
-        });
-      } else {
-        await notifyAllActiveMembers({
-          type: "EVENT",
-          title: `New Event: ${event.title}`,
-          message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt?.toLocaleDateString() ?? "TBD"}.`,
-          payload: { eventId: event.id },
-          link: `/events/${event.id}`,
-        });
+    // PRD §3c: New Event → EVENT in-app to department members (all members if dept is null).
+    // A DRAFT is not announced — it links to a page the public route 404s on,
+    // and the point of a draft is that nobody has been told about it yet.
+    // Members are notified when it is published via PATCH.
+    if (event.status !== "DRAFT") {
+      try {
+        if (data.departmentId) {
+          await notifyDepartmentMembers({
+            departmentId: data.departmentId,
+            type: "EVENT",
+            title: `New Event: ${event.title}`,
+            message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt?.toLocaleDateString() ?? "TBD"}.`,
+            payload: { eventId: event.id },
+            link: `/events/${event.id}`,
+          });
+        } else {
+          await notifyAllActiveMembers({
+            type: "EVENT",
+            title: `New Event: ${event.title}`,
+            message: `A new ${event.type.toLowerCase()} has been scheduled for ${event.startAt?.toLocaleDateString() ?? "TBD"}.`,
+            payload: { eventId: event.id },
+            link: `/events/${event.id}`,
+          });
+        }
+      } catch (notifError) {
+        console.error("[Event POST] Failed to notify:", notifError);
       }
-    } catch (notifError) {
-      console.error("[Event POST] Failed to notify:", notifError);
     }
 
     await logAudit({

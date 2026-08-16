@@ -42,9 +42,12 @@ export async function POST(request: NextRequest) {
       data.departmentId
     );
 
+    // The declared size is signed into the URL, so the limit checked above is
+    // enforced by storage rather than trusted from the client.
     const { uploadUrl, publicUrl } = await getPresignedUploadUrl(
       key,
-      data.contentType
+      data.contentType,
+      data.fileSize
     );
 
     return NextResponse.json({ uploadUrl, key, publicUrl });

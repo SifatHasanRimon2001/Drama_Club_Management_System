@@ -95,30 +95,30 @@ export function Modal({
       aria-labelledby={titleId}
     >
       <div
-        className="animate-fade absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="animate-fade absolute inset-0 bg-black/70 backdrop-blur-md"
         onClick={onClose}
         aria-hidden="true"
       />
       <div
         ref={panelRef}
         className={cn(
-          "animate-sheet relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-sheet sm:rounded-2xl",
-          "dark:bg-card",
+          "animate-sheet relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl sm:rounded-2xl",
+          "border border-line-strong bg-card shadow-sheet",
           sizes[size]
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-5 py-4 sm:px-6 dark:border-line">
+        <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4 sm:px-6">
           <div className="min-w-0">
-            <h2 id={titleId} className="text-[16px] font-semibold tracking-tight text-ink dark:text-slate-100">
+            <h2 id={titleId} className="font-display text-[17px] font-semibold tracking-[-0.02em] text-ink">
               {title}
             </h2>
             {subtitle && (
-              <p className="mt-0.5 text-[13px] text-sub dark:text-slate-400">{subtitle}</p>
+              <p className="mt-1 text-[13px] text-sub">{subtitle}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-sub transition hover:bg-gray-200 active:scale-95 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/20"
+            className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-line bg-elevated text-sub transition hover:border-line-strong hover:text-ink active:scale-95"
             aria-label="Close dialog"
           >
             <Icon name="close" size={14} />
@@ -126,7 +126,7 @@ export function Modal({
         </div>
         <div className="thin-scroll flex-1 overflow-y-auto px-5 py-5 sm:px-6">{children}</div>
         {footer && (
-          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-gray-100 bg-gray-50/80 px-5 py-3.5 backdrop-blur sm:px-6 dark:border-line dark:bg-card/80">
+          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-line bg-elevated/50 px-5 py-4 backdrop-blur sm:px-6">
             {footer}
           </div>
         )}
@@ -165,7 +165,7 @@ export function ConfirmDialog({
           <button
             onClick={onClose}
             disabled={loading}
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-gray-100 px-4 text-[13px] font-medium text-ink transition hover:bg-gray-200 disabled:opacity-50 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/20"
+            className="inline-flex h-10 items-center justify-center rounded-xl border border-line bg-elevated px-4 text-[13px] font-medium text-ink transition hover:border-line-strong disabled:opacity-50"
           >
             Cancel
           </button>
@@ -173,10 +173,10 @@ export function ConfirmDialog({
             onClick={onConfirm}
             disabled={loading}
             className={cn(
-              "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-[13px] font-medium text-white transition active:scale-[0.98] disabled:opacity-50",
+              "inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-[13px] font-semibold transition active:scale-[0.98] disabled:opacity-50",
               tone === "danger"
-                ? "bg-red-600 hover:bg-red-700"
-                : "bg-accent font-semibold text-white hover:bg-accent-hover dark:text-on-accent"
+                ? "bg-red text-white hover:brightness-110 dark:text-canvas"
+                : "bg-accent text-on-accent hover:bg-accent-hover"
             )}
           >
             {loading && (
@@ -187,7 +187,7 @@ export function ConfirmDialog({
         </>
       }
     >
-      <p className="text-[14px] leading-relaxed text-sub dark:text-slate-400">{message}</p>
+      <p className="text-[14px] leading-relaxed text-sub">{message}</p>
     </Modal>
   );
 }

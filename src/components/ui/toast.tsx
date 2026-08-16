@@ -79,9 +79,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 <Icon name={s.icon} size={14} />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-[13.5px] font-semibold text-ink dark:text-slate-100">{t.title}</p>
+                <p className="text-[13.5px] font-semibold text-ink">{t.title}</p>
                 {t.message && (
-                  <p className="mt-0.5 text-[12.5px] leading-snug text-sub dark:text-slate-400">{t.message}</p>
+                  <p className="mt-0.5 text-[12.5px] leading-snug text-sub">{t.message}</p>
                 )}
               </div>
               <button

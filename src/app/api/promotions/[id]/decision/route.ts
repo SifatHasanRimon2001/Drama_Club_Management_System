@@ -4,7 +4,20 @@ import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { promotionDecisionSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 import { createNotification } from "@/lib/notifications";
+import { PUBLIC_MEMBER_SELECT } from "@/lib/member-select";
 import { ZodError } from "zod";
+
+/**
+ * Raised inside the decision transaction when another request already moved
+ * the promotion out of a reviewable state. Rolls the transaction back and is
+ * translated into a 409 by the handler.
+ */
+class PromotionAlreadyDecidedError extends Error {
+  constructor() {
+    super("Promotion has already been decided");
+    this.name = "PromotionAlreadyDecidedError";
+  }
+}
 
 export async function POST(
   request: NextRequest,
@@ -52,18 +65,33 @@ export async function POST(
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      // Update promotion status
-      const updated = await tx.promotionRequest.update({
-        where: { id },
+      // Re-assert the reviewable state as part of the write itself. The check
+      // above ran outside the transaction, so two concurrent approvals (a
+      // double-clicked button, a retried request) could both pass it and each
+      // record a decision — producing duplicate audit entries and duplicate
+      // "promotion approved" notifications for the member. Matching on the
+      // status here means only the first writer updates a row; the loser sees
+      // count 0 and is rejected as a conflict.
+      const claimed = await tx.promotionRequest.updateMany({
+        where: {
+          id,
+          status: { in: ["SUBMITTED", "PENDING_APPROVAL"] },
+        },
         data: {
           status: data.status,
           reviewedById: auth.userId,
           reviewedAt: new Date(),
         },
+      });
+
+      if (claimed.count === 0) {
+        throw new PromotionAlreadyDecidedError();
+      }
+
+      const updated = await tx.promotionRequest.findUniqueOrThrow({
+        where: { id },
         include: {
-          member: {
-            include: { user: { select: { id: true, name: true, email: true } } },
-          },
+          member: { select: PUBLIC_MEMBER_SELECT },
           currentRole: { select: { id: true, name: true } },
           proposedRole: { select: { id: true, name: true } },
           submittedBy: { select: { id: true, name: true } },
@@ -154,6 +182,13 @@ export async function POST(
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    // Lost the race against a concurrent decision on the same request.
+    if (error instanceof PromotionAlreadyDecidedError) {
+      return NextResponse.json(
+        { error: "This promotion has already been decided" },
+        { status: 409 }
+      );
     }
     console.error("[Promotion Decision POST]", error);
     return NextResponse.json(

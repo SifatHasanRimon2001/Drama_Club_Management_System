@@ -15,7 +15,7 @@ export function TicketStub({
   className?: string;
 }) {
   const sizes = {
-    sm: "w-14 px-1 py-1.5",
+    sm: "w-14 px-1 py-2",
     md: "w-[70px] px-1.5 py-2.5",
     lg: "w-24 px-1.5 py-3",
   } as const;
@@ -24,8 +24,10 @@ export function TicketStub({
     md: "text-[22px]",
     lg: "text-[28px]",
   } as const;
+  // Floor of 11px: below that, uppercase month abbreviations stop being
+  // comfortably legible even with the wider tracking.
   const month = {
-    sm: "text-[10px]",
+    sm: "text-[11px]",
     md: "text-[11px]",
     lg: "text-[12px]",
   } as const;

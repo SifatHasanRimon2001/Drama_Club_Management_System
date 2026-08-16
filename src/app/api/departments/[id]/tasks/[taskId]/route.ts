@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { taskSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { PUBLIC_MEMBER_SELECT } from "@/lib/member-select";
 import { ZodError } from "zod";
 
 export async function PATCH(
@@ -34,6 +35,22 @@ export async function PATCH(
       );
     }
 
+    // Mirrors the create path: without this, an unknown assignee reaches the
+    // database and the foreign-key violation surfaces as a 500 instead of a
+    // useful 404. `null` is a legitimate value here — it unassigns the task.
+    if (data.assigneeId) {
+      const assignee = await prisma.member.findUnique({
+        where: { id: data.assigneeId },
+        select: { id: true },
+      });
+      if (!assignee) {
+        return NextResponse.json(
+          { error: "Assignee not found" },
+          { status: 404 }
+        );
+      }
+    }
+
     const task = await prisma.task.update({
       where: { id: taskId },
       data: {
@@ -44,9 +61,7 @@ export async function PATCH(
         dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
       },
       include: {
-        assignee: {
-          include: { user: { select: { id: true, name: true } } },
-        },
+        assignee: { select: PUBLIC_MEMBER_SELECT },
       },
     });
 

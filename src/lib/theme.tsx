@@ -15,6 +15,9 @@ export type Theme = "light" | "dark" | "system";
 
 const STORAGE_KEY = "dcms-theme";
 
+/** The palette used when the visitor has expressed no preference at all. */
+const DEFAULT_THEME: Theme = "dark";
+
 function resolveTheme(theme: Theme): "light" | "dark" {
   if (theme === "system") {
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -35,18 +38,18 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "system",
-  resolved: "light",
+  theme: DEFAULT_THEME,
+  resolved: "dark",
   setTheme: () => {},
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Initial state is always "system"/"light" so SSR and hydration match.
-  // The persisted theme is applied right after mount (and by the inline
-  // bootstrap script in the root layout, which also prevents a flash).
-  const [theme, setThemeState] = useState<Theme>("system");
-  const [resolved, setResolved] = useState<"light" | "dark">("light");
-  const themeRef = useRef<Theme>("system");
+  // Initial state matches the dark-first default so SSR and hydration agree.
+  // The persisted theme is read right after mount (and applied before paint by
+  // the inline bootstrap script in the root layout, which prevents a flash).
+  const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME);
+  const [resolved, setResolved] = useState<"light" | "dark">("dark");
+  const themeRef = useRef<Theme>(DEFAULT_THEME);
 
   useEffect(() => {
     themeRef.current = theme;
@@ -54,7 +57,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const stored = (localStorage.getItem(STORAGE_KEY) as Theme | null) || "system";
+      const stored = (localStorage.getItem(STORAGE_KEY) as Theme | null) || DEFAULT_THEME;
       applyTheme(stored);
       setThemeState(stored);
       setResolved(resolveTheme(stored));

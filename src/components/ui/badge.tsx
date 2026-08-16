@@ -13,17 +13,25 @@ export type Tone =
   | "pink"
   | "indigo";
 
+/**
+ * Badges are translucent tints over the card surface with a matching hairline,
+ * rather than solid blocks of colour. On near-black that keeps status readable
+ * without any pill competing with the violet accent for attention.
+ *
+ * `blue` is the accent tone — the palette's violet — because `toneFor()` maps
+ * the app's neutral/among-friends states to it.
+ */
 const tones: Record<Tone, string> = {
-  blue: "bg-accent-soft-strong text-accent-ink",
-  green: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400",
-  red: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400",
-  orange: "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400",
-  yellow: "bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-400",
-  purple: "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-400",
-  gray: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-slate-300",
-  teal: "bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-400",
-  pink: "bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-400",
-  indigo: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400",
+  blue: "bg-accent-soft-strong text-accent-ink border-accent-soft-strong",
+  green: "bg-green/12 text-green border-green/25",
+  red: "bg-red/12 text-red border-red/25",
+  orange: "bg-orange/12 text-orange border-orange/25",
+  yellow: "bg-yellow/12 text-yellow border-yellow/25",
+  purple: "bg-purple/12 text-purple border-purple/25",
+  gray: "bg-elevated text-sub border-line-strong",
+  teal: "bg-teal/12 text-teal border-teal/25",
+  pink: "bg-pink/12 text-pink border-pink/25",
+  indigo: "bg-indigo/12 text-indigo border-indigo/25",
 };
 
 export function Badge({
@@ -36,7 +44,8 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[12px] font-medium leading-none whitespace-nowrap",
+        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1",
+        "text-[11.5px] font-semibold leading-none tracking-[0.01em]",
         tones[tone],
         className
       )}

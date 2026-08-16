@@ -122,10 +122,10 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
         <span className="flex size-14 items-center justify-center rounded-full bg-green/12 text-[#248a3d] dark:text-green-400">
           <Icon name="check" size={26} />
         </span>
-        <h3 className="mt-5 text-[19px] font-bold tracking-tight text-ink dark:text-slate-100">
+        <h3 className="mt-5 text-[19px] font-bold tracking-tight text-ink">
           Application submitted!
         </h3>
-        <p className="mt-2 max-w-sm text-[14px] leading-relaxed text-sub dark:text-slate-400">
+        <p className="mt-2 max-w-sm text-[14px] leading-relaxed text-sub">
           Thanks for applying. Our team will review your application and get back to you by
           email. Break a leg!
         </p>
@@ -172,7 +172,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
       </Grid>
 
       <div className="mt-5">
-        <p className="text-[13px] font-medium text-sub dark:text-slate-400">
+        <p className="text-[13px] font-medium text-sub">
           Department preferences <span className="text-red">*</span>
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -187,7 +187,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
                 className={`rounded-full border px-3.5 py-1.5 text-[13.5px] font-medium transition ${
                   active
                     ? "border-gold bg-gradient-to-br from-gold-light via-gold to-[#1e40af] font-bold text-white dark:bg-accent dark:bg-none dark:text-on-accent shadow-gold"
-                    : "border-line bg-white text-sub hover:border-gold/60 dark:bg-white/10 dark:text-slate-300"
+                    : "border-line bg-white text-sub hover:border-gold/60 dark:bg-white/10"
                 }`}
               >
                 {d.name}
@@ -203,7 +203,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
       </div>
 
       <div className="mt-5">
-        <p className="text-[13px] font-medium text-sub dark:text-slate-400">Skills</p>
+        <p className="text-[13px] font-medium text-sub">Skills</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {skills.map((s) => (
             <span
@@ -243,7 +243,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
                 key={s}
                 type="button"
                 onClick={() => setSkills((k) => [...k, s])}
-                className="rounded-full bg-black/[0.04] px-2.5 py-1 text-[12px] text-sub transition hover:bg-black/[0.08] dark:bg-white/10 dark:text-slate-300"
+                className="rounded-full bg-black/[0.04] px-2.5 py-1 text-[12px] text-sub transition hover:bg-black/[0.08] dark:bg-white/10"
               >
                 + {s}
               </button>
@@ -344,7 +344,7 @@ export function ApplyForm({ windowId, formSchema, departments }: ApplyFormProps)
         <Button type="submit" loading={submitting} size="lg" full>
           Submit Application
         </Button>
-        <p className="text-[12.5px] text-faint dark:text-slate-400">
+        <p className="text-[12.5px] text-faint">
           You&apos;ll receive a confirmation email once reviewed. Max 1 application per window.
         </p>
       </div>

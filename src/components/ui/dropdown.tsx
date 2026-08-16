@@ -37,7 +37,11 @@ export function Dropdown({
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      // Return focus to the trigger. Dismissing with Escape otherwise strands
+      // keyboard users at the top of the document with no clear position.
+      ref.current?.querySelector<HTMLElement>("button, [role='button']")?.focus();
     };
     document.addEventListener("mousedown", onDown);
     document.addEventListener("touchstart", onDown);
@@ -65,8 +69,8 @@ export function Dropdown({
         <div
           id={menuId}
           className={cn(
-            "animate-sheet absolute top-full z-[60] mt-2 max-w-[calc(100vw-2rem)] origin-top overflow-hidden rounded-xl border border-gray-200 bg-white shadow-pop backdrop-blur-xl",
-            "dark:bg-card/95 dark:border-white/10",
+            "animate-sheet absolute top-full z-[60] mt-2 max-w-[calc(100vw-2rem)] origin-top overflow-hidden rounded-xl",
+            "glass-strong border border-line-strong shadow-pop",
             align === "end" ? "right-0" : "left-0",
             width,
             className

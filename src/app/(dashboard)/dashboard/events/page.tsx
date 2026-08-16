@@ -159,17 +159,17 @@ function EventsPage() {
                 <Icon name={(EVENT_TYPE_ICONS[ev.type] as IconName) || "calendar"} size={17} />
               </span>
               <div className="min-w-0 flex-1 basis-52">
-                <p className="truncate text-[14.5px] font-semibold text-ink dark:text-slate-100">
+                <p className="truncate text-[14.5px] font-semibold text-ink">
                   {ev.title}
                 </p>
-                <p className="truncate text-[12.5px] text-sub dark:text-slate-400">
+                <p className="truncate text-[12.5px] text-sub">
                   {formatDateTime(ev.startAt)}
                   {ev.endAt ? ` → ${formatDateTime(ev.endAt)}` : ""}
                   {ev.location ? ` · ${ev.location}` : ""}
                   {ev.department ? ` · ${ev.department.name}` : ""}
                 </p>
               </div>
-              <span className="hidden rounded-full bg-black/[0.05] px-2.5 py-1 text-[11.5px] font-medium text-sub sm:block dark:bg-white/10 dark:text-slate-300">
+              <span className="hidden rounded-full bg-black/[0.05] px-2.5 py-1 text-[11.5px] font-medium text-sub sm:block dark:bg-white/10">
                 {eventTypeLabel(ev.type)}
               </span>
               <StatusPill value={ev.status} />

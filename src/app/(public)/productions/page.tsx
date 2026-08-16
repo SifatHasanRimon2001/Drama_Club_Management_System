@@ -47,15 +47,15 @@ export default async function ProductionsPage() {
                 <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-accent">
                   {p.department?.name || "Club Production"}
                 </p>
-                <h2 className="font-display mt-1.5 text-[20px] font-bold tracking-tight text-ink dark:text-slate-100">
+                <h2 className="font-display mt-1.5 text-[20px] font-bold tracking-tight text-ink">
                   {p.title}
                 </h2>
                 {p.description && (
-                  <p className="mt-2 line-clamp-2 text-[14px] leading-relaxed text-sub dark:text-slate-400">
+                  <p className="mt-2 line-clamp-2 text-[14px] leading-relaxed text-sub">
                     {p.description}
                   </p>
                 )}
-                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-line pt-4 text-[13px] text-sub dark:border-white/10 dark:text-slate-400">
+                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-line pt-4 text-[13px] text-sub dark:border-white/10">
                   <span className="inline-flex items-center gap-1.5">
                     <Icon name="calendar" size={14} />
                     {formatDate(p.startAt)}
@@ -79,7 +79,7 @@ export default async function ProductionsPage() {
       <div className="mt-16 flex justify-center">
         <Link
           href="/events"
-          className="inline-flex h-11 items-center gap-2 rounded-full border border-line bg-card px-5 text-[14.5px] font-medium text-ink shadow-card transition hover:bg-black/[0.03] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:bg-card dark:text-slate-100 dark:hover:bg-white/10"
+          className="bg-card inline-flex h-11 items-center gap-2 rounded-full border border-line bg-card px-5 text-[14.5px] font-medium text-ink shadow-card transition hover:bg-black/[0.03] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:hover:/10"
         >
           See all events <Icon name="chevron-right" size={14} />
         </Link>

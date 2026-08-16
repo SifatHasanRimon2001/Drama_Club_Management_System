@@ -52,7 +52,7 @@ export default async function RecruitmentPage() {
               <section key={w.id} className="scroll-mt-24">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h2 className="flex items-center gap-2.5 text-[22px] font-bold tracking-tight text-ink dark:text-slate-100">
+                    <h2 className="flex items-center gap-2.5 text-[22px] font-bold tracking-tight text-ink">
                       {w.title}
                       {isOpen && (
                         <Badge tone="green" dot className="align-middle">
@@ -60,14 +60,14 @@ export default async function RecruitmentPage() {
                         </Badge>
                       )}
                     </h2>
-                    <p className="mt-1.5 flex items-center gap-2 text-[13.5px] text-sub dark:text-slate-400">
+                    <p className="mt-1.5 flex items-center gap-2 text-[13.5px] text-sub">
                       <Icon name="calendar" size={14} />
                       {formatDate(w.startDate)} — {formatDate(w.endDate)}
                     </p>
                   </div>
                 </div>
                 {w.description && (
-                  <p className="mb-5 max-w-2xl text-[15px] leading-relaxed text-sub dark:text-slate-400">
+                  <p className="mb-5 max-w-2xl text-[15px] leading-relaxed text-sub">
                     {w.description}
                   </p>
                 )}

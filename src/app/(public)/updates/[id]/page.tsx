@@ -27,11 +27,11 @@ export default async function UpdateDetailPage({
 
       <div className="flex flex-wrap items-center gap-2.5">
         <StatusPill value={update.category} />
-        <span className="text-[13px] text-faint dark:text-slate-400">
+        <span className="text-[13px] text-faint">
           {formatDateTime(update.publishedAt)}
         </span>
         {update.author?.name && (
-          <span className="flex items-center gap-1.5 text-[13px] text-faint dark:text-slate-400">
+          <span className="flex items-center gap-1.5 text-[13px] text-faint">
             · <Icon name="user" size={12} /> {update.author.name}
           </span>
         )}
@@ -57,20 +57,20 @@ export default async function UpdateDetailPage({
 
       {update.bodyRichText ? (
         <div
-          className="rich-text mt-8 text-[16px] leading-[1.75] text-ink dark:text-slate-200"
+          className="rich-text mt-8 text-[16px] leading-[1.75] text-ink"
           dangerouslySetInnerHTML={{ __html: update.bodyRichText }}
         />
       ) : (
-        <p className="mt-8 text-[15px] text-sub dark:text-slate-400">
+        <p className="mt-8 text-[15px] text-sub">
           No additional details provided. {updateCategoryLabel(update.category)} — {update.title}
         </p>
       )}
 
       <div className="mt-14 rounded-apple border border-line bg-card p-6 text-center shadow-card sm:p-8 dark:border-white/10 dark:bg-card">
-        <p className="text-[15px] font-semibold text-ink dark:text-slate-100">
+        <p className="text-[15px] font-semibold text-ink">
           Don&apos;t miss the next update
         </p>
-        <p className="mt-1 text-[13.5px] text-sub dark:text-slate-400">
+        <p className="mt-1 text-[13.5px] text-sub">
           Follow our productions and events page for what&apos;s coming up.
         </p>
         <div className="mt-4 flex flex-wrap justify-center gap-3">
@@ -83,7 +83,7 @@ export default async function UpdateDetailPage({
           </Link>
           <Link
             href="/recruitment"
-            className="inline-flex h-11 items-center rounded-full border border-line bg-card px-6 text-sm font-medium text-ink transition hover:bg-black/[0.03] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:bg-card dark:text-slate-100 dark:hover:bg-white/10"
+            className="bg-card inline-flex h-11 items-center rounded-full border border-line bg-card px-6 text-sm font-medium text-ink transition hover:bg-black/[0.03] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:hover:/10"
           >
             Join the Club
           </Link>

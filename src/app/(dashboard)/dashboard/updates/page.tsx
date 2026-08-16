@@ -135,7 +135,7 @@ function UpdatesPage() {
               </CardHeader>
               <CardBody>
                 <div
-                  className="rich-text line-clamp-3 text-[13.5px] text-sub dark:text-slate-400"
+                  className="rich-text line-clamp-3 text-[13.5px] text-sub"
                   dangerouslySetInnerHTML={{ __html: u.bodyRichText }}
                 />
                 {u.mediaUrls.length > 0 && (
@@ -227,7 +227,7 @@ function ToolbarButton({
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         active
           ? "bg-gradient-to-br from-gold-light via-gold to-[#1e40af] text-white dark:bg-accent dark:bg-none dark:text-on-accent"
-          : "text-sub hover:bg-black/[0.05] hover:text-ink dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100"
+          : "text-sub hover:bg-black/[0.05] hover:text-ink dark:hover:bg-white/10 dark:hover:text-slate-100"
       )}
     >
       <Icon name={icon} size={16} />
@@ -248,7 +248,7 @@ function RichEditor({ value, onChange }: { value: string; onChange: (html: strin
     editorProps: {
       attributes: {
         class:
-          "prose max-w-none min-h-[200px] px-4 py-3 text-[15px] text-ink dark:text-slate-100 focus:outline-none rich-text",
+          "prose max-w-none min-h-[200px] px-4 py-3 text-[15px] text-ink focus:outline-none rich-text",
       },
     },
     onUpdate: ({ editor: ed }) => onChange(ed.getHTML()),

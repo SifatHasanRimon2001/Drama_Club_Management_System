@@ -25,16 +25,16 @@ export function PageHeader({
     >
       <div className="flex min-w-0 items-center gap-3.5">
         {icon && (
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent-ink">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-accent-soft-strong bg-accent-soft text-accent-ink">
             <Icon name={icon} size={20} />
           </span>
         )}
         <div className="min-w-0">
-          <h1 className="font-display text-[24px] font-bold leading-tight tracking-tight text-ink dark:text-slate-100">
+          <h1 className="font-display text-[25px] font-bold leading-tight tracking-[-0.03em] text-ink">
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-1 text-[13.5px] text-sub dark:text-slate-400">{subtitle}</p>
+            <p className="mt-1.5 text-[13.5px] text-sub">{subtitle}</p>
           )}
         </div>
       </div>
@@ -70,11 +70,11 @@ export function PageIntro({
     >
       <div className={cn("min-w-0 max-w-3xl", align === "center" && "flex flex-col items-center")}>
         {eyebrow && (
-          <p className="theatre-eyebrow text-accent">{eyebrow}</p>
+          <p className="theatre-eyebrow">{eyebrow}</p>
         )}
-        <h1 className="display-title mt-4 text-ink dark:text-[#faf4e6]">{title}</h1>
+        <h1 className="display-title mt-5 text-ink">{title}</h1>
         {subtitle && (
-          <p className="mt-5 max-w-2xl text-[16px] leading-relaxed text-sub sm:text-[18px] dark:text-slate-400">
+          <p className="mt-5 max-w-2xl text-[16px] leading-relaxed text-sub sm:text-[17.5px]">
             {subtitle}
           </p>
         )}
@@ -97,7 +97,7 @@ export function BackLink({
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center gap-1.5 text-[13.5px] font-medium text-sub transition hover:text-ink dark:text-slate-400 dark:hover:text-slate-100",
+        "group inline-flex items-center gap-1.5 text-[13.5px] font-medium text-sub transition hover:text-accent-ink",
         className
       )}
     >
@@ -118,14 +118,14 @@ export function PermissionGate({
 }) {
   if (allowed) return <>{children}</>;
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 px-6 py-16 text-center dark:border-white/10">
-      <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-line-strong bg-card/40 px-6 py-16 text-center">
+      <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-red/12 text-red">
         <Icon name="lock" size={24} />
       </span>
-      <h3 className="text-[16px] font-semibold text-ink dark:text-slate-100">
+      <h3 className="text-[15.5px] font-semibold text-ink">
         Access Restricted
       </h3>
-      <p className="mt-1 max-w-sm text-[13.5px] text-sub dark:text-slate-400">{message}</p>
+      <p className="mt-1.5 max-w-sm text-[13.5px] leading-relaxed text-sub">{message}</p>
     </div>
   );
 }

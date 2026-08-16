@@ -120,7 +120,7 @@ function GalleryPage() {
                 <div className="relative flex h-36 items-center justify-center bg-gradient-to-br from-accent-soft via-accent-soft/40 to-plum/15 dark:from-accent/20 dark:via-accent/10 dark:to-plum/30">
                   <span
                     className={cn(
-                      "flex size-12 items-center justify-center rounded-2xl bg-white/80 text-ink shadow-card backdrop-blur dark:bg-white/10 dark:text-slate-100",
+                      "flex size-12 items-center justify-center rounded-2xl bg-white/80 text-ink shadow-card backdrop-blur dark:bg-white/10",
                       "transition-transform duration-300 group-hover:scale-110"
                     )}
                   >
@@ -136,10 +136,10 @@ function GalleryPage() {
                   </span>
                 </div>
                 <div className="p-4">
-                  <h3 className="truncate text-[15.5px] font-bold tracking-tight text-ink dark:text-slate-100">
+                  <h3 className="truncate text-[15.5px] font-bold tracking-tight text-ink">
                     {a.name}
                   </h3>
-                  <p className="mt-0.5 text-[12.5px] text-sub dark:text-slate-400">
+                  <p className="mt-0.5 text-[12.5px] text-sub">
                     {a._count?.items ?? 0} items
                     {a.department ? ` · ${a.department.name}` : ""} ·{" "}
                     {timeAgo(a.createdAt)}
@@ -150,14 +150,14 @@ function GalleryPage() {
                 <div className="flex items-center justify-between gap-2 border-t border-line px-4 py-2.5 dark:border-white/10">
                   <button
                     onClick={() => setEditing(a)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-1.5 text-[12.5px] font-medium text-sub transition hover:bg-black/[0.08] hover:text-ink dark:bg-white/10 dark:text-slate-300 dark:hover:text-slate-100"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-1.5 text-[12.5px] font-medium text-sub transition hover:bg-black/[0.08] hover:text-ink dark:bg-white/10 dark:hover:text-slate-100"
                   >
                     <Icon name="edit" size={13} />
                     Edit
                   </button>
                   <button
                     onClick={() => setDeleting(a)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-1.5 text-[12.5px] font-medium text-sub transition hover:bg-red/10 hover:text-red dark:bg-white/10 dark:text-slate-300"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-1.5 text-[12.5px] font-medium text-sub transition hover:bg-red/10 hover:text-red dark:bg-white/10"
                   >
                     <Icon name="trash" size={13} />
                     Delete
@@ -431,7 +431,7 @@ function AlbumModal({
         {canUpload && (
           <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-line-strong/60 p-4 dark:border-white/15">
             <Icon name="upload" size={18} className="text-faint" />
-            <p className="flex-1 text-[13px] text-sub dark:text-slate-400">
+            <p className="flex-1 text-[13px] text-sub">
               {uploadProgress || "Upload images (max 10 MB) or videos (max 50 MB)"}
             </p>
             <input
