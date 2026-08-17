@@ -87,18 +87,147 @@ const NOTIF_TONES: Record<string, string> = {
   GENERAL: "bg-gray-100 text-sub dark:bg-white/10",
 };
 
-function StageLights() {
+/**
+ * Single branding block for the console sidebar.
+ *
+ * This replaces what used to be two stacked headers — a "Member Console /
+ * Drama Club" lockup directly above a "BRAC University Drama Club /
+ * Management Console" one — which rendered the logo twice and said
+ * essentially the same thing four times. One mark, one name, one label.
+ */
+function SidebarBrand() {
   return (
-    <div className="flex items-center gap-2.5 px-5 pt-5">
-      <ClubLogo size={28} />
-      <div className="min-w-0 leading-tight">
-        <p className="truncate font-display text-[13px] font-bold tracking-tight text-ink">
-          Member Console
-        </p>
-        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-accent ">
-          Drama Club
-        </p>
-      </div>
+    <Link
+      href="/dashboard"
+      className={cn(
+        "mx-3 mt-4 flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors",
+        "hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      )}
+    >
+      <ClubLogo size={32} className="shrink-0" />
+      <span className="min-w-0 flex-1">
+        {/* One line. The sidebar's minimum width is derived from this text's
+            measured single-line width, so it fits at every allowed width and
+            the ellipsis never actually engages — `truncate` is only here as a
+            graceful fallback for a club name longer than this one, with the
+            full value still available via the title attribute. */}
+        <span
+          title="BRAC University Drama Club"
+          className="font-display block truncate text-[12.5px] font-bold leading-[1.3] tracking-[-0.02em] text-ink"
+        >
+          BRAC University Drama Club
+        </span>
+        <span className="mt-0.5 block truncate text-[9.5px] font-bold uppercase tracking-[0.18em] text-accent-ink">
+          Management Console
+        </span>
+      </span>
+    </Link>
+  );
+}
+
+/* ---------------------------------------------------------------------------
+   Resizable sidebar
+--------------------------------------------------------------------------- */
+
+const SIDEBAR_STORAGE_KEY = "dcms-sidebar-width";
+/**
+ * Floor is measured, not guessed: "BRAC University Drama Club" is 168px on one
+ * line at 12.5px semibold, plus a 32px logo, a 12px gap, 16px of link padding
+ * and 24px of link margins — 252px. Clamping to it means the club name can
+ * never be clipped no matter how far the handle is dragged.
+ */
+const SIDEBAR_MIN = 252;
+const SIDEBAR_MAX = 420;
+const SIDEBAR_DEFAULT = 272;
+/** Arrow-key step when the separator has keyboard focus. */
+const SIDEBAR_STEP = 16;
+
+function clampSidebar(px: number): number {
+  return Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, Math.round(px)));
+}
+
+/**
+ * Drag handle sitting on the sidebar's trailing edge.
+ *
+ * Implemented as an ARIA `separator` with a value, so it is operable without a
+ * pointer: arrows nudge, Home/End jump to the limits, Enter/double-click
+ * restores the default. Pointer capture keeps the drag alive when the cursor
+ * outruns the 12px hit area, and `touch-none` stops a touch drag from scrolling
+ * the page instead of resizing.
+ */
+function SidebarResizer({
+  width,
+  onResize,
+}: {
+  width: number;
+  onResize: (next: number) => void;
+}) {
+  const [dragging, setDragging] = useState(false);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDragging(true);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragging) return;
+    // The sidebar is pinned to the left edge, so the pointer's x is the width.
+    onResize(clampSidebar(e.clientX));
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragging) return;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    setDragging(false);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const moves: Record<string, number> = {
+      ArrowLeft: width - SIDEBAR_STEP,
+      ArrowRight: width + SIDEBAR_STEP,
+      Home: SIDEBAR_MIN,
+      End: SIDEBAR_MAX,
+      Enter: SIDEBAR_DEFAULT,
+    };
+    const next = moves[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    onResize(clampSidebar(next));
+  };
+
+  return (
+    <div
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Resize sidebar"
+      aria-valuenow={width}
+      aria-valuemin={SIDEBAR_MIN}
+      aria-valuemax={SIDEBAR_MAX}
+      tabIndex={0}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onKeyDown={onKeyDown}
+      onDoubleClick={() => onResize(SIDEBAR_DEFAULT)}
+      title="Drag to resize · double-click to reset"
+      className={cn(
+        "group absolute inset-y-0 -right-1.5 z-50 hidden w-3 cursor-col-resize touch-none lg:block",
+        "focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-accent"
+      )}
+    >
+      {/* Hairline that lights up violet on hover/drag — the 12px hit area
+          stays invisible so the chrome reads as a 1px divider. */}
+      <span
+        aria-hidden="true"
+        className={cn(
+          "absolute inset-y-0 left-1/2 w-px -translate-x-1/2 transition-colors duration-150",
+          dragging ? "bg-accent" : "bg-transparent group-hover:bg-accent"
+        )}
+      />
     </div>
   );
 }
@@ -109,9 +238,38 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, loading, clear: clearSession } = useSession();
   const toast = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Starts at the default so server and client markup agree; the persisted
+  // value is applied in a layout effect below, before the browser paints.
+  const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_DEFAULT);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unread, setUnread] = useState(0);
   const [notifLoading, setNotifLoading] = useState(true);
+
+  // Restore the persisted width after mount. Deferred by a tick — the same
+  // pattern ThemeProvider and SessionProvider use — so the state update lands
+  // outside the effect body and SSR markup still matches on hydration.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const stored = Number(localStorage.getItem(SIDEBAR_STORAGE_KEY));
+        if (Number.isFinite(stored) && stored > 0) {
+          setSidebarWidth(clampSidebar(stored));
+        }
+      } catch {
+        /* storage unavailable (private mode) — keep the default */
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const resizeSidebar = useCallback((next: number) => {
+    setSidebarWidth(next);
+    try {
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next));
+    } catch {
+      /* non-fatal: the width just won't persist */
+    }
+  }, []);
 
   const loadNotifications = useCallback(async () => {
     try {
@@ -186,21 +344,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const sidebar = (
     <div className="flex h-full flex-col">
-      <StageLights />
-      <div className="flex items-center gap-2.5 px-5 py-4">
-        <Link href="/" className="flex items-center gap-2.5">
-          <ClubLogo size={28} />
-          <div className="flex min-w-0 flex-col justify-center leading-tight">
-            <p className="whitespace-nowrap font-display text-left text-[12.5px] font-bold leading-snug tracking-tight text-ink">
-              BRAC University Drama Club
-            </p>
-            <p className="text-left text-[9px] font-semibold uppercase tracking-[0.16em] text-accent ">
-              Management Console
-            </p>
-          </div>
-        </Link>
-      </div>
-      <nav className="thin-scroll flex-1 space-y-0.5 overflow-y-auto px-3 pb-4">
+      <SidebarBrand />
+      <nav className="thin-scroll mt-4 flex-1 space-y-0.5 overflow-y-auto px-3 pb-4">
         {visibleNav.map((item) => {
           const active =
             item.href === "/dashboard"
@@ -246,7 +391,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="flex min-h-dvh bg-gray-50 dark:bg-card">
+    <div
+      className="flex min-h-dvh bg-gray-50 dark:bg-card"
+      // One variable drives both the sidebar's width and the content's offset,
+      // so the two can never disagree mid-drag.
+      style={{ "--sidebar-w": `${sidebarWidth}px` } as React.CSSProperties}
+    >
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[120] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:text-on-accent"
@@ -254,9 +404,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         Skip to main content
       </a>
 
-      {/* Desktop sidebar */}
-      <aside className="border-line bg-card fixed inset-y-0 left-0 z-40 hidden w-60 border-r lg:block">
+      {/* Desktop sidebar — user-resizable, width persisted per browser */}
+      <aside
+        className="border-line bg-card fixed inset-y-0 left-0 z-40 hidden w-[var(--sidebar-w)] border-r lg:block"
+      >
         <div className="relative h-full">{sidebar}</div>
+        <SidebarResizer width={sidebarWidth} onResize={resizeSidebar} />
       </aside>
 
       {/* Mobile sidebar */}
@@ -274,7 +427,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <div className="flex min-w-0 flex-1 flex-col lg:pl-60">
+      <div className="flex min-w-0 flex-1 flex-col lg:pl-[var(--sidebar-w)]">
         {/* Top bar */}
         <header className="border-line glass sticky top-0 z-30 border-b">
           <div className="flex h-14 items-center gap-3 px-4 sm:px-6">

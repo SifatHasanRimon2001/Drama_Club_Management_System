@@ -61,9 +61,18 @@ export function PublicNav({
       <ButtonLink href="/login" size="sm">
         Sign In
       </ButtonLink>
-      <ButtonLink href="/dashboard" variant="secondary" size="sm" icon="grid" className="hidden sm:inline-flex">
-        Member Area
-      </ButtonLink>
+      {/* Visibility is controlled by this wrapper, not by a `hidden` class on
+          the button itself: `cn()` concatenates without resolving Tailwind
+          conflicts, so a `hidden` passed via className loses to the
+          `inline-flex` baked into the button base and the button stayed
+          visible at 320px, pushing the whole cluster off-screen.
+          `sm:contents` makes the wrapper disappear from the box tree when
+          shown, so it does not disturb the flex layout. */}
+      <span className="hidden sm:contents">
+        <ButtonLink href="/dashboard" variant="secondary" size="sm" icon="grid">
+          Member Area
+        </ButtonLink>
+      </span>
     </>
   );
 
@@ -79,17 +88,27 @@ export function PublicNav({
       )}
     >
       <Container
-        size="wide"
+        size="shell"
         className={cn(
           "grid items-center gap-2",
-          "grid-cols-[auto_1fr_auto]",
+          // Every flexible column is minmax(0,…) — NOT `auto` or a bare `1fr`.
+          // A bare `1fr` is `minmax(auto, 1fr)`, and `auto` refuses to shrink
+          // below its content's min-content width. That floor is what pushed
+          // the right-hand cluster (theme toggle, Sign In, menu) off-screen:
+          // the nav's ten nowrap links at 1024–1235px, and the truncated club
+          // name at ~320px. Because the header is `fixed`, neither produced a
+          // scrollbar — the controls were simply unreachable.
+          //
+          // Columns 1 and 2 may now collapse; only column 3 holds its size,
+          // because those are the controls that must never disappear.
+          "grid-cols-[minmax(0,auto)_minmax(0,1fr)_auto]",
           "h-auto py-2 sm:h-14 sm:py-0",
         )}
       >
         {/* ---- Left: Logo ---- */}
         <Link
           href="/"
-          className="group grid min-h-10 shrink-0 grid-flow-col auto-cols-max items-center justify-self-start gap-2 rounded-lg"
+          className="group flex min-h-10 min-w-0 items-center justify-self-start gap-2 rounded-lg"
         >
           {logoUrl ? (
             // Deliberately a plain <img>: the logo URL is admin-configurable in
@@ -108,23 +127,36 @@ export function PublicNav({
               className="transition-transform duration-200 group-hover:scale-105"
             />
           )}
+          {/* min-w-0 lets this shrink inside the grid column; `truncate` then
+              trims the club name to whatever room is left rather than forcing
+              the row wider than the viewport. No fixed max-width, so it uses
+              all available space on large screens and yields it on small. */}
           <span
             className={cn(
-              "whitespace-nowrap text-left font-display font-bold tracking-tight",
-              "text-[12px] text-ink sm:text-[12.5px] xl:text-[13px]",
-              "max-w-[9.5rem] truncate sm:max-w-none"
+              "font-display min-w-0 truncate text-left font-bold tracking-tight",
+              "text-[12px] text-ink sm:text-[12.5px] xl:text-[13px]"
             )}
           >
             {clubName || "BRAC University Drama Club"}
           </span>
         </Link>
 
-        {/* ---- Center: Desktop Nav Links (lg+) ---- */}
+        {/* ---- Center: Desktop Nav Links ----
+            Ten links need ~765px; with the brand and the right-hand cluster
+            that is ~1310px of hard minimum, so `lg` (1024px) and even `xl`
+            (1280px) both overlap. The custom breakpoint is the first width
+            where the full row genuinely fits; below it the hamburger takes over.
+
+            `min-w-0` + horizontal scroll is the safety net: the club name comes
+            from admin settings and can be any length, so the column width is
+            not knowable at build time. If it ever squeezes this column, the
+            links scroll within it instead of painting over the logo and the
+            sign-in buttons. */}
         <nav
           className={cn(
             "col-start-2 row-start-1",
-            "hidden w-full justify-center gap-0.5 text-[12.5px]",
-            "lg:flex lg:text-[13px]"
+            "no-scrollbar hidden w-full min-w-0 justify-center gap-0.5 overflow-x-auto text-[12.5px]",
+            "min-[1320px]:flex min-[1320px]:text-[13px]"
           )}
           aria-label="Primary"
         >
@@ -136,7 +168,7 @@ export function PublicNav({
                 href={l.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative whitespace-nowrap rounded-lg px-3 py-2 font-medium transition-colors duration-200",
+                  "relative whitespace-nowrap rounded-lg px-2.5 py-2 font-medium transition-colors duration-200 2xl:px-3",
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                   active ? "text-ink" : "text-faint hover:text-ink"
                 )}
@@ -236,7 +268,9 @@ export function PublicNav({
                 type="button"
                 onClick={toggle}
                 className={cn(
-                  "lg:hidden",
+                  // Mirrors the nav's breakpoint exactly — one of the two is
+                  // always visible, and never both.
+                  "min-[1320px]:hidden",
                   // 40px square: comfortably tappable without crowding the bar.
                   "flex size-10 items-center justify-center rounded-xl border border-transparent text-ink transition hover:border-line hover:bg-elevated",
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"

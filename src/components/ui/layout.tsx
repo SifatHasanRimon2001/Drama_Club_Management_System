@@ -17,6 +17,15 @@ const CONTAINER_SIZES = {
   article: "max-w-4xl",
   form: "max-w-3xl",
   panel: "max-w-2xl",
+  /**
+   * Chrome that spans wider than body content — the site header and footer.
+   * `wide` (1280px) leaves 1216px of usable width, which is less than the
+   * header's ten nav links plus brand plus controls actually need (~1245px),
+   * so a header on `wide` can never lay out without overlapping regardless of
+   * how large the window gets. Defined as a named size rather than passed via
+   * className because `cn()` does not resolve competing max-w utilities.
+   */
+  shell: "max-w-[1440px]",
 } as const;
 
 export function Container({

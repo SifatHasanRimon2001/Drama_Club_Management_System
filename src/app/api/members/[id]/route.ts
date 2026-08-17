@@ -4,6 +4,7 @@ import { requireAuth, parseJsonBody } from "@/lib/api-helpers";
 import { can } from "@/lib/permissions";
 import { memberUpdateSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { DIRECTORY_MEMBER_SELECT, PERSONAL_MEMBER_FIELDS } from "@/lib/member-select";
 import { ZodError } from "zod";
 
 export async function GET(
@@ -40,10 +41,17 @@ export async function GET(
       }
     }
 
+    // Personal contact details are gated behind ownership or `member.edit`.
+    // `member.view` alone is the directory permission — every role holds it,
+    // so treating it as sufficient for phone/address/DOB/emergency contact
+    // made the whole membership's personal data readable by every member.
+    const canSeePersonal = isOwner || (await can(auth.userId, "member.edit"));
+
     const full = await prisma.member.findUnique({
       where: { id },
-      include: {
-        user: { select: { id: true, name: true, email: true, image: true } },
+      select: {
+        ...DIRECTORY_MEMBER_SELECT,
+        ...(canSeePersonal ? PERSONAL_MEMBER_FIELDS : {}),
         departments: {
           include: { department: true },
         },

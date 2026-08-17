@@ -25,12 +25,45 @@ export const PUBLIC_MEMBER_SELECT = {
 /**
  * Signed-in directory audience: adds the club-internal member code and the
  * work email so staff can identify and contact each other. Still excludes
- * phone, address, date of birth and emergency contact — those belong to the
- * member's own profile view (`/api/members/:id`, gated by `member.view`).
+ * phone, address, date of birth and emergency contact — see
+ * PERSONAL_MEMBER_FIELDS below for why those are gated separately.
  */
 export const INTERNAL_MEMBER_SELECT = {
   id: true,
   memberCode: true,
   status: true,
   user: { select: { id: true, name: true, email: true, image: true } },
+} as const;
+
+/**
+ * The member directory row — everything needed to find and identify a person,
+ * and nothing that could be used to turn up at their front door.
+ */
+export const DIRECTORY_MEMBER_SELECT = {
+  id: true,
+  userId: true,
+  memberCode: true,
+  status: true,
+  joiningDate: true,
+  photoUrl: true,
+  user: { select: { id: true, name: true, email: true, image: true } },
+} as const;
+
+/**
+ * Home address, phone, date of birth and emergency contact.
+ *
+ * These are deliberately NOT part of `member.view`. Every seeded role — down to
+ * the base "Member" — holds `member.view`, because it is what powers the member
+ * directory. Returning personal contact details under that permission meant any
+ * ordinary member could read all 87 members' home addresses simply by walking
+ * ids through `/api/members/:id`.
+ *
+ * Spread these in only when the viewer is the member themselves, or holds
+ * `member.edit` (the permission that actually administers profiles).
+ */
+export const PERSONAL_MEMBER_FIELDS = {
+  phone: true,
+  dateOfBirth: true,
+  address: true,
+  emergencyContact: true,
 } as const;

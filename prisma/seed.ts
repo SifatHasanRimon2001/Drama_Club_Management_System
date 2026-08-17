@@ -116,7 +116,12 @@ async function main() {
   };
   const ALL = PERMISSIONS_LIST.map(([k]) => k);
   await assignPerms(roles.Admin.id, ALL);
-  await assignPerms(roles.Member.id, ["member.view", "department.view", "events.manage", "gallery.upload", "promotion.submit"]);
+  // Base member: read the directory and departments, upload to the gallery,
+  // raise their own promotion request. Deliberately WITHOUT `events.manage` —
+  // that permission is club-wide, so granting it to every member let anyone
+  // edit or delete any event on the calendar. Event management belongs to the
+  // coordinator/lead roles below.
+  await assignPerms(roles.Member.id, ["member.view", "department.view", "gallery.upload", "promotion.submit"]);
   await assignPerms(roles.President.id, ALL);
   await assignPerms(roles["Vice President"].id, ["member.view", "member.edit", "department.view", "department.manage", "committee.manage", "registration.manage", "registration.review", "promotion.submit", "promotion.approve", "gallery.upload", "gallery.manage", "updates.publish", "events.manage"]);
   await assignPerms(roles.Treasurer.id, ["member.view", "department.view", "events.manage", "promotion.submit", "gallery.upload"]);

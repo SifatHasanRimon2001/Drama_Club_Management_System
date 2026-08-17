@@ -29,16 +29,43 @@ const baseField =
   "hover:border-line-strong disabled:opacity-50 disabled:cursor-not-allowed " +
   "aria-[invalid=true]:border-red aria-[invalid=true]:shadow-[0_0_0_4px_var(--color-red)]/15";
 
+/**
+ * Why `suppressHydrationWarning` on the form controls:
+ *
+ * Password managers (1Password, LastPass, Dashlane, Bitwarden, the browser's
+ * own autofill) mutate input elements *after* the server HTML arrives and
+ * *before* React hydrates — typically adding `autocomplete`, a `data-*` hook,
+ * and an inline `style` that paints their icon as a right-aligned
+ * background-image. React then compares its render against the already-mutated
+ * DOM and reports a hydration mismatch that the application did not cause and
+ * cannot prevent.
+ *
+ * This suppresses that specific false positive on the element's own attributes.
+ * It does not hide real problems: these are controlled inputs, so a genuinely
+ * wrong `value` still surfaces as visibly incorrect data and as React's
+ * controlled/uncontrolled warning, and mismatches in any child element are
+ * unaffected.
+ */
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   ({ className, ...props }, ref) => (
-    <input ref={ref} className={cn(baseField, className)} {...props} />
+    <input
+      ref={ref}
+      suppressHydrationWarning
+      className={cn(baseField, className)}
+      {...props}
+    />
   )
 );
 Input.displayName = "Input";
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(
   ({ className, ...props }, ref) => (
-    <textarea ref={ref} className={cn(baseField, "min-h-28 resize-y", className)} {...props} />
+    <textarea
+      ref={ref}
+      suppressHydrationWarning
+      className={cn(baseField, "min-h-28 resize-y", className)}
+      {...props}
+    />
   )
 );
 Textarea.displayName = "Textarea";
@@ -51,6 +78,7 @@ export const Select = forwardRef<
 >(({ className, children, onChange, ...props }, ref) => (
   <select
     ref={ref}
+    suppressHydrationWarning
     onChange={onChange ? (e) => onChange(e.target.value) : undefined}
     className={cn(
       baseField,
@@ -163,6 +191,7 @@ export function SearchInput({
       <input
         type="search"
         aria-label={ariaLabel}
+        suppressHydrationWarning
         className={cn(baseField, "pl-10")}
         {...props}
       />

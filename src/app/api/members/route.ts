@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth, getPaginationParams, validateEnumParam, parseJsonBody } from "@/lib/api-helpers";
 import { memberSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { DIRECTORY_MEMBER_SELECT } from "@/lib/member-select";
 import { ZodError } from "zod";
 
 const VALID_MEMBER_STATUSES = [
@@ -43,8 +44,13 @@ export async function GET(request: NextRequest) {
     const [members, total] = await Promise.all([
       prisma.member.findMany({
         where,
-        include: {
-          user: { select: { id: true, name: true, email: true, image: true } },
+        // Directory projection only. No screen consumes personal contact
+        // fields from the list, and a top-level `include` here handed every
+        // member's phone and home address to anyone with `member.view` — in
+        // bulk, one page at a time. Personal fields live on the detail route,
+        // gated by ownership or `member.edit`.
+        select: {
+          ...DIRECTORY_MEMBER_SELECT,
           departments: {
             include: { department: { select: { id: true, name: true } } },
           },
